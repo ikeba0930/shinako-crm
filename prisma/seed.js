@@ -2,7 +2,7 @@
 const { PrismaClient, CandidateOverallStatus, CustomerRank, GoalPeriodType, MasterScope, SelectionStatus } = require("@prisma/client")
 const { PrismaPg } = require("@prisma/adapter-pg")
 
-const connectionString = process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL?.trim()
 
 if (!connectionString) {
   throw new Error("DATABASE_URL is not set")
