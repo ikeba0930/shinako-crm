@@ -1,10 +1,11 @@
 import Link from "next/link"
-import { prisma } from "@/lib/db"
 import { deleteCandidateAction } from "@/lib/actions"
+import { DeleteCandidateButton } from "@/components/delete-candidate-button"
+import { prisma } from "@/lib/db"
 import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE } from "@/lib/constants"
 import { formatDate, formatManYen } from "@/lib/format"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export const dynamic = "force-dynamic"
@@ -73,10 +74,17 @@ export default async function CandidatesPage({ searchParams }: Props) {
       </div>
 
       <Card className="rounded-[24px] border-white/55 bg-white/62 shadow-[0_22px_48px_-34px_rgba(88,28,135,0.78)]">
-        <CardHeader><CardTitle className="text-base font-black text-[#241433]">検索・絞り込み</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base font-black text-[#241433]">絞り込み</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
           <form className="grid gap-3 md:grid-cols-6">
-            <input name="keyword" defaultValue={keyword} placeholder="氏名 / 求職者ID / 希望職種" className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm" />
+            <input
+              name="keyword"
+              defaultValue={keyword}
+              placeholder="氏名 / 求職者ID / 希望職種"
+              className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm"
+            />
             <select name="rank" defaultValue={rank} className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
               <option value="">ランクすべて</option>
               <option value="S">S</option>
@@ -87,31 +95,42 @@ export default async function CandidatesPage({ searchParams }: Props) {
             <select name="status" defaultValue={status} className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
               <option value="">ステータスすべて</option>
               {Object.entries(CANDIDATE_STATUS_LABELS).map(([code, label]) => (
-                <option key={code} value={code}>{label}</option>
+                <option key={code} value={code}>
+                  {label}
+                </option>
               ))}
             </select>
             <select name="inflowSource" defaultValue={inflowSource} className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
-              <option value="">流入経路すべて</option>
+              <option value="">流入元すべて</option>
               <option value="ポータル">ポータル</option>
-              <option value="失業保険">失業保険</option>
+              <option value="紹介会社">紹介会社</option>
             </select>
             <select name="owner" defaultValue={owner} className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
               <option value="">担当者すべて</option>
               {owners.map((item) => (
-                <option key={item} value={item ?? ""}>{item}</option>
+                <option key={item} value={item ?? ""}>
+                  {item}
+                </option>
               ))}
             </select>
             <select name="sort" defaultValue={sort} className="h-10 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
               <option value="updatedAt">更新日順</option>
               <option value="inflowDate">流入日順</option>
             </select>
-            <button type="submit" className="h-10 rounded-2xl bg-[linear-gradient(135deg,#7c3aed_0%,#ec4899_52%,#f59e0b_100%)] px-4 text-sm font-semibold text-white md:col-span-6">適用</button>
+            <button
+              type="submit"
+              className="h-10 rounded-2xl bg-[linear-gradient(135deg,#7c3aed_0%,#ec4899_52%,#f59e0b_100%)] px-4 text-sm font-semibold text-white md:col-span-6"
+            >
+              適用
+            </button>
           </form>
         </CardContent>
       </Card>
 
       <Card className="rounded-[24px] border-white/55 bg-white/62 shadow-[0_22px_48px_-34px_rgba(88,28,135,0.78)]">
-        <CardHeader><CardTitle className="text-base font-black text-[#241433]">一覧</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base font-black text-[#241433]">一覧</CardTitle>
+        </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
@@ -129,7 +148,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <TableHead>流入日</TableHead>
                 <TableHead>面談日</TableHead>
                 <TableHead>担当者</TableHead>
-                <TableHead className="text-right">操作</TableHead>
+                <TableHead className="text-right">削除</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -144,9 +163,15 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   <TableCell>{candidate.age ?? "-"}</TableCell>
                   <TableCell>{formatManYen(candidate.currentAnnualIncome)}</TableCell>
                   <TableCell>{formatManYen(candidate.desiredAnnualIncome)}</TableCell>
-                  <TableCell><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>{candidate.customerRank}</span></TableCell>
+                  <TableCell>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>
+                      {candidate.customerRank}
+                    </span>
+                  </TableCell>
                   <TableCell>{candidate.desiredJobType ?? "-"}</TableCell>
-                  <TableCell><Badge variant="secondary">{CANDIDATE_STATUS_LABELS[candidate.overallStatus]}</Badge></TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{CANDIDATE_STATUS_LABELS[candidate.overallStatus]}</Badge>
+                  </TableCell>
                   <TableCell>{candidate.proposalCount}</TableCell>
                   <TableCell>{candidate.activeSelectionCount}</TableCell>
                   <TableCell>{formatDate(candidate.inflowDate)}</TableCell>
@@ -155,12 +180,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   <TableCell className="text-right">
                     <form action={deleteCandidateAction}>
                       <input type="hidden" name="candidateId" value={candidate.id} />
-                      <button
-                        type="submit"
-                        className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100"
-                      >
-                        削除
-                      </button>
+                      <DeleteCandidateButton candidateName={candidate.name} />
                     </form>
                   </TableCell>
                 </TableRow>
