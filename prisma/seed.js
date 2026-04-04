@@ -10,8 +10,9 @@ if (!connectionString) {
 }
 
 function createPoolFromDatabaseUrl(value) {
-  const url = new URL(value.trim())
-  const database = url.pathname.replace(/^\/+/, "").trim()
+  const normalized = value.replace(/^\s+|\s+$/g, "").replace(/^['"]|['"]$/g, "")
+  const url = new URL(normalized)
+  const database = decodeURIComponent(url.pathname.replace(/^\/+/, "")).trim()
 
   if (!database) {
     throw new Error("DATABASE_URL does not include a database name")

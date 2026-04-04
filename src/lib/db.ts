@@ -5,8 +5,9 @@ import pg from "pg"
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
 function createPoolFromDatabaseUrl(connectionString: string) {
-  const url = new URL(connectionString.trim())
-  const database = url.pathname.replace(/^\/+/, "").trim()
+  const normalized = connectionString.replace(/^\s+|\s+$/g, "").replace(/^['"]|['"]$/g, "")
+  const url = new URL(normalized)
+  const database = decodeURIComponent(url.pathname.replace(/^\/+/, "")).trim()
 
   if (!database) {
     throw new Error("DATABASE_URL does not include a database name")
