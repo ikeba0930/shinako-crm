@@ -9,7 +9,25 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set")
 }
 
-const pool = new pg.Pool({ connectionString })
+function createPoolFromDatabaseUrl(value) {
+  const url = new URL(value.trim())
+  const database = url.pathname.replace(/^\/+/, "").trim()
+
+  if (!database) {
+    throw new Error("DATABASE_URL does not include a database name")
+  }
+
+  return new pg.Pool({
+    host: url.hostname,
+    port: url.port ? Number(url.port) : 5432,
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    database,
+    ssl: { rejectUnauthorized: false },
+  })
+}
+
+const pool = createPoolFromDatabaseUrl(connectionString)
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
