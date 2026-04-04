@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { PrismaClient, CandidateOverallStatus, CustomerRank, GoalPeriodType, MasterScope, SelectionStatus } = require("@prisma/client")
 const { PrismaPg } = require("@prisma/adapter-pg")
+const pg = require("pg")
 
 const connectionString = process.env.DATABASE_URL?.trim()
 
@@ -8,7 +9,8 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set")
 }
 
-const adapter = new PrismaPg(connectionString)
+const pool = new pg.Pool({ connectionString })
+const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 const S_QUALIFICATIONS = [
