@@ -197,7 +197,6 @@ export async function getDashboardData(options: DashboardOptions = {}) {
     (goal) => goal.periodType === "monthly" && goal.year === targetYear && goal.month === targetMonth
   )
   const yearlyGoal = goals.find((goal) => goal.periodType === "yearly" && goal.year === targetYear)
-  const averageUnitPrice = monthlyGoal?.averageUnitPrice ?? yearlyGoal?.averageUnitPrice ?? 800000
 
   const activeCandidates = candidates.filter((candidate) => {
     if (candidate.archived) return false
@@ -206,6 +205,11 @@ export async function getDashboardData(options: DashboardOptions = {}) {
   })
   const activeCandidateIds = new Set(activeCandidates.map((candidate) => candidate.id))
   const filteredSelections = selections.filter((selection) => activeCandidateIds.has(selection.candidateId))
+  const selectionsWithUnitPrice = filteredSelections.filter((selection) => typeof selection.unitPrice === "number")
+  const averageUnitPrice =
+    selectionsWithUnitPrice.length === 0
+      ? 0
+      : Math.round(selectionsWithUnitPrice.reduce((sum, selection) => sum + (selection.unitPrice ?? 0), 0) / selectionsWithUnitPrice.length)
 
   const monthlySummary = buildSummaryRows({
     inflow: activeCandidates.filter((candidate) => inRange(candidate.inflowDate, start, end)).length,
