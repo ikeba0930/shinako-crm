@@ -6,19 +6,23 @@ This app is deployable on Vercel.
 
 Set these in the Vercel project:
 
+- `POSTGRES_PRISMA_URL`
+- `POSTGRES_URL_NON_POOLING`
 - `DATABASE_URL`
-  - Use a remote LibSQL/Turso connection string such as `libsql://your-database.turso.io`
 - `JWT_SECRET`
-  - Use a long random secret
+
+When using Vercel Postgres or Neon via Vercel Storage, these are added automatically except `JWT_SECRET`.
 
 ## Recommended database flow
 
-1. Create a Turso database.
-2. Copy the LibSQL connection string into `DATABASE_URL`.
+1. Create and connect a Postgres database from Vercel Storage.
+2. Confirm the Postgres environment variables are present in the Vercel project.
 3. Run Prisma schema sync against that database:
 
 ```powershell
-$env:DATABASE_URL="libsql://your-database.turso.io"
+$env:POSTGRES_PRISMA_URL="postgres://..."
+$env:POSTGRES_URL_NON_POOLING="postgres://..."
+$env:DATABASE_URL="postgres://..."
 npx prisma db push
 npm run db:seed
 ```
