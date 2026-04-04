@@ -1,0 +1,94 @@
+export const CUSTOMER_RANK_LABELS = {
+  S: "S",
+  A: "A",
+  B: "B",
+  C: "C",
+} as const
+
+export const CUSTOMER_RANK_BADGE = {
+  S: "bg-rose-100 text-rose-700",
+  A: "bg-orange-100 text-orange-700",
+  B: "bg-sky-100 text-sky-700",
+  C: "bg-slate-100 text-slate-700",
+} as const
+
+export const CANDIDATE_STATUS_LABELS = {
+  NEW: "新規流入",
+  FIRST_CONTACTED: "初回対応済",
+  INTERVIEWED: "面談済",
+  PROPOSING: "提案中",
+  IN_PROGRESS: "選考中",
+  OFFERED: "内定",
+  ACCEPTED: "承諾",
+  JOINED: "入社",
+  ON_HOLD: "保留",
+  DROPPED: "離脱",
+  CLOSED: "終了",
+} as const
+
+export const SELECTION_STATUS_LABELS = {
+  PROPOSED: "提案済",
+  WAITING_ENTRY: "応募待ち",
+  ENTERED: "エントリー済",
+  DOCUMENT_SCREENING: "書類選考中",
+  PASSED_DOCUMENT: "書類通過",
+  FIRST_INTERVIEW_ADJUSTING: "一次面談調整中",
+  FIRST_INTERVIEW_DONE: "一次面談済",
+  SECOND_INTERVIEW_ADJUSTING: "二次面談調整中",
+  SECOND_INTERVIEW_DONE: "二次面談済",
+  OFFERED: "内定",
+  ACCEPTED: "承諾",
+  JOINING_SCHEDULED: "入社予定",
+  JOINED: "入社済",
+  DECLINED: "辞退",
+  REJECTED: "見送り",
+  CLOSED: "クローズ",
+} as const
+
+export const SELECTION_STATUS_BADGE = {
+  PROPOSED: "bg-zinc-100 text-zinc-700",
+  WAITING_ENTRY: "bg-amber-100 text-amber-700",
+  ENTERED: "bg-blue-100 text-blue-700",
+  DOCUMENT_SCREENING: "bg-violet-100 text-violet-700",
+  PASSED_DOCUMENT: "bg-cyan-100 text-cyan-700",
+  FIRST_INTERVIEW_ADJUSTING: "bg-indigo-100 text-indigo-700",
+  FIRST_INTERVIEW_DONE: "bg-indigo-100 text-indigo-700",
+  SECOND_INTERVIEW_ADJUSTING: "bg-fuchsia-100 text-fuchsia-700",
+  SECOND_INTERVIEW_DONE: "bg-fuchsia-100 text-fuchsia-700",
+  OFFERED: "bg-emerald-100 text-emerald-700",
+  ACCEPTED: "bg-green-100 text-green-700",
+  JOINING_SCHEDULED: "bg-lime-100 text-lime-700",
+  JOINED: "bg-green-200 text-green-800",
+  DECLINED: "bg-rose-100 text-rose-700",
+  REJECTED: "bg-red-100 text-red-700",
+  CLOSED: "bg-slate-200 text-slate-700",
+} as const
+
+export const S_RANK_QUALIFICATIONS = [
+  "技術士（建設部門）",
+  "1級施工管理技士（建築）",
+  "1級施工管理技士（土木）",
+  "1級施工管理技士（管工事）",
+  "1級施工管理技士（電気工事）",
+  "1級施工管理技士（造園）",
+  "第一種電気工事士",
+  "一級建築士",
+  "第三種電気主任技術者",
+  "1級自動車整備士",
+  "特殊溶接",
+  "運行管理者",
+] as const
+
+export const A_RANK_QUALIFICATIONS = [
+  "第二種電気工事士",
+  "フォークリフト運転技能講習",
+  "玉掛け",
+  "クレーン",
+  "大型自動車免許",
+  "2級自動車整備士",
+  "衛生管理者",
+  "消防設備士",
+  "危険物取扱者乙種4類",
+  "けん引免許",
+  "自動車検査員",
+] as const

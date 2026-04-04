@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum CustomerRank {
+  S
+  A
+  B
+  C
+}
+
+enum RankSource {
+  auto
+  manual
+}
+
+enum CandidateOverallStatus {
+  NEW
+  FIRST_CONTACTED
+  INTERVIEWED
+  PROPOSING
+  IN_PROGRESS
+  OFFERED
+  ACCEPTED
+  JOINED
+  ON_HOLD
+  DROPPED
+  CLOSED
+}
+
+enum SelectionStatus {
+  PROPOSED
+  WAITING_ENTRY
+  ENTERED
+  DOCUMENT_SCREENING
+  PASSED_DOCUMENT
+  FIRST_INTERVIEW_ADJUSTING
+  FIRST_INTERVIEW_DONE
+  SECOND_INTERVIEW_ADJUSTING
+  SECOND_INTERVIEW_DONE
+  OFFERED
+  ACCEPTED
+  JOINING_SCHEDULED
+  JOINED
+  DECLINED
+  REJECTED
+  CLOSED
+}
+
+enum GoalPeriodType {
+  yearly
+  monthly
+}
+
+enum MasterScope {
+  candidate
+  selection
+}
+
+model Candidate {
+  id                        String                 @id @default(cuid())
+  candidateCode             String                 @unique
+  name                      String
+  nameKana                  String?
+  birthDate                 DateTime?
+  gender                    String?
+  age                       Int?
+  postalCode                String?
+  address                   String?
+  addressKana               String?
+  phone                     String?
+  email                     String?
+  nearestStation            String?
+  commuteTime               String?
+  dependentsCount           Int?                   @default(0)
+  spouseStatus              String?
+  photoPath                 String?
+  contactPostalCode         String?
+  contactAddress            String?
+  contactAddressKana        String?
+  contactPhone              String?
+  currentAnnualIncome       Int?
+  desiredAnnualIncome       Int?
+  employmentStatus          String?
+  jobSearchStatus           String?
+  desiredTiming             String?
+  desiredJobType            String?
+  desiredLocation           String?
+  employmentTypePreference  String?
+  availability              String?
+  otherConditions           String?
+  resumePreferenceText      String?
+  managementExperience      String?
+  circusExperiencedIndustry String?
+  circusExperiencedJobType  String?
+  pcSkills                  String?
+  languageSkills            String?
+  transferableSkills        String?
+  strengths                 String?
+  reasonForChange           String?
+  healthNote                String?
+  tattooNote                String?
+  symptomNote               String?
+  surgeryNote               String?
+  moneyNote                 String?
+  qualificationText         String?
+  qualificationCategory     String?
+  customerRank              CustomerRank           @default(C)
+  rankAutoResult            CustomerRank           @default(C)
+  rankSource                RankSource             @default(auto)
+  rankManualOverride        Boolean                @default(false)
+  ownerName                 String?
+  inflowSource              String?
+  inflowDate                DateTime?
+  firstResponseDate         DateTime?
+  interviewDate             DateTime?
+  proposalDate              DateTime?
+  documentCreatedDate       DateTime?
+  offerDate                 DateTime?
+  offerAcceptedDate         DateTime?
+  joiningDate               DateTime?
+  closedDate                DateTime?
+  overallStatus             CandidateOverallStatus @default(NEW)
+  proposalCount             Int                    @default(0)
+  activeSelectionCount      Int                    @default(0)
+  internalMemo              String?
+  archived                  Boolean                @default(false)
+  createdAt                 DateTime               @default(now())
+  updatedAt                 DateTime               @updatedAt
+
+  educations          Education[]
+  workHistories       WorkHistory[]
+  qualifications      Qualification[]
+  companyProfiles     CandidateCompanyProfile[]
+  attachments         Attachment[]
+  selections          Selection[]
+
+  @@index([customerRank])
+  @@index([overallStatus])
+  @@index([ownerName])
+  @@index([inflowDate])
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  candidateId String
+  year        Int
+  month       Int
+  category    String
+  schoolName  String
+  sortOrder   Int       @default(0)
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model WorkHistory {
+  id              String    @id @default(cuid())
+  candidateId     String
+  joinedYear      Int
+  joinedMonth     Int
+  leftYear        Int?
+  leftMonth       Int?
+  isCurrent       Boolean   @default(false)
+  companyName     String
+  industry        String?
+  employeeCount   String?
+  departmentRole  String?
+  employmentType  String?
+  workDescription String?
+  achievements    String?
+  advisorMemo     String?
+  sortOrder       Int       @default(0)
+  candidate       Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model Qualification {
+  id                String    @id @default(cuid())
+  candidateId       String
+  qualificationName String
+  acquiredYear      Int?
+  acquiredMonth     Int?
+  isRankRelevant    Boolean   @default(false)
+  notes             String?
+  sortOrder         Int       @default(0)
+  candidate         Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model CandidateCompanyProfile {
+  id          String    @id @default(cuid())
+  candidateId String
+  companyName String
+  selfPr      String?
+  motivation  String?
+  sortOrder   Int       @default(0)
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id          String    @id @default(cuid())
+  candidateId String
+  name        String
+  filePath    String
+  mimeType    String?
+  isOutput    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model Selection {
+  id                   String          @id @default(cuid())
+  candidateId          String
+  companyName          String
+  jobType              String?
+  unitPrice            Int?
+  feeRate              Float?
+  selectionStatus      SelectionStatus @default(PROPOSED)
+  ownerName            String?
+  proposedAt           DateTime?
+  entryAt              DateTime?
+  passedAt             DateTime?
+  interviewScheduledAt DateTime?
+  firstInterviewAt     DateTime?
+  secondInterviewAt    DateTime?
+  offerAt              DateTime?
+  offerAcceptedAt      DateTime?
+  joiningAt            DateTime?
+  closedAt             DateTime?
+  declinedAt           DateTime?
+  rejectedAt           DateTime?
+  lossReason           String?
+  notes                String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  candidate            Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@index([selectionStatus])
+  @@index([ownerName])
+  @@index([companyName])
+}
+
+model GoalSetting {
+  id                    String         @id @default(cuid())
+  periodType            GoalPeriodType
+  year                  Int
+  month                 Int            @default(0)
+  annualRevenueTarget   Int?
+  monthlyRevenueTarget  Int?
+  averageUnitPrice      Int            @default(800000)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  @@unique([periodType, year, month])
+}
+
+model QualificationMaster {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  rankCategory CustomerRank
+  isActive     Boolean      @default(true)
+  sortOrder    Int          @default(0)
+}
+
+model StatusMaster {
+  id        String      @id @default(cuid())
+  scope     MasterScope
+  code      String
+  label     String
+  sortOrder Int         @default(0)
+  isActive  Boolean     @default(true)
+
+  @@unique([scope, code])
+}
