@@ -173,6 +173,26 @@ export async function createCandidateAction(formData: FormData) {
   redirect(`/candidates/${candidate.id}`)
 }
 
+export async function deleteCandidateAction(formData: FormData) {
+  const candidateId = String(formData.get("candidateId") ?? "")
+
+  if (!candidateId) return
+
+  await prisma.candidate.update({
+    where: { id: candidateId },
+    data: {
+      archived: true,
+      closedDate: new Date(),
+    },
+  })
+
+  await syncCandidateDerivedFields(candidateId)
+  revalidatePath("/candidates")
+  revalidatePath(`/candidates/${candidateId}`)
+  revalidatePath("/dashboard")
+  revalidatePath("/selections")
+}
+
 export async function saveSelectionAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
   const candidateId = String(formData.get("candidateId") ?? "")

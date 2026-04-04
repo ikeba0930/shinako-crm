@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db"
+import { deleteCandidateAction } from "@/lib/actions"
 import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE } from "@/lib/constants"
 import { formatDate, formatManYen } from "@/lib/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -128,6 +129,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <TableHead>流入日</TableHead>
                 <TableHead>面談日</TableHead>
                 <TableHead>担当者</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -150,6 +152,17 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   <TableCell>{formatDate(candidate.inflowDate)}</TableCell>
                   <TableCell>{formatDate(candidate.interviewDate)}</TableCell>
                   <TableCell>{candidate.ownerName ?? "-"}</TableCell>
+                  <TableCell className="text-right">
+                    <form action={deleteCandidateAction}>
+                      <input type="hidden" name="candidateId" value={candidate.id} />
+                      <button
+                        type="submit"
+                        className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100"
+                      >
+                        削除
+                      </button>
+                    </form>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
