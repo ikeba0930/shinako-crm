@@ -9,7 +9,7 @@
     "dev": "next dev --webpack",
     "dev:direct": "node ./node_modules/next/dist/bin/next dev --webpack",
     "typecheck": "tsc --noEmit",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
