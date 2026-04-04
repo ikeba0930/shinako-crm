@@ -6,12 +6,10 @@ This app is deployable on Vercel.
 
 Set these in the Vercel project:
 
-- `POSTGRES_PRISMA_URL`
-- `POSTGRES_URL_NON_POOLING`
 - `DATABASE_URL`
 - `JWT_SECRET`
 
-When using Vercel Postgres or Neon via Vercel Storage, these are added automatically except `JWT_SECRET`.
+When using Vercel Postgres or Neon via Vercel Storage, `DATABASE_URL` is added automatically.
 
 ## Recommended database flow
 
@@ -20,8 +18,6 @@ When using Vercel Postgres or Neon via Vercel Storage, these are added automatic
 3. Run Prisma schema sync against that database:
 
 ```powershell
-$env:POSTGRES_PRISMA_URL="postgres://..."
-$env:POSTGRES_URL_NON_POOLING="postgres://..."
 $env:DATABASE_URL="postgres://..."
 npx prisma db push
 npm run db:seed

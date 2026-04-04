@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db"
 import { saveGoalSettingAction } from "@/lib/actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+export const dynamic = "force-dynamic"
+
 export default async function SettingsPage() {
   const now = new Date()
   const [goals, qualificationMasters, statusMasters] = await Promise.all([

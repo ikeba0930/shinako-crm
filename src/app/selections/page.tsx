@@ -4,6 +4,8 @@ import { CUSTOMER_RANK_BADGE, SELECTION_STATUS_LABELS } from "@/lib/constants"
 import { formatDate, formatDateInput, formatManYen } from "@/lib/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+export const dynamic = "force-dynamic"
+
 const STALLED_ENTRY_THRESHOLD = (() => {
   const date = new Date()
   date.setDate(date.getDate() - 14)
