@@ -374,6 +374,14 @@ export async function saveGoalSettingAction(formData: FormData) {
   revalidatePath("/dashboard")
 }
 
+export async function deleteContactLogAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "")
+  const candidateId = String(formData.get("candidateId") ?? "")
+  if (!id || !candidateId) return
+  await prisma.contactLog.delete({ where: { id } })
+  revalidatePath(`/candidates/${candidateId}`)
+}
+
 export async function saveContactLogAction(formData: FormData) {
   const candidateId = String(formData.get("candidateId") ?? "")
   if (!candidateId) return

@@ -2,6 +2,7 @@ import { Mail, Phone } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CandidateFileVault } from "@/components/candidate-file-vault"
 import { CandidateNaModal } from "@/components/candidate-na-modal"
+import { CandidateContactLogList } from "@/components/candidate-contact-log-list"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
@@ -65,6 +66,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         qualifications: { orderBy: { sortOrder: "asc" } },
         selections: { orderBy: { updatedAt: "desc" } },
         attachments: { orderBy: { createdAt: "desc" } },
+        contactLogs: { orderBy: { createdAt: "desc" } },
       },
     }),
     prisma.qualificationMaster.findMany({
@@ -126,17 +128,20 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
     <div className="space-y-3 p-3 lg:p-4">
       {isSaved ? <SaveSuccessNotice message="保存しました" /> : null}
 
-      <Tabs defaultValue="support" className="space-y-2">
+      <Tabs defaultValue="basic" className="space-y-2">
         <TabsList className="rounded-full border border-white/55 bg-white/85 p-0.5 shadow-[0_18px_38px_-28px_rgba(76,29,149,0.86)]">
-          <TabsTrigger value="support" className="rounded-full px-3 py-1 text-xs font-semibold">
-            対応履歴など
+          <TabsTrigger value="basic" className="rounded-full px-3 py-1 text-xs font-semibold">
+            基本情報
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="rounded-full px-3 py-1 text-xs font-semibold">
+            対応履歴
           </TabsTrigger>
           <TabsTrigger value="selections" className="rounded-full px-3 py-1 text-xs font-semibold">
             選考企業
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="support" className="space-y-3">
+        <TabsContent value="basic" className="space-y-3">
           <form action={saveCandidateAction} className="space-y-3">
             <input type="hidden" name="id" value={candidate.id} />
 
@@ -555,6 +560,10 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </CardContent>
             </Card>
           </form>
+        </TabsContent>
+
+        <TabsContent value="contact" className="space-y-3">
+          <CandidateContactLogList candidateId={candidate.id} initialLogs={candidate.contactLogs} />
         </TabsContent>
 
         <TabsContent value="selections">
