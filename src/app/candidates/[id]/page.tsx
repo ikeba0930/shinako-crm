@@ -1,6 +1,7 @@
 import { Mail, Phone } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CandidateFileVault } from "@/components/candidate-file-vault"
+import { CandidateNaModal } from "@/components/candidate-na-modal"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
@@ -145,12 +146,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
               <div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-white/55 bg-[linear-gradient(90deg,rgba(255,245,251,0.58),rgba(248,244,255,0.56),rgba(241,248,255,0.54),rgba(255,250,239,0.56))] px-3 py-2 backdrop-blur-xl">
                   <CandidateFileVault candidateId={candidate.id} initialAttachments={candidate.attachments} />
-                  <button
-                    type="button"
-                    className="rounded-full border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,242,246,0.92))] px-3 py-1 text-[10px] font-semibold text-rose-700 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.68)] transition hover:bg-rose-50"
-                  >
-                    対応NA
-                  </button>
+                  <CandidateNaModal candidateId={candidate.id} />
                   <details className="group rounded-2xl border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,244,248,0.86))] p-1 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.64)]">
                     <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600">
                       ステータス変更

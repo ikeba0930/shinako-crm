@@ -155,6 +155,7 @@ model Candidate {
   qualifications      Qualification[]
   companyProfiles     CandidateCompanyProfile[]
   attachments         Attachment[]
+  contactLogs         ContactLog[]
   selections          Selection[]
 
   @@index([customerRank])
@@ -215,6 +216,25 @@ model CandidateCompanyProfile {
   motivation  String?
   sortOrder   Int       @default(0)
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model ContactLog {
+  id                  String    @id @default(cuid())
+  candidateId         String
+  respondedAt         DateTime?
+  respondentName      String?
+  responseStatus      String?
+  direction           String?
+  communicationMethod String?
+  reason              String?
+  naAt                DateTime?
+  naContent           String?
+  isUnreachable       Boolean   @default(false)
+  notes               String?
+  createdAt           DateTime  @default(now())
+  candidate           Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
 }
 
 model Attachment {

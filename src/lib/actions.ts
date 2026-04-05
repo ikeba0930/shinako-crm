@@ -373,3 +373,33 @@ export async function saveGoalSettingAction(formData: FormData) {
   revalidatePath("/settings")
   revalidatePath("/dashboard")
 }
+
+export async function saveContactLogAction(formData: FormData) {
+  const candidateId = String(formData.get("candidateId") ?? "")
+  if (!candidateId) return
+
+  function parseDateTime(dateKey: string, timeKey: string) {
+    const date = String(formData.get(dateKey) ?? "").trim()
+    const time = String(formData.get(timeKey) ?? "").trim()
+    if (!date) return null
+    return new Date(`${date}T${time || "00:00"}:00`)
+  }
+
+  await prisma.contactLog.create({
+    data: {
+      candidateId,
+      respondedAt: parseDateTime("respondedAtDate", "respondedAtTime"),
+      respondentName: String(formData.get("respondentName") ?? "") || null,
+      responseStatus: String(formData.get("responseStatus") ?? "") || null,
+      direction: String(formData.get("direction") ?? "") || null,
+      communicationMethod: String(formData.get("communicationMethod") ?? "") || null,
+      reason: String(formData.get("reason") ?? "") || null,
+      naAt: parseDateTime("naAtDate", "naAtTime"),
+      naContent: String(formData.get("naContent") ?? "") || null,
+      isUnreachable: formData.get("isUnreachable") === "on",
+      notes: String(formData.get("notes") ?? "") || null,
+    },
+  })
+
+  revalidatePath(`/candidates/${candidateId}`)
+}

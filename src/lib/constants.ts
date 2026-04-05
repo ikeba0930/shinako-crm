@@ -373,3 +373,42 @@ export const A_RANK_QUALIFICATIONS = [
   "けん引免許",
   "自動車検査員",
 ] as const
+
+export const CONTACT_RESPONSE_STATUS_OPTIONS = [
+  "未対応",
+  "初回対応中",
+  "面談調整中",
+  "書類作成中",
+  "提案中",
+  "選考中",
+  "内定後フォロー中",
+  "クローズ",
+] as const
+
+export const CONTACT_COMMUNICATION_METHOD_OPTIONS = [
+  "電話",
+  "SMS",
+  "メール",
+  "LINE",
+  "対面",
+  "その他",
+] as const
+
+export const CONTACT_REASON_OPTIONS = [
+  "初回連絡",
+  "状況確認",
+  "面談調整",
+  "書類確認",
+  "提案",
+  "内定連絡",
+  "その他",
+] as const
+
+export const CONTACT_NA_CONTENT_OPTIONS = [
+  "電話不通",
+  "SMS不通",
+  "メール不通",
+  "LINE既読スルー",
+  "LINE未読",
+  "その他",
+] as const
