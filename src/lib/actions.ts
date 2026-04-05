@@ -170,6 +170,7 @@ export async function saveCandidateAction(formData: FormData) {
   revalidatePath(`/candidates/${id}`)
   revalidatePath("/dashboard")
   revalidatePath("/selections")
+  redirect(`/candidates/${id}?saved=1`)
 }
 
 export async function createCandidateAction(formData: FormData) {

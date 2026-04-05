@@ -21,6 +21,7 @@ export const dynamic = "force-dynamic"
 
 type Props = {
   params: Promise<{ id: string }>
+  searchParams?: Promise<{ saved?: string }>
 }
 
 const compactInputClassName = "h-9 w-full rounded-2xl border border-zinc-200 bg-white px-3 text-[11px]"
@@ -37,8 +38,9 @@ function HeaderLabel({ label, className }: { label: string; className: string })
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black tracking-tight ${className}`}>{label}</span>
 }
 
-export default async function CandidateDetailPage({ params }: Props) {
+export default async function CandidateDetailPage({ params, searchParams }: Props) {
   const { id } = await params
+  const query = (await searchParams) ?? {}
   const candidate = await prisma.candidate.findUnique({
     where: { id },
     include: {
@@ -59,6 +61,7 @@ export default async function CandidateDetailPage({ params }: Props) {
   )
   const headerEntryDate = candidate.entryDate ?? fallbackEntryDate
   const headerCompanyInterviewDate = candidate.companyInterviewDate ?? fallbackCompanyInterviewDate
+  const isSaved = query.saved === "1"
   const nameColorClassName =
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
 
@@ -66,6 +69,12 @@ export default async function CandidateDetailPage({ params }: Props) {
     <div className="space-y-6 p-6 lg:p-8">
       <form action={saveCandidateAction} className="space-y-6">
         <input type="hidden" name="id" value={candidate.id} />
+
+        {isSaved ? (
+          <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            保存しました
+          </div>
+        ) : null}
 
         <div className="rounded-[24px] border border-white/70 bg-white/90 p-4 shadow-sm">
           <div className="flex flex-col gap-4">
