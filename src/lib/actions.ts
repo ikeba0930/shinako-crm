@@ -422,6 +422,7 @@ export async function deleteContactLogAction(formData: FormData) {
 export async function saveContactLogAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
   const candidateId = String(formData.get("candidateId") ?? "")
+  const candidateOwnerName = String(formData.get("candidateOwnerName") ?? "").trim()
   if (!candidateId) return
 
   function parseDateTime(dateKey: string, timeKey: string) {
@@ -479,11 +480,22 @@ export async function saveContactLogAction(formData: FormData) {
     }
   }
 
-  if (Object.keys(candidateDateUpdates).length > 0) {
-    const candidate = await prisma.candidate.findUnique({
+  const candidate = await prisma.candidate.findUnique({
+    where: { id: candidateId },
+    select: { ownerName: true },
+  })
+
+  if (!candidate) return
+
+  if (candidateOwnerName && !candidate.ownerName) {
+    await prisma.candidate.update({
       where: { id: candidateId },
-      select: { ownerName: true },
+      data: { ownerName: candidateOwnerName },
     })
+    candidate.ownerName = candidateOwnerName
+  }
+
+  if (Object.keys(candidateDateUpdates).length > 0) {
     const ownerRequiredTriggered = Object.keys(candidateDateUpdates).some((fieldName) =>
       ownerRequiredStatusFields.includes(fieldName as (typeof ownerRequiredStatusFields)[number])
     )
