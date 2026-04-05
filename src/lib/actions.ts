@@ -90,14 +90,15 @@ async function syncCandidateDerivedFields(candidateId: string) {
 
 export async function saveCandidateAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
+  const qualificationFreeText = String(formData.get("qualificationFreeText") ?? "")
   const qualificationNames = formData
     .getAll("qualificationNames")
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim())
     .filter(Boolean)
-  const qualificationLines = qualificationNames.length > 0
-    ? qualificationNames.filter((value, index, values) => values.indexOf(value) === index)
-    : parseQualificationLines(String(formData.get("qualificationLines") ?? ""))
+  const qualificationLines = [...qualificationNames, ...parseQualificationLines(qualificationFreeText)].filter(
+    (value, index, values) => values.indexOf(value) === index
+  )
   const birthDate = parseDate(formData.get("birthDate"))
   const age = parseIntValue(formData.get("age"))
   const manualRank = String(formData.get("customerRank") ?? "C") as CustomerRank
@@ -205,11 +206,13 @@ export async function createCandidateAction(formData: FormData) {
   const age = parseIntValue(formData.get("age"))
   const condition = String(formData.get("jobSearchStatus") ?? "") || null
   const initialOwnerName = String(formData.get("initialOwnerName") ?? "") || null
+  const qualificationFreeText = String(formData.get("qualificationFreeText") ?? "")
   const qualificationNames = formData
     .getAll("qualificationNames")
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim())
     .filter(Boolean)
+    .concat(parseQualificationLines(qualificationFreeText))
     .filter((value, index, values) => values.indexOf(value) === index)
   const autoRank = calculateCustomerRank(
     {

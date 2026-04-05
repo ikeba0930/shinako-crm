@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db"
 import { createCandidateAction } from "@/lib/actions"
 import { EXTRA_QUALIFICATION_OPTIONS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DETAILED_QUALIFICATION_OPTIONS } from "@/lib/qualification-options"
 import { CandidateBasicCreateForm } from "./candidate-basic-create-form"
 
 export default async function CandidateNewPage() {
@@ -10,7 +11,7 @@ export default async function CandidateNewPage() {
     where: { isActive: true },
     orderBy: [{ rankCategory: "asc" }, { sortOrder: "asc" }],
   })
-  const qualificationOptions = [...qualificationMasters.map((item) => item.name), ...EXTRA_QUALIFICATION_OPTIONS]
+  const qualificationOptions = Array.from(new Set([...qualificationMasters.map((item) => item.name), ...DETAILED_QUALIFICATION_OPTIONS, ...EXTRA_QUALIFICATION_OPTIONS]))
 
   return (
     <div className="space-y-4 p-4 lg:p-5">

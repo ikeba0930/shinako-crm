@@ -17,6 +17,7 @@ import {
   DESIRED_TIMING_OPTIONS,
   DETAILED_CANDIDATE_JOB_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
+  EXTRA_QUALIFICATION_OPTIONS,
   FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
   MANAGEMENT_EXPERIENCE_OPTIONS,
@@ -51,19 +52,31 @@ function HeaderLabel({ label, className }: { label: string; className: string })
 export default async function CandidateDetailPage({ params, searchParams }: Props) {
   const { id } = await params
   const query = (await searchParams) ?? {}
-  const candidate = await prisma.candidate.findUnique({
-    where: { id },
-    include: {
-      qualifications: { orderBy: { sortOrder: "asc" } },
-      selections: { orderBy: { updatedAt: "desc" } },
-    },
-  })
+  const [candidate, qualificationMasters] = await Promise.all([
+    prisma.candidate.findUnique({
+      where: { id },
+      include: {
+        qualifications: { orderBy: { sortOrder: "asc" } },
+        selections: { orderBy: { updatedAt: "desc" } },
+      },
+    }),
+    prisma.qualificationMaster.findMany({
+      where: { isActive: true },
+      orderBy: [{ rankCategory: "asc" }, { sortOrder: "asc" }],
+    }),
+  ])
 
   if (!candidate) notFound()
 
   const isUnemploymentInsurance = candidate.inflowSource === "失業保険"
   const lineUrlLabel = isUnemploymentInsurance ? "LステURL（ひとなりのURL）" : "LステURL"
+  const qualificationOptions = Array.from(
+    new Set([...qualificationMasters.map((item) => item.name), ...DETAILED_QUALIFICATION_OPTIONS, ...EXTRA_QUALIFICATION_OPTIONS])
+  )
+  const qualificationOptionSet = new Set(qualificationOptions)
   const qualificationValues = candidate.qualifications.map((item) => item.qualificationName)
+  const presetQualifications = qualificationValues.filter((item) => qualificationOptionSet.has(item))
+  const freeTextQualifications = qualificationValues.filter((item) => !qualificationOptionSet.has(item)).join("、")
   const activeCompanies = [...new Set(candidate.selections.map((selection) => selection.companyName).filter(Boolean))]
   const activeCompanyCount = activeCompanies.length
   const fallbackEntryDate = getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
@@ -307,8 +320,9 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             <div className="space-y-1 text-sm md:col-span-3">
               <span className="block">資格</span>
               <CandidateQualificationFields
-                initialQualifications={qualificationValues}
-                options={DETAILED_QUALIFICATION_OPTIONS}
+                initialQualifications={presetQualifications}
+                initialFreeText={freeTextQualifications}
+                options={qualificationOptions}
                 className={inputClassName}
               />
             </div>

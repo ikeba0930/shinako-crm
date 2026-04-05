@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { useState } from "react"
+import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
 import { SearchableSelect } from "@/components/searchable-select"
 import type { createCandidateAction } from "@/lib/actions"
 import {
@@ -68,12 +69,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
         const form = event.currentTarget
         const requiredFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("[required]"))
         const requiredSearchableFields = Array.from(form.querySelectorAll<HTMLInputElement>("[data-searchable-select-value='required']"))
-        const hasEmptyRequiredField = requiredFields.some((field) => {
-          if (field instanceof HTMLSelectElement && field.multiple) {
-            return field.selectedOptions.length === 0
-          }
-          return !field.value
-        })
+        const hasEmptyRequiredField = requiredFields.some((field) => !field.value)
         const hasEmptyRequiredSearchableField = requiredSearchableFields.some((field) => !field.value)
 
         if (hasEmptyRequiredField || hasEmptyRequiredSearchableField) {
@@ -98,11 +94,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
       <Field label="性別" required accentClassName="from-sky-500 to-cyan-400">
         <SearchableSelect name="gender" options={CANDIDATE_GENDER_OPTIONS.map((option) => option.value)} required className={inputClassName} />
       </Field>
-      <Field
-        label={isUnemploymentInsurance ? "LINE URL（ひとなりのURL）" : "LINE URL"}
-        required
-        accentClassName="from-emerald-500 to-lime-400"
-      >
+      <Field label={isUnemploymentInsurance ? "LINE URL（ひとなりのURL）" : "LINE URL"} required accentClassName="from-emerald-500 to-lime-400">
         <input name="lineUrl" required className={inputClassName} />
       </Field>
       <Field label="年齢" required accentClassName="from-amber-500 to-yellow-400">
@@ -151,35 +143,13 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
             <SearchableSelect name="initialOwnerName" options={CANDIDATE_OWNER_OPTIONS.map((option) => option)} required className={inputClassName} />
           </Field>
           <Field label="資格" className="md:col-span-2 xl:col-span-2" accentClassName="from-lime-500 to-emerald-500">
-            <div className="w-full rounded-2xl border border-white/60 bg-white/80 p-3">
-              <select
-                name="qualificationNames"
-                multiple
-                required
-                size={6}
-                value={selectedQualifications}
-                onChange={(event) => {
-                  let values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
-                  if (values.includes("特になし")) {
-                    values = ["特になし"]
-                  } else {
-                    values = values.filter((value) => value !== "特になし")
-                  }
-                  setSelectedQualifications(values)
-                }}
-                className="w-full bg-transparent text-sm outline-none"
-              >
-                {qualificationOptions.map((option) => (
-                  <option
-                    key={option}
-                    value={option}
-                    className={option === "普通自動車免許" ? "text-sky-600" : option === "特になし" ? "text-zinc-500" : undefined}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CandidateQualificationFields
+              initialQualifications={[]}
+              options={qualificationOptions}
+              required
+              className={inputClassName}
+              onQualificationsChange={setSelectedQualifications}
+            />
           </Field>
         </>
       )}
