@@ -30,6 +30,21 @@ function parseQualificationLines(value: string) {
     .filter(Boolean)
 }
 
+const ownerRequiredStatusFields = [
+  "interviewDate",
+  "proposalDate",
+  "entryDate",
+  "companyInterviewDate",
+  "offerDate",
+  "offerAcceptedDate",
+  "joiningDate",
+  "closedDate",
+] as const
+
+function hasOwnerRequiredStatusUpdate(formData: FormData, parsedDates: Partial<Record<(typeof ownerRequiredStatusFields)[number], Date | null>>) {
+  return ownerRequiredStatusFields.some((fieldName) => formData.get(`setToday_${fieldName}`) === "on" || Boolean(parsedDates[fieldName]))
+}
+
 function calculateAgeFromBirthDate(birthDate: Date | null) {
   if (!birthDate) return null
   const today = new Date()
@@ -114,8 +129,28 @@ export async function saveCandidateAction(formData: FormData) {
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const entryDate = parseDate(formData.get("entryDate"))
   const companyInterviewDate = parseDate(formData.get("companyInterviewDate"))
+  const interviewDate = parseDate(formData.get("interviewDate"))
+  const proposalDate = parseDate(formData.get("proposalDate"))
+  const offerDate = parseDate(formData.get("offerDate"))
+  const offerAcceptedDate = parseDate(formData.get("offerAcceptedDate"))
+  const joiningDate = parseDate(formData.get("joiningDate"))
+  const closedDate = parseDate(formData.get("closedDate"))
   const today = new Date()
   const parseDateOrToday = (fieldName: string) => (formData.get(`setToday_${fieldName}`) === "on" ? today : parseDate(formData.get(fieldName)))
+  const ownerRequiredDates = {
+    interviewDate,
+    proposalDate,
+    entryDate,
+    companyInterviewDate,
+    offerDate,
+    offerAcceptedDate,
+    joiningDate,
+    closedDate,
+  }
+
+  if (!ownerName && hasOwnerRequiredStatusUpdate(formData, ownerRequiredDates)) {
+    redirect(`/candidates/${id}?ownerRequired=1&openStatus=1`)
+  }
 
   await prisma.candidate.update({
     where: { id },
@@ -156,15 +191,15 @@ export async function saveCandidateAction(formData: FormData) {
       callPreferredAt,
       inflowDate: parseDateOrToday("inflowDate"),
       firstResponseDate: parseDateOrToday("firstResponseDate"),
-      interviewDate: parseDateOrToday("interviewDate"),
-      proposalDate: parseDateOrToday("proposalDate"),
+      interviewDate: formData.get("setToday_interviewDate") === "on" ? today : interviewDate,
+      proposalDate: formData.get("setToday_proposalDate") === "on" ? today : proposalDate,
       documentCreatedDate: parseDateOrToday("documentCreatedDate"),
       entryDate: formData.get("setToday_entryDate") === "on" ? today : entryDate,
       companyInterviewDate: formData.get("setToday_companyInterviewDate") === "on" ? today : companyInterviewDate,
-      offerDate: parseDateOrToday("offerDate"),
-      offerAcceptedDate: parseDateOrToday("offerAcceptedDate"),
-      joiningDate: parseDateOrToday("joiningDate"),
-      closedDate: parseDateOrToday("closedDate"),
+      offerDate: formData.get("setToday_offerDate") === "on" ? today : offerDate,
+      offerAcceptedDate: formData.get("setToday_offerAcceptedDate") === "on" ? today : offerAcceptedDate,
+      joiningDate: formData.get("setToday_joiningDate") === "on" ? today : joiningDate,
+      closedDate: formData.get("setToday_closedDate") === "on" ? today : closedDate,
       employmentStatus: String(formData.get("employmentStatus") ?? "") || null,
       employmentTypePreference: String(formData.get("employmentTypePreference") ?? "") || null,
       availability: String(formData.get("availability") ?? "") || null,
@@ -242,7 +277,7 @@ export async function createCandidateAction(formData: FormData) {
       jobSearchStatus: condition,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       initialOwnerName,
-      ownerName: initialOwnerName,
+      ownerName: null,
       otherConditions: String(formData.get("lineUrl") ?? "") || null,
       customerRank: autoRank.rank,
       rankAutoResult: autoRank.rank,
@@ -445,6 +480,16 @@ export async function saveContactLogAction(formData: FormData) {
   }
 
   if (Object.keys(candidateDateUpdates).length > 0) {
+    const candidate = await prisma.candidate.findUnique({
+      where: { id: candidateId },
+      select: { ownerName: true },
+    })
+    const ownerRequiredTriggered = Object.keys(candidateDateUpdates).some((fieldName) =>
+      ownerRequiredStatusFields.includes(fieldName as (typeof ownerRequiredStatusFields)[number])
+    )
+    if (ownerRequiredTriggered && !candidate?.ownerName) {
+      throw new Error("担当者が未入力です。先にステータス変更から担当者を入力してください。")
+    }
     await prisma.candidate.update({
       where: { id: candidateId },
       data: candidateDateUpdates,

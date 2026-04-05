@@ -23,6 +23,7 @@ type ContactLog = {
 
 type Props = {
   candidateId: string
+  ownerName: string | null
   initialLogs: ContactLog[]
 }
 
@@ -46,7 +47,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   )
 }
 
-function LogCard({ log, candidateId, onDelete }: { log: ContactLog; candidateId: string; onDelete: (id: string) => void }) {
+function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; candidateId: string; ownerName: string | null; onDelete: (id: string) => void }) {
   const router = useRouter()
   const shortId = log.id.slice(-8).toUpperCase()
 
@@ -64,6 +65,7 @@ function LogCard({ log, candidateId, onDelete }: { log: ContactLog; candidateId:
         <div className="flex items-center gap-1.5">
           <CandidateNaModal
             candidateId={candidateId}
+            ownerName={ownerName}
             initialLog={log}
             triggerLabel="編集"
             triggerClassName="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[9px] font-semibold text-sky-600 transition hover:bg-sky-100 hover:text-sky-700"
@@ -115,7 +117,7 @@ function LogCard({ log, candidateId, onDelete }: { log: ContactLog; candidateId:
   )
 }
 
-export function CandidateContactLogList({ candidateId, initialLogs }: Props) {
+export function CandidateContactLogList({ candidateId, ownerName, initialLogs }: Props) {
   const [logs, dispatch] = useOptimistic(
     initialLogs,
     (state, deletedId: string) => state.filter((l) => l.id !== deletedId),
@@ -129,7 +131,7 @@ export function CandidateContactLogList({ candidateId, initialLogs }: Props) {
           <span className="text-[13px] font-black tracking-wide text-violet-900">対応・NAリスト</span>
           <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-bold text-violet-600">{logs.length}件</span>
         </div>
-        <CandidateNaModal candidateId={candidateId} />
+        <CandidateNaModal candidateId={candidateId} ownerName={ownerName} />
       </div>
 
       {/* ログ一覧 */}
@@ -146,6 +148,7 @@ export function CandidateContactLogList({ candidateId, initialLogs }: Props) {
               key={log.id}
               log={log}
               candidateId={candidateId}
+              ownerName={ownerName}
               onDelete={(id) => dispatch(id)}
             />
           ))}

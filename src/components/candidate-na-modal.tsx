@@ -15,6 +15,7 @@ import {
 
 type Props = {
   candidateId: string
+  ownerName?: string | null
   triggerLabel?: string
   triggerClassName?: string
   initialLog?: {
@@ -84,7 +85,7 @@ function SectionBand({ children, className = "" }: { children: React.ReactNode; 
   )
 }
 
-export function CandidateNaModal({ candidateId, triggerLabel = "対応NA", triggerClassName, initialLog }: Props) {
+export function CandidateNaModal({ candidateId, ownerName, triggerLabel = "対応NA", triggerClassName, initialLog }: Props) {
   const router = useRouter()
   const initialStatusPhase = initialLog?.responseStatus?.split("：")[0] ?? ""
   const initialStatusDetail = initialLog?.responseStatus?.split("：").slice(1).join("：") ?? ""
@@ -119,6 +120,21 @@ export function CandidateNaModal({ candidateId, triggerLabel = "対応NA", trigg
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const ownerRequiredCheckboxNames = [
+      "setAs_interviewDate",
+      "setAs_proposalDate",
+      "setAs_entryDate",
+      "setAs_companyInterviewDate",
+      "setAs_offerDate",
+      "setAs_offerAcceptedDate",
+      "setAs_joiningDate",
+      "setAs_closedDate",
+    ]
+    const needsOwner = ownerRequiredCheckboxNames.some((name) => formData.get(name) === "on")
+    if (needsOwner && !ownerName) {
+      alert("担当者が未入力です。先にステータス変更から担当者を入力してください。")
+      return
+    }
     startTransition(async () => {
       await saveContactLogAction(formData)
       router.refresh()

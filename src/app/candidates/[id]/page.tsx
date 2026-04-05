@@ -38,7 +38,7 @@ export const dynamic = "force-dynamic"
 
 type Props = {
   params: Promise<{ id: string }>
-  searchParams?: Promise<{ saved?: string }>
+  searchParams?: Promise<{ saved?: string; ownerRequired?: string; openStatus?: string }>
 }
 
 const compactInputClassName =
@@ -120,6 +120,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const headerEntryDate = candidate.entryDate ?? fallbackEntryDate
   const headerCompanyInterviewDate = candidate.companyInterviewDate ?? fallbackCompanyInterviewDate
   const isSaved = query.saved === "1"
+  const isOwnerRequired = query.ownerRequired === "1"
+  const shouldOpenStatus = query.openStatus === "1"
   const nameColorClassName =
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
   const inflowLabel =
@@ -152,6 +154,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   return (
     <div className="space-y-3 p-3 lg:p-4">
       {isSaved ? <SaveSuccessNotice message="保存しました" /> : null}
+      {isOwnerRequired ? (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-sm font-semibold text-rose-700 shadow-[0_14px_30px_-24px_rgba(244,63,94,0.6)]">
+          面談以降のフラグを立てるには担当者の入力が必要です。ステータス変更から担当者を入れてください。
+        </div>
+      ) : null}
 
       <Tabs defaultValue="basic" className="space-y-2">
         <TabsList className="rounded-full border border-white/55 bg-white/85 p-0.5 shadow-[0_18px_38px_-28px_rgba(76,29,149,0.86)]">
@@ -176,8 +183,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
               <div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-white/55 bg-[linear-gradient(90deg,rgba(255,245,251,0.58),rgba(248,244,255,0.56),rgba(241,248,255,0.54),rgba(255,250,239,0.56))] px-3 py-2 backdrop-blur-xl">
                   <CandidateFileVault candidateId={candidate.id} initialAttachments={candidate.attachments} />
-                  <CandidateNaModal candidateId={candidate.id} />
-                  <details className="group rounded-2xl border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,244,248,0.86))] p-1 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.64)]">
+                  <CandidateNaModal candidateId={candidate.id} ownerName={candidate.ownerName} />
+                  <details open={shouldOpenStatus} className="group rounded-2xl border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,244,248,0.86))] p-1 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.64)]">
                     <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600">
                       ステータス変更
                     </summary>
@@ -555,7 +562,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         </TabsContent>
 
         <TabsContent value="contact" className="space-y-3">
-          <CandidateContactLogList candidateId={candidate.id} initialLogs={candidate.contactLogs} />
+          <CandidateContactLogList candidateId={candidate.id} ownerName={candidate.ownerName} initialLogs={candidate.contactLogs} />
         </TabsContent>
 
         <TabsContent value="selections">
