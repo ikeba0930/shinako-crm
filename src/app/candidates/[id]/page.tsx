@@ -105,7 +105,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const topMetaItems = [
     { key: "inflow", label: "流入経路", value: inflowLabel },
     { key: "rank", label: "ランク", value: candidate.customerRank },
-    { key: "status", label: "ステータス", value: CANDIDATE_STATUS_LABELS[candidate.overallStatus] },
+    { key: "status", label: "対応中ステータス", value: candidate.contactLogs[0]?.responseStatus ?? "未設定" },
     { key: "companyCount", label: "選考企業社数", value: `${activeCompanyCount}社` },
   ]
 

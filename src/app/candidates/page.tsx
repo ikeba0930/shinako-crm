@@ -64,6 +64,10 @@ export default async function CandidatesPage({ searchParams }: Props) {
       selections: {
         orderBy: { updatedAt: "desc" },
       },
+      contactLogs: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
     },
     orderBy: sort === "inflowDate" ? { inflowDate: "desc" } : { updatedAt: "desc" },
   })
@@ -187,7 +191,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <TableHead className="px-1 py-2"><HeaderLabel label="LステURL" className="bg-sky-100 text-sky-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="氏名" className="bg-sky-100 text-sky-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" /></TableHead>
-                <TableHead className="px-1 py-2"><HeaderLabel label="ステータス" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="対応中ステータス" className="bg-sky-100 text-sky-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="選考中企業" className="bg-rose-100 text-rose-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="流入日" className="bg-violet-100 text-violet-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" /></TableHead>
@@ -270,7 +274,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                     </TableCell>
                     <TableCell className="px-1 py-2">
                       <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px]">
-                        {CANDIDATE_STATUS_LABELS[candidate.overallStatus]}
+                        {candidate.contactLogs[0]?.responseStatus ?? "-"}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanies.join(" / ") || "-"}>
