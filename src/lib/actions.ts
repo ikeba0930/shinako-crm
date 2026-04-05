@@ -394,8 +394,7 @@ export async function saveContactLogAction(formData: FormData) {
   }
 
   const respondedAt = parseDateTime("respondedAtDate", "respondedAtTime")
-  const setAsDocumentReturn = formData.get("setAsDocumentReturn") === "on"
-  const setAsInterviewDate = formData.get("setAsInterviewDate") === "on"
+  const today = respondedAt ?? new Date()
 
   await prisma.contactLog.create({
     data: {
@@ -408,19 +407,37 @@ export async function saveContactLogAction(formData: FormData) {
       reason: String(formData.get("reason") ?? "") || null,
       naAt: parseDateTime("naAtDate", "naAtTime"),
       naContent: String(formData.get("naContent") ?? "") || null,
-      isUnreachable: formData.get("isUnreachable") === "on",
+      isUnreachable: false,
       notes: String(formData.get("notes") ?? "") || null,
     },
   })
 
-  if (setAsDocumentReturn || setAsInterviewDate) {
+  const dateFieldMap: Record<string, string> = {
+    setAs_firstResponseDate: "firstResponseDate",
+    setAs_interviewDate: "interviewDate",
+    setAs_documentCreatedDate: "documentCreatedDate",
+    setAs_proposalDate: "proposalDate",
+    setAs_entryDate: "entryDate",
+    setAs_companyInterviewDate: "companyInterviewDate",
+    setAs_offerDate: "offerDate",
+    setAs_offerAcceptedDate: "offerAcceptedDate",
+    setAs_joiningDate: "joiningDate",
+    setAs_closedDate: "closedDate",
+  }
+
+  const candidateDateUpdates: Record<string, Date> = {}
+  for (const [checkboxName, fieldName] of Object.entries(dateFieldMap)) {
+    if (formData.get(checkboxName) === "on") {
+      candidateDateUpdates[fieldName] = today
+    }
+  }
+
+  if (Object.keys(candidateDateUpdates).length > 0) {
     await prisma.candidate.update({
       where: { id: candidateId },
-      data: {
-        ...(setAsDocumentReturn ? { documentCreatedDate: respondedAt ?? new Date() } : {}),
-        ...(setAsInterviewDate ? { interviewDate: respondedAt ?? new Date() } : {}),
-      },
+      data: candidateDateUpdates,
     })
+    await syncCandidateDerivedFields(candidateId)
   }
 
   revalidatePath(`/candidates/${candidateId}`)
