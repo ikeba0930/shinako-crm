@@ -464,10 +464,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   <input type="date" name="resignationPlannedDate" defaultValue={formatDateInput(candidate.resignationPlannedDate)} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span>希望時期</span>
-                  <SearchableSelect name="desiredTiming" defaultValue={candidate.desiredTiming ?? ""} options={DESIRED_TIMING_OPTIONS} className={inputClassName} />
-                </label>
-                <label className="space-y-1 text-sm">
                   <span>転職軸 第一候補</span>
                   <SearchableSelect
                     name="careerAxisPrimary"
@@ -510,7 +506,20 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       <input type="datetime-local" name="callPreferredAt" defaultValue={formatDateTimeInput(candidate.callPreferredAt)} className={inputClassName} />
                     </label>
                   </>
-                ) : (
+                ) : null}
+              </CardContent>
+            </Card>
+
+            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="amber">
+              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(250,204,21,0.18),rgba(251,146,60,0.12),rgba(236,72,153,0.1),rgba(168,85,247,0.12))] py-3">
+                <CardTitle className="text-zinc-900">希望条件</CardTitle>
+              </CardHeader>
+              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
+                <label className="space-y-1 text-sm">
+                  <span>希望転職時期</span>
+                  <SearchableSelect name="desiredTiming" defaultValue={candidate.desiredTiming ?? ""} options={DESIRED_TIMING_OPTIONS} className={inputClassName} />
+                </label>
+                {!isUnemploymentInsurance ? (
                   <>
                     <label className="space-y-1 text-sm">
                       <span>希望職種 第一候補</span>
@@ -531,15 +540,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       />
                     </label>
                   </>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="amber">
-              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(250,204,21,0.18),rgba(251,146,60,0.12),rgba(236,72,153,0.1),rgba(168,85,247,0.12))] py-3">
-                <CardTitle className="text-zinc-900">希望条件</CardTitle>
-              </CardHeader>
-              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
+                ) : null}
                 <div className="space-y-1 text-sm md:col-span-3">
                   <span className="block">希望勤務地</span>
                   <CandidateLocationFields
