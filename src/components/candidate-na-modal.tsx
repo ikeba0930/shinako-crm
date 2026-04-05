@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef, useState, useTransition } from "react"
+import { useRef, useState, useTransition, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { saveContactLogAction } from "@/lib/actions"
 import {
   CANDIDATE_OWNER_OPTIONS,
@@ -50,12 +51,15 @@ function SectionBand({ children, className = "" }: { children: React.ReactNode; 
 
 export function CandidateNaModal({ candidateId }: Props) {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [respondedDate, setRespondedDate] = useState("")
   const [respondedTime, setRespondedTime] = useState("")
   const [naDate, setNaDate] = useState("")
   const [naTime, setNaTime] = useState("")
   const formRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   function open() {
     setIsOpen(true)
@@ -89,8 +93,8 @@ export function CandidateNaModal({ candidateId }: Props) {
         対応NA
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col">
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col">
           {/* 全画面モーダル */}
           <div className="flex h-full flex-col overflow-hidden bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))]">
 
@@ -286,7 +290,8 @@ export function CandidateNaModal({ candidateId }: Props) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
