@@ -301,9 +301,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     </div>
                   </div>
 
-                  <div className="grid flex-1 gap-1 sm:grid-cols-2 xl:ml-2 xl:grid-cols-4">
+                  <div className="grid flex-1 gap-2 sm:grid-cols-2 xl:ml-3 xl:grid-cols-4">
                     {topMetaItems.map((item) => (
-                      <div key={item.label} className={`flex min-w-0 items-center justify-center rounded-full px-2 py-0.5 text-[9px] font-bold ${item.className}`}>
+                      <div
+                        key={item.label}
+                        className={`flex min-w-0 items-center justify-center rounded-full px-3 py-1.5 text-[12px] font-black shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-22px_rgba(76,29,149,0.55)] ${item.className}`}
+                      >
                         <span className="truncate">
                           {item.label} {item.value}
                         </span>
