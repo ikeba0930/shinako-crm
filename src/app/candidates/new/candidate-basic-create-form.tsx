@@ -56,28 +56,57 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
     isUnemploymentInsurance ? [] : selectedQualifications,
     condition || null
   ).rank
+  const inflowSourceClassName =
+    inflowSource === "ポータル（ブルー）"
+      ? "font-bold text-sky-600"
+      : inflowSource === "失業保険"
+        ? "font-bold text-rose-600"
+        : "font-bold"
 
   return (
-    <form action={action} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+    <form
+      action={action}
+      className="grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+      onSubmit={(event) => {
+        const form = event.currentTarget
+        const requiredFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("[required]"))
+        const hasEmptyRequiredField = requiredFields.some((field) => {
+          if (field instanceof HTMLSelectElement && field.multiple) {
+            return field.selectedOptions.length === 0
+          }
+
+          return !field.value
+        })
+
+        if (hasEmptyRequiredField) {
+          event.preventDefault()
+          alert("未入力の必須項目があります。すべて入力してから進んでください。")
+        }
+      }}
+    >
       <Field label="流入経路" required accentClassName="from-violet-500 to-pink-500">
         <select
           name="inflowSource"
           value={inflowSource}
           onChange={(event) => setInflowSource(event.target.value)}
-          className={inputClassName}
+          className={`${inputClassName} ${inflowSourceClassName}`}
         >
           {INFLOW_ROUTE_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              className={option.value === "ポータル（ブルー）" ? "font-bold text-sky-600" : "font-bold text-rose-600"}
+            >
               {option.label}
             </option>
           ))}
         </select>
       </Field>
       <Field label="氏名" required accentClassName="from-rose-500 to-orange-400">
-        <input name="name" className={inputClassName} />
+        <input name="name" required className={inputClassName} />
       </Field>
       <Field label="性別" required accentClassName="from-sky-500 to-cyan-400">
-        <select name="gender" defaultValue="" className={inputClassName}>
+        <select name="gender" defaultValue="" required className={inputClassName}>
           <option value="">選択してください</option>
           {CANDIDATE_GENDER_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -86,11 +115,11 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
-      <Field label="LINE URL" accentClassName="from-emerald-500 to-lime-400">
-        <input name="lineUrl" className={inputClassName} />
+      <Field label="LINE URL" required accentClassName="from-emerald-500 to-lime-400">
+        <input name="lineUrl" required className={inputClassName} />
       </Field>
       <Field label="年齢" required accentClassName="from-amber-500 to-yellow-400">
-        <select name="age" value={age} onChange={(event) => setAge(event.target.value)} className={inputClassName}>
+        <select name="age" value={age} onChange={(event) => setAge(event.target.value)} required className={inputClassName}>
           <option value="">選択してください</option>
           {CANDIDATE_AGE_OPTIONS.map((option) => (
             <option key={option} value={option}>
@@ -100,7 +129,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
         </select>
       </Field>
       <Field label="条件" required accentClassName="from-indigo-500 to-violet-500">
-        <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} className={inputClassName}>
+        <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} required className={inputClassName}>
           <option value="">選択してください</option>
           {CANDIDATE_CONDITION_OPTIONS.map((option) => (
             <option key={option} value={option}>
@@ -115,8 +144,8 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
 
       {isUnemploymentInsurance ? (
         <>
-          <Field label="失業保険契約" accentClassName="from-cyan-500 to-sky-500">
-            <select name="unemploymentInsuranceContract" defaultValue="" className={inputClassName}>
+          <Field label="失業保険契約" required accentClassName="from-cyan-500 to-sky-500">
+            <select name="unemploymentInsuranceContract" defaultValue="" required className={inputClassName}>
               <option value="">選択してください</option>
               {UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -125,8 +154,8 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
               ))}
             </select>
           </Field>
-          <Field label="退職日" accentClassName="from-orange-500 to-rose-500">
-            <input type="date" name="retirementDate" className={inputClassName} />
+          <Field label="退職日" required accentClassName="from-orange-500 to-rose-500">
+            <input type="date" name="retirementDate" required className={inputClassName} />
           </Field>
           <Field label="エージェント パス日" required accentClassName="from-teal-500 to-emerald-500">
             <input type="date" name="agentPassDate" required className={inputClassName} />
@@ -138,7 +167,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
       ) : (
         <>
           <Field label="希望職種" required accentClassName="from-pink-500 to-rose-500">
-            <select name="desiredJobType" defaultValue="" className={inputClassName}>
+            <select name="desiredJobType" defaultValue="" required className={inputClassName}>
               <option value="">選択してください</option>
               {CANDIDATE_JOB_OPTIONS.map((option) => (
                 <option key={option} value={option}>
@@ -148,7 +177,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
             </select>
           </Field>
           <Field label="初回担当者" required accentClassName="from-cyan-500 to-blue-500">
-            <select name="ownerName" defaultValue="" className={inputClassName}>
+            <select name="ownerName" defaultValue="" required className={inputClassName}>
               <option value="">選択してください</option>
               {CANDIDATE_OWNER_OPTIONS.map((option) => (
                 <option key={option} value={option}>
@@ -162,6 +191,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
               <select
                 name="qualificationNames"
                 multiple
+                required
                 size={6}
                 value={selectedQualifications}
                 onChange={(event) => {
