@@ -110,7 +110,7 @@ export function CandidateNaModal({ candidateId }: Props) {
           {/* モーダル本体 */}
           <div
             className="relative flex flex-col overflow-hidden rounded-[1.8rem] border border-fuchsia-100/60 bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))] shadow-[0_32px_64px_-24px_rgba(109,40,217,0.55)]"
-            style={{ width: "96vw", maxWidth: "1680px", maxHeight: "92vh" }}
+            style={{ width: "94vw", maxWidth: "1560px", maxHeight: "92vh" }}
           >
 
             {/* トップバー */}
@@ -129,20 +129,20 @@ export function CandidateNaModal({ candidateId }: Props) {
             <form ref={formRef} onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-y-auto">
               <input type="hidden" name="candidateId" value={candidateId} />
 
-              <div className="mx-auto w-full max-w-6xl flex-1 space-y-3 px-6 py-5">
+              <div className="mx-auto w-full max-w-5xl flex-1 space-y-3 px-6 py-5">
 
                 {/* ─── 対応情報 ─── */}
-                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(245,243,255,0.8),rgba(250,246,255,0.7))] grid-cols-[auto_1fr_1.4fr]">
+                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(245,243,255,0.8),rgba(250,246,255,0.7))] grid-cols-1 md:grid-cols-[1.05fr_1fr_1.2fr]">
                   {/* 対応日時 */}
                   <div>
                     <label className={sectionLabelCls}>対応日時</label>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <input
                         type="date"
                         name="respondedAtDate"
                         value={respondedDate}
                         onChange={(e) => setRespondedDate(e.target.value)}
-                        className={`${inputCls} w-36 shrink-0`}
+                        className={`${inputCls} min-w-[152px] flex-1 md:flex-none`}
                       />
                       <input
                         type="time"
@@ -244,17 +244,17 @@ export function CandidateNaModal({ candidateId }: Props) {
                 )}
 
                 {/* ─── NA情報 ─── */}
-                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-[1fr_auto]">
+                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_260px]">
                   {/* NA日時 */}
                   <div>
                     <label className={sectionLabelCls}>NA日時</label>
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <input
                         type="date"
                         name="naAtDate"
                         value={naDate}
                         onChange={(e) => setNaDate(e.target.value)}
-                        className={`${inputCls} w-36 shrink-0`}
+                        className={`${inputCls} min-w-[152px] flex-1 xl:flex-none`}
                       />
                       <input
                         type="time"
@@ -270,7 +270,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                     </div>
                   </div>
                   {/* NA内容 */}
-                  <div className="min-w-[180px]">
+                  <div className="min-w-0 xl:min-w-[260px]">
                     <label className={sectionLabelCls}>NA内容</label>
                     <select name="naContent" className={selectCls}>
                       <option value="">選択してください</option>
