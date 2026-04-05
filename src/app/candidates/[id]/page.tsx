@@ -318,7 +318,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
                 <div className="grid gap-1 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
                   {headerStatusItems.map((item) => (
-                    <div key={item.label} className="rounded-2xl border border-zinc-100 bg-white px-1 py-1.5 text-center">
+                    <div key={item.label} className="px-1 py-1.5 text-center">
                       <div className="flex justify-center">
                         <HeaderLabel label={item.label} className={`${item.className} text-[12px]`} />
                       </div>
