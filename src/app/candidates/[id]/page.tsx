@@ -47,7 +47,7 @@ function getLatestSelectionDate(values: Array<Date | null>) {
 }
 
 function HeaderLabel({ label, className }: { label: string; className: string }) {
-  return <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black tracking-tight ${className}`}>{label}</span>
+  return <span className={`inline-flex rounded-full px-2 py-0.5 text-[9px] font-black leading-none tracking-tight ${className}`}>{label}</span>
 }
 
 export default async function CandidateDetailPage({ params, searchParams }: Props) {
@@ -114,14 +114,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   ]
 
   return (
-    <div className="space-y-4 p-4 lg:p-6">
+    <div className="space-y-3 p-3 lg:p-4">
       {isSaved ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
           保存しました
         </div>
       ) : null}
 
-      <Tabs defaultValue="support" className="space-y-3">
+      <Tabs defaultValue="support" className="space-y-2">
         <TabsList className="rounded-full bg-white/85 p-0.5 shadow-sm">
           <TabsTrigger value="support" className="rounded-full px-3 py-1 text-xs font-semibold">
             対応履歴など
@@ -131,16 +131,16 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="support" className="space-y-4">
-          <form action={saveCandidateAction} className="space-y-4">
+        <TabsContent value="support" className="space-y-3">
+          <form action={saveCandidateAction} className="space-y-3">
             <input type="hidden" name="id" value={candidate.id} />
 
-            <section className="overflow-hidden rounded-[18px] border border-sky-100 bg-white shadow-sm">
-              <div className="flex flex-col gap-2 bg-sky-100/85 px-3 py-1.5 md:flex-row md:items-center md:justify-between">
+            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+              <div className="flex items-center justify-between gap-2 bg-sky-100/80 px-3 py-1.5">
                 <div className="text-sm font-black tracking-tight text-zinc-800">相談者基本情報</div>
-                <div className="flex items-start gap-1.5 self-start md:self-auto">
+                <div className="flex items-center gap-1.5">
                   <details className="group rounded-2xl border border-rose-200 bg-white/90 p-1">
-                    <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-rose-600">
+                    <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600">
                       受任ステータス変更
                     </summary>
                     <div className="mt-2 grid gap-1.5 md:grid-cols-2 xl:grid-cols-4">
@@ -190,12 +190,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       </label>
                       <label className="space-y-1">
                         <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
-                        <SearchableSelect
-                          name="customerRank"
-                          defaultValue={candidate.customerRank}
-                          options={["S", "A", "B", "C"]}
-                          className={compactInputClassName}
-                        />
+                        <SearchableSelect name="customerRank" defaultValue={candidate.customerRank} options={["S", "A", "B", "C"]} className={compactInputClassName} />
                       </label>
                       <label className="flex items-center gap-2 rounded-xl bg-white px-2.5 text-[10px]">
                         <input type="checkbox" name="rankManualOverride" defaultChecked={candidate.rankManualOverride} />
@@ -204,47 +199,47 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     </div>
                   </details>
 
-                  <button type="submit" className="rounded-full bg-zinc-900 px-3 py-1.5 text-[11px] font-semibold text-white">
+                  <button type="submit" className="rounded-full bg-zinc-900 px-3 py-1 text-[10px] font-semibold text-white">
                     保存
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-2 px-2 py-2.5">
-                <div className="grid gap-x-5 gap-y-2 text-[11px] md:grid-cols-[140px_140px_minmax(0,1fr)]">
-                  <div className="space-y-0.5">
-                    <div className="font-bold text-zinc-600">初回担当者</div>
-                    <div className="text-xs font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
+              <div className="space-y-1.5 px-2 py-2">
+                <div className="grid gap-x-4 gap-y-1 text-[10px] md:grid-cols-[110px_110px_minmax(0,1fr)]">
+                  <div className="leading-tight">
+                    <div className="font-bold text-zinc-500">初回担当者</div>
+                    <div className="mt-0.5 font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
                   </div>
-                  <div className="space-y-0.5">
-                    <div className="font-bold text-zinc-600">担当者</div>
-                    <div className="text-xs font-semibold text-zinc-800">{candidate.ownerName ?? "-"}</div>
+                  <div className="leading-tight">
+                    <div className="font-bold text-zinc-500">担当者</div>
+                    <div className="mt-0.5 font-semibold text-zinc-800">{candidate.ownerName ?? "-"}</div>
                   </div>
-                  <div className="space-y-0.5">
-                    <div className="font-bold text-zinc-600">電話番号</div>
+                  <div className="leading-tight">
+                    <div className="font-bold text-zinc-500">電話番号</div>
                     {candidate.phone ? (
-                      <a href={`tel:${candidate.phone}`} className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 underline-offset-2 hover:underline">
-                        <Phone className="h-3.5 w-3.5" />
+                      <a href={`tel:${candidate.phone}`} className="mt-0.5 inline-flex items-center gap-1 font-semibold text-sky-700 underline-offset-2 hover:underline">
+                        <Phone className="h-3 w-3" />
                         {candidate.phone}
                       </a>
                     ) : (
-                      <div className="text-xs font-semibold text-zinc-800">-</div>
+                      <div className="mt-0.5 font-semibold text-zinc-800">-</div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
-                  <div className="min-w-0 xl:pl-0">
-                    <div className="mb-0.5 text-[10px] font-semibold tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
-                    <div className="flex items-center gap-1.5">
+                <div className="flex flex-col gap-1 xl:flex-row xl:items-end xl:justify-between">
+                  <div className="min-w-0">
+                    <div className="mb-0.5 pl-0 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
+                    <div className="flex items-center gap-1">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
-                      <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                      <h1 className={`truncate text-[18px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
                     </div>
                   </div>
 
-                  <div className="grid flex-1 gap-1.5 sm:grid-cols-2 xl:ml-3 xl:grid-cols-4">
+                  <div className="grid flex-1 gap-1 sm:grid-cols-2 xl:ml-2 xl:grid-cols-4">
                     {topMetaItems.map((item) => (
-                      <div key={item.label} className={`flex min-w-0 items-center justify-center rounded-full px-2.5 py-1 text-[10px] font-bold ${item.className}`}>
+                      <div key={item.label} className={`flex min-w-0 items-center justify-center rounded-full px-2 py-0.5 text-[9px] font-bold ${item.className}`}>
                         <span className="truncate">
                           {item.label} {item.value}
                         </span>
@@ -253,13 +248,13 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   </div>
                 </div>
 
-                <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-6 xl:grid-cols-11">
+                <div className="grid gap-1 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
                   {headerStatusItems.map((item) => (
-                    <div key={item.label} className="rounded-lg border border-zinc-100 bg-white px-1.5 py-1 text-center">
+                    <div key={item.label} className="rounded-2xl border border-zinc-100 bg-white px-1 py-1 text-center">
                       <div className="flex justify-center">
                         <HeaderLabel label={item.label} className={item.className} />
                       </div>
-                      <div className="mt-1 text-[10px] font-semibold leading-none text-zinc-700">{formatDate(item.value)}</div>
+                      <div className="mt-0.5 text-[9px] font-semibold leading-none text-zinc-700">{formatDate(item.value)}</div>
                     </div>
                   ))}
                 </div>
@@ -294,12 +289,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>担当者</span>
-                  <SearchableSelect
-                    name="ownerName"
-                    defaultValue={candidate.ownerName ?? ""}
-                    options={CANDIDATE_OWNER_OPTIONS}
-                    className={inputClassName}
-                  />
+                  <SearchableSelect name="ownerName" defaultValue={candidate.ownerName ?? ""} options={CANDIDATE_OWNER_OPTIONS} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>電話番号</span>

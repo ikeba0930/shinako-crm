@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Check, Copy, UserRound } from "lucide-react"
+import { Check, UserRound } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -14,8 +14,7 @@ export function CandidateLineCopyButton({ gender, url }: Props) {
 
   useEffect(() => {
     if (!copied) return
-
-    const timer = window.setTimeout(() => setCopied(false), 1800)
+    const timer = window.setTimeout(() => setCopied(false), 1500)
     return () => window.clearTimeout(timer)
   }, [copied])
 
@@ -38,14 +37,14 @@ export function CandidateLineCopyButton({ gender, url }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="relative inline-flex items-center">
       <button
         type="button"
         onClick={handleCopy}
         disabled={isDisabled}
         title={url ? "LINE URLをコピー" : "LINE URL未設定"}
         className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
+          "inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors",
           buttonClassName,
           isDisabled ? "cursor-not-allowed" : "cursor-pointer"
         )}
@@ -54,11 +53,11 @@ export function CandidateLineCopyButton({ gender, url }: Props) {
       </button>
       <span
         className={cn(
-          "inline-flex min-w-[86px] items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all",
-          copied ? "bg-emerald-100 text-emerald-700 opacity-100" : "bg-transparent text-transparent opacity-0"
+          "pointer-events-none absolute left-8 top-1/2 inline-flex -translate-y-1/2 items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-semibold text-emerald-700 transition-all",
+          copied ? "opacity-100" : "opacity-0"
         )}
       >
-        {copied ? <Check className="mr-1 h-3.5 w-3.5" /> : <Copy className="mr-1 h-3.5 w-3.5" />}
+        <Check className="mr-1 h-3 w-3" />
         コピーしました
       </span>
     </div>
