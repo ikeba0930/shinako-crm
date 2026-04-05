@@ -1,6 +1,7 @@
 "use client"
 
 import { useOptimistic, startTransition } from "react"
+import { useRouter } from "next/navigation"
 import { deleteContactLogAction } from "@/lib/actions"
 import { CandidateNaModal } from "@/components/candidate-na-modal"
 
@@ -46,6 +47,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
 }
 
 function LogCard({ log, candidateId, onDelete }: { log: ContactLog; candidateId: string; onDelete: (id: string) => void }) {
+  const router = useRouter()
   const shortId = log.id.slice(-8).toUpperCase()
 
   return (
@@ -60,20 +62,29 @@ function LogCard({ log, candidateId, onDelete }: { log: ContactLog; candidateId:
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <form action={deleteContactLogAction}>
-            <input type="hidden" name="id" value={log.id} />
-            <input type="hidden" name="candidateId" value={candidateId} />
-            <button
-              type="submit"
-              onClick={(e) => {
-                if (!confirm("この対応履歴を削除しますか？")) e.preventDefault()
-                else startTransition(() => onDelete(log.id))
-              }}
-              className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[9px] font-semibold text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
-            >
-              削除
-            </button>
-          </form>
+          <CandidateNaModal
+            candidateId={candidateId}
+            initialLog={log}
+            triggerLabel="編集"
+            triggerClassName="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[9px] font-semibold text-sky-600 transition hover:bg-sky-100 hover:text-sky-700"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (!confirm("この対応履歴を削除しますか？")) return
+              startTransition(async () => {
+                const formData = new FormData()
+                formData.set("id", log.id)
+                formData.set("candidateId", candidateId)
+                await deleteContactLogAction(formData)
+                onDelete(log.id)
+                router.refresh()
+              })
+            }}
+            className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[9px] font-semibold text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
+          >
+            削除
+          </button>
         </div>
       </div>
 

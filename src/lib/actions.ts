@@ -385,6 +385,7 @@ export async function deleteContactLogAction(formData: FormData) {
 }
 
 export async function saveContactLogAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "")
   const candidateId = String(formData.get("candidateId") ?? "")
   if (!candidateId) return
 
@@ -398,21 +399,30 @@ export async function saveContactLogAction(formData: FormData) {
   const respondedAt = parseDateTime("respondedAtDate", "respondedAtTime")
   const today = respondedAt ?? new Date()
 
-  await prisma.contactLog.create({
-    data: {
-      candidateId,
-      respondedAt,
-      respondentName: String(formData.get("respondentName") ?? "") || null,
-      responseStatus: String(formData.get("responseStatus") ?? "") || null,
-      direction: String(formData.get("direction") ?? "") || null,
-      communicationMethod: String(formData.get("communicationMethod") ?? "") || null,
-      reason: String(formData.get("reason") ?? "") || null,
-      naAt: parseDateTime("naAtDate", "naAtTime"),
-      naContent: String(formData.get("naContent") ?? "") || null,
-      isUnreachable: false,
-      notes: String(formData.get("notes") ?? "") || null,
-    },
-  })
+  const contactLogData = {
+    candidateId,
+    respondedAt,
+    respondentName: String(formData.get("respondentName") ?? "") || null,
+    responseStatus: String(formData.get("responseStatus") ?? "") || null,
+    direction: String(formData.get("direction") ?? "") || null,
+    communicationMethod: String(formData.get("communicationMethod") ?? "") || null,
+    reason: String(formData.get("reason") ?? "") || null,
+    naAt: parseDateTime("naAtDate", "naAtTime"),
+    naContent: String(formData.get("naContent") ?? "") || null,
+    isUnreachable: false,
+    notes: String(formData.get("notes") ?? "") || null,
+  }
+
+  if (id) {
+    await prisma.contactLog.update({
+      where: { id },
+      data: contactLogData,
+    })
+  } else {
+    await prisma.contactLog.create({
+      data: contactLogData,
+    })
+  }
 
   const dateFieldMap: Record<string, string> = {
     setAs_firstResponseDate: "firstResponseDate",

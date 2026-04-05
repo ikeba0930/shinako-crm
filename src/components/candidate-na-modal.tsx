@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState, useTransition, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { createPortal } from "react-dom"
 import { saveContactLogAction } from "@/lib/actions"
 import {
@@ -14,6 +15,20 @@ import {
 
 type Props = {
   candidateId: string
+  triggerLabel?: string
+  triggerClassName?: string
+  initialLog?: {
+    id: string
+    respondedAt: string | Date | null
+    respondentName: string | null
+    responseStatus: string | null
+    direction: string | null
+    communicationMethod: string | null
+    reason: string | null
+    naAt: string | Date | null
+    naContent: string | null
+    notes: string | null
+  }
 }
 
 function nowDate() {
@@ -27,6 +42,20 @@ function addDays(n: number) {
   const d = new Date()
   d.setDate(d.getDate() + n)
   return d.toLocaleDateString("sv-SE")
+}
+
+function toDateInputValue(value?: string | Date | null) {
+  if (!value) return ""
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ""
+  return date.toLocaleDateString("sv-SE")
+}
+
+function toTimeInputValue(value?: string | Date | null) {
+  if (!value) return ""
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ""
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
 }
 
 const inputCls =
@@ -55,16 +84,19 @@ function SectionBand({ children, className = "" }: { children: React.ReactNode; 
   )
 }
 
-export function CandidateNaModal({ candidateId }: Props) {
+export function CandidateNaModal({ candidateId, triggerLabel = "対応NA", triggerClassName, initialLog }: Props) {
+  const router = useRouter()
+  const initialStatusPhase = initialLog?.responseStatus?.split("：")[0] ?? ""
+  const initialStatusDetail = initialLog?.responseStatus?.split("：").slice(1).join("：") ?? ""
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const [respondedDate, setRespondedDate] = useState("")
-  const [respondedTime, setRespondedTime] = useState("")
-  const [naDate, setNaDate] = useState("")
-  const [naTime, setNaTime] = useState("")
-  const [statusPhase, setStatusPhase] = useState("")
-  const [statusDetail, setStatusDetail] = useState("")
+  const [respondedDate, setRespondedDate] = useState(toDateInputValue(initialLog?.respondedAt))
+  const [respondedTime, setRespondedTime] = useState(toTimeInputValue(initialLog?.respondedAt))
+  const [naDate, setNaDate] = useState(toDateInputValue(initialLog?.naAt))
+  const [naTime, setNaTime] = useState(toTimeInputValue(initialLog?.naAt))
+  const [statusPhase, setStatusPhase] = useState(initialStatusPhase)
+  const [statusDetail, setStatusDetail] = useState(initialStatusDetail)
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -76,12 +108,12 @@ export function CandidateNaModal({ candidateId }: Props) {
   function close() {
     setIsOpen(false)
     formRef.current?.reset()
-    setRespondedDate("")
-    setRespondedTime("")
-    setNaDate("")
-    setNaTime("")
-    setStatusPhase("")
-    setStatusDetail("")
+    setRespondedDate(toDateInputValue(initialLog?.respondedAt))
+    setRespondedTime(toTimeInputValue(initialLog?.respondedAt))
+    setNaDate(toDateInputValue(initialLog?.naAt))
+    setNaTime(toTimeInputValue(initialLog?.naAt))
+    setStatusPhase(initialStatusPhase)
+    setStatusDetail(initialStatusDetail)
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -89,6 +121,7 @@ export function CandidateNaModal({ candidateId }: Props) {
     const formData = new FormData(e.currentTarget)
     startTransition(async () => {
       await saveContactLogAction(formData)
+      router.refresh()
       close()
     })
   }
@@ -98,9 +131,9 @@ export function CandidateNaModal({ candidateId }: Props) {
       <button
         type="button"
         onClick={open}
-        className="rounded-full border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,242,246,0.92))] px-3 py-1 text-[10px] font-semibold text-rose-700 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.68)] transition hover:bg-rose-50"
+        className={triggerClassName ?? "rounded-full border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,242,246,0.92))] px-3 py-1 text-[10px] font-semibold text-rose-700 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.68)] transition hover:bg-rose-50"}
       >
-        対応NA
+        {triggerLabel}
       </button>
 
       {isOpen && mounted && createPortal(
@@ -128,6 +161,7 @@ export function CandidateNaModal({ candidateId }: Props) {
             {/* フォーム本体（スクロール可） */}
             <form ref={formRef} onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-y-auto">
               <input type="hidden" name="candidateId" value={candidateId} />
+              <input type="hidden" name="id" value={initialLog?.id ?? ""} />
 
               <div className="mx-auto w-full max-w-5xl flex-1 space-y-3 px-6 py-5">
 
@@ -158,7 +192,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                   {/* 対応者 */}
                   <div>
                     <label className={sectionLabelCls}>対応者</label>
-                    <select name="respondentName" className={selectCls}>
+                    <select name="respondentName" defaultValue={initialLog?.respondentName ?? ""} className={selectCls}>
                       <option value="">選択してください</option>
                       {CANDIDATE_OWNER_OPTIONS.map((o) => (
                         <option key={o} value={o}>{o}</option>
@@ -211,7 +245,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                             type="radio"
                             name="direction"
                             value={v === "未選択" ? "" : v}
-                            defaultChecked={v === "未選択"}
+                            defaultChecked={(initialLog?.direction ?? "") === (v === "未選択" ? "" : v)}
                             className="accent-fuchsia-500"
                           />
                           {v}
@@ -222,7 +256,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                   {/* 通信手段 */}
                   <div>
                     <label className={sectionLabelCls}>通信手段</label>
-                    <select name="communicationMethod" className={selectCls}>
+                    <select name="communicationMethod" defaultValue={initialLog?.communicationMethod ?? ""} className={selectCls}>
                       <option value="">選択してください</option>
                       {CONTACT_COMMUNICATION_METHOD_OPTIONS.map((o) => (
                         <option key={o} value={o}>{o}</option>
@@ -235,7 +269,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                 {statusPhase === "対応終了" && (
                   <div className="rounded-2xl border border-amber-200/70 bg-[linear-gradient(135deg,rgba(255,251,235,0.9),rgba(255,248,225,0.85))] px-5 py-4">
                     <label className={`${sectionLabelCls} text-amber-700`}>終了理由</label>
-                    <select name="reason" className={selectCls}>
+                    <select name="reason" defaultValue={initialLog?.reason ?? ""} className={selectCls}>
                       <option value="">選択してください</option>
                       {CONTACT_REASON_OPTIONS.map((o) => (
                         <option key={o} value={o}>{o}</option>
@@ -273,7 +307,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                   {/* NA内容 */}
                   <div className="min-w-0 xl:min-w-[260px]">
                     <label className={sectionLabelCls}>NA内容</label>
-                    <select name="naContent" className={selectCls}>
+                    <select name="naContent" defaultValue={initialLog?.naContent ?? ""} className={selectCls}>
                       <option value="">選択してください</option>
                       {CONTACT_NA_CONTENT_OPTIONS.map((o) => (
                         <option key={o} value={o}>{o}</option>
@@ -287,6 +321,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                   <label className={sectionLabelCls}>備考</label>
                   <textarea
                     name="notes"
+                    defaultValue={initialLog?.notes ?? ""}
                     rows={6}
                     className="w-full rounded-xl border border-fuchsia-100/80 bg-white px-3 py-2.5 text-[12px] text-[#2f1b3b] outline-none focus:border-fuchsia-300 focus:ring-1 focus:ring-fuchsia-200/70 resize-none"
                     placeholder="自由記述..."
