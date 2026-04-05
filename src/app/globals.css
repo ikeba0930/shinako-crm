@@ -219,8 +219,8 @@
     align-items: center;
     gap: 0.6rem;
     font-family: var(--font-heading);
-    font-size: 1.02rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     letter-spacing: 0.04em;
     color: #251335;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
@@ -290,8 +290,8 @@
 
   .fantasy-page-title {
     font-family: var(--font-heading);
-    font-size: 1.65rem;
-    font-weight: 700;
+    font-size: 1.85rem;
+    font-weight: 800;
     letter-spacing: 0.05em;
     color: #231234;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
