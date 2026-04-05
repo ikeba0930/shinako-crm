@@ -98,11 +98,11 @@ function FileRow({
       </td>
       <td className="whitespace-nowrap px-2 py-2 text-[10px] text-violet-400">{dateStr}</td>
       <td className="py-2 pr-3">
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-end gap-1 whitespace-nowrap">
           <a
             href={att.filePath}
             download={att.name}
-            className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 text-[9px] font-semibold text-violet-700 transition hover:bg-violet-100"
+            className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[8px] font-semibold text-violet-700 transition hover:bg-violet-100"
           >
             ⬇ DL
           </a>
@@ -110,14 +110,14 @@ function FileRow({
             href={att.filePath}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[9px] font-semibold text-sky-700 transition hover:bg-sky-100"
+            className="rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[8px] font-semibold text-sky-700 transition hover:bg-sky-100"
           >
             👁 開封
           </a>
           <button
             type="button"
             onClick={() => onDelete(att.id)}
-            className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[9px] font-semibold text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
+            className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[8px] font-semibold text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
           >
             🗑 削除
           </button>
