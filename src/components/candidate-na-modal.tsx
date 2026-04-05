@@ -195,8 +195,8 @@ export function CandidateNaModal({ candidateId }: Props) {
                   </div>
                 </SectionBand>
 
-                {/* ─── 受発信・通信手段・理由 ─── */}
-                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(255,250,240,0.8),rgba(255,246,235,0.7))] grid-cols-1 md:grid-cols-3">
+                {/* ─── 受発信・通信手段 ─── */}
+                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(255,250,240,0.8),rgba(255,246,235,0.7))] grid-cols-1 md:grid-cols-2">
                   {/* 受発信 */}
                   <div>
                     <label className={sectionLabelCls}>受発信</label>
@@ -225,9 +225,12 @@ export function CandidateNaModal({ candidateId }: Props) {
                       ))}
                     </select>
                   </div>
-                  {/* 理由 */}
-                  <div>
-                    <label className={sectionLabelCls}>理由</label>
+                </SectionBand>
+
+                {/* ─── 終了理由（対応終了時のみ表示） ─── */}
+                {statusPhase === "対応終了" && (
+                  <div className="rounded-2xl border border-amber-200/70 bg-[linear-gradient(135deg,rgba(255,251,235,0.9),rgba(255,248,225,0.85))] px-5 py-4">
+                    <label className={`${sectionLabelCls} text-amber-700`}>終了理由</label>
                     <select name="reason" className={selectCls}>
                       <option value="">選択してください</option>
                       {CONTACT_REASON_OPTIONS.map((o) => (
@@ -235,10 +238,10 @@ export function CandidateNaModal({ candidateId }: Props) {
                       ))}
                     </select>
                   </div>
-                </SectionBand>
+                )}
 
                 {/* ─── NA情報 ─── */}
-                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-1 md:grid-cols-[1fr_1fr_auto]">
+                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-1 md:grid-cols-2">
                   {/* NA日時 */}
                   <div>
                     <label className={sectionLabelCls}>NA日時</label>
@@ -272,13 +275,6 @@ export function CandidateNaModal({ candidateId }: Props) {
                         <option key={o} value={o}>{o}</option>
                       ))}
                     </select>
-                  </div>
-                  {/* 不通フラグ */}
-                  <div className="flex items-end pb-1">
-                    <label className="flex cursor-pointer items-center gap-2 text-[12px] font-semibold text-rose-700">
-                      <input type="checkbox" name="isUnreachable" className="h-4 w-4 accent-rose-500" />
-                      不通
-                    </label>
                   </div>
                 </SectionBand>
 
