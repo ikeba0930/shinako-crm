@@ -10,7 +10,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c084fc] to-transparent" />
       <div className="absolute right-0 top-0 h-16 w-16 rounded-full bg-[radial-gradient(circle,_rgba(196,181,253,0.42)_0%,_transparent_68%)]" />
       <CardHeader className="relative px-3 pb-2 pt-3">
-        <CardTitle className="font-serif text-[13px] font-black tracking-tight text-[#22112f]">{title}</CardTitle>
+        <CardTitle className="text-[0.98rem] text-[#22112f]">{title}</CardTitle>
       </CardHeader>
       <CardContent className="relative px-3 pb-3">{children}</CardContent>
     </Card>
@@ -199,7 +199,7 @@ export async function DashboardScreen({ year, month, source }: { year?: number; 
   const data = await getDashboardData({ period: "month", year, month, source })
 
   return (
-    <div className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(192,132,252,0.18),_transparent_18%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.12),_transparent_20%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.12),_transparent_22%),linear-gradient(180deg,_#fcf8ff_0%,_#fffdfb_45%,_#ffffff_100%)]">
+    <div className="min-h-full">
       <div className="space-y-2.5 p-3 lg:space-y-2.5 lg:p-3">
         <section className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
