@@ -115,7 +115,11 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
-      <Field label="LINE URL" required accentClassName="from-emerald-500 to-lime-400">
+      <Field
+        label={isUnemploymentInsurance ? "LINE URL（ひとなりのURL）" : "LINE URL"}
+        required
+        accentClassName="from-emerald-500 to-lime-400"
+      >
         <input name="lineUrl" required className={inputClassName} />
       </Field>
       <Field label="年齢" required accentClassName="from-amber-500 to-yellow-400">
