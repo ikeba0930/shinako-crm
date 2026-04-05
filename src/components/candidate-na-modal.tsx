@@ -7,7 +7,8 @@ import {
   CANDIDATE_OWNER_OPTIONS,
   CONTACT_COMMUNICATION_METHOD_OPTIONS,
   CONTACT_NA_CONTENT_OPTIONS,
-  CONTACT_REASON_OPTIONS,
+  CONTACT_REASON_PHASES,
+  CONTACT_REASON_DETAILS,
   CONTACT_RESPONSE_STATUS_PHASES,
   CONTACT_RESPONSE_STATUS_DETAILS,
 } from "@/lib/constants"
@@ -60,6 +61,8 @@ export function CandidateNaModal({ candidateId }: Props) {
   const [naTime, setNaTime] = useState("")
   const [statusPhase, setStatusPhase] = useState("")
   const [statusDetail, setStatusDetail] = useState("")
+  const [reasonPhase, setReasonPhase] = useState("")
+  const [reasonDetail, setReasonDetail] = useState("")
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -77,6 +80,8 @@ export function CandidateNaModal({ candidateId }: Props) {
     setNaTime("")
     setStatusPhase("")
     setStatusDetail("")
+    setReasonPhase("")
+    setReasonDetail("")
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -220,15 +225,36 @@ export function CandidateNaModal({ candidateId }: Props) {
                       ))}
                     </select>
                   </div>
-                  {/* 理由 */}
-                  <div>
+                  {/* 理由（2段） */}
+                  <div className="space-y-1.5">
                     <label className={sectionLabelCls}>理由</label>
-                    <select name="reason" className={selectCls}>
-                      <option value="">選択してください</option>
-                      {CONTACT_REASON_OPTIONS.map((o) => (
-                        <option key={o} value={o}>{o}</option>
+                    <input
+                      type="hidden"
+                      name="reason"
+                      value={reasonPhase && reasonDetail ? `${reasonPhase}：${reasonDetail}` : reasonPhase}
+                    />
+                    <select
+                      value={reasonPhase}
+                      onChange={(e) => { setReasonPhase(e.target.value); setReasonDetail("") }}
+                      className={selectCls}
+                    >
+                      <option value="">① カテゴリを選択</option>
+                      {CONTACT_REASON_PHASES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
+                    {reasonPhase && (
+                      <select
+                        value={reasonDetail}
+                        onChange={(e) => setReasonDetail(e.target.value)}
+                        className={selectCls}
+                      >
+                        <option value="">② 詳細を選択</option>
+                        {(CONTACT_REASON_DETAILS[reasonPhase] ?? []).map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </SectionBand>
 
