@@ -5,7 +5,14 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { deleteCandidateAction } from "@/lib/actions"
-import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE, INFLOW_ROUTE_OPTIONS, inflowRouteMatches } from "@/lib/constants"
+import {
+  CANDIDATE_STATUS_LABELS,
+  CONTACT_RESPONSE_STATUS_DETAILS,
+  CONTACT_RESPONSE_STATUS_PHASES,
+  CUSTOMER_RANK_BADGE,
+  INFLOW_ROUTE_OPTIONS,
+  inflowRouteMatches,
+} from "@/lib/constants"
 import { prisma } from "@/lib/db"
 import { formatDate } from "@/lib/format"
 
@@ -32,6 +39,13 @@ function HeaderLabel({ label, className }: { label: string; className: string })
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black tracking-tight ${className}`}>{label}</span>
 }
 
+const responseStatusOptions = [
+  ...CONTACT_RESPONSE_STATUS_PHASES,
+  ...CONTACT_RESPONSE_STATUS_PHASES.flatMap((phase) =>
+    (CONTACT_RESPONSE_STATUS_DETAILS[phase] ?? []).map((detail) => `${phase}：${detail}`)
+  ),
+]
+
 export default async function CandidatesPage({ searchParams }: Props) {
   const params = await searchParams
   const keyword = typeof params.keyword === "string" ? params.keyword : ""
@@ -57,7 +71,6 @@ export default async function CandidatesPage({ searchParams }: Props) {
           }
         : {}),
       ...(rank ? { customerRank: rank as never } : {}),
-      ...(status ? { overallStatus: status as never } : {}),
       ...(owner ? { ownerName: owner } : {}),
     },
     include: {
@@ -72,9 +85,16 @@ export default async function CandidatesPage({ searchParams }: Props) {
     orderBy: sort === "inflowDate" ? { inflowDate: "desc" } : { updatedAt: "desc" },
   })
 
-  const baseFiltered = inflowSource
-    ? candidates.filter((candidate) => inflowRouteMatches(candidate.inflowSource, inflowSource))
+  const statusFiltered = status
+    ? candidates.filter((candidate) => {
+        const responseStatus = candidate.contactLogs[0]?.responseStatus ?? ""
+        return responseStatus === status
+      })
     : candidates
+
+  const baseFiltered = inflowSource
+    ? statusFiltered.filter((candidate) => inflowRouteMatches(candidate.inflowSource, inflowSource))
+    : statusFiltered
 
   const filteredCandidates =
     sort === "naAt"
@@ -143,10 +163,10 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <option value="C">C</option>
               </select>
               <select name="status" defaultValue={status} className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
-                <option value="">ステータスすべて</option>
-                {Object.entries(CANDIDATE_STATUS_LABELS).map(([code, label]) => (
-                  <option key={code} value={code}>
-                    {label}
+                <option value="">対応中ステータスすべて</option>
+                {responseStatusOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
