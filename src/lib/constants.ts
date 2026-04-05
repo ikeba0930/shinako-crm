@@ -374,16 +374,45 @@ export const A_RANK_QUALIFICATIONS = [
   "自動車検査員",
 ] as const
 
-export const CONTACT_RESPONSE_STATUS_OPTIONS = [
-  "未対応",
-  "初回対応中",
-  "面談調整中",
-  "書類作成中",
-  "提案中",
+export const CONTACT_RESPONSE_STATUS_PHASES = [
+  "初回面談済み",
+  "企業提案面談済",
   "選考中",
-  "内定後フォロー中",
-  "クローズ",
+  "面接",
 ] as const
+
+export const CONTACT_RESPONSE_STATUS_DETAILS: Record<string, string[]> = {
+  "初回面談済み": [
+    "求人10社選定中",
+    "企業提案面談不通",
+    "面談リスケ中",
+    "初回面談後、不通",
+    "初回面談時NG",
+  ],
+  "企業提案面談済": [
+    "書類作成待ち：両方",
+    "書類作成待ち：履歴書",
+    "書類作成待ち：職務経歴書",
+    "提案面談後不通、提案できず",
+    "提案面談時検討",
+    "提案面談時NG",
+  ],
+  "選考中": [
+    "書類選考中",
+    "書類不備有、確認中",
+    "書類通過後、面接日程調整中",
+    "書類通過後、不通",
+    "書類選考全落ち、再提案へ",
+  ],
+  "面接": [
+    "面接待ち",
+    "面接後、結果待ち",
+    "面接不合格",
+    "2次面接へ日程調整中",
+    "2次面接、結果待ち",
+    "2次面接不合格",
+  ],
+}
 
 export const CONTACT_COMMUNICATION_METHOD_OPTIONS = [
   "電話",
@@ -405,10 +434,23 @@ export const CONTACT_REASON_OPTIONS = [
 ] as const
 
 export const CONTACT_NA_CONTENT_OPTIONS = [
-  "電話不通",
+  "電話不通（折り返し待ち）",
+  "電話不通（留守電残し）",
+  "電話中",
+  "SMS送信→返信待ち",
   "SMS不通",
-  "メール不通",
+  "LINE送信→返信待ち",
   "LINE既読スルー",
   "LINE未読",
-  "その他",
+  "メール送信→返信待ち",
+  "メール不通",
+  "翌日再コール予定",
+  "数日後再コール予定",
+  "1週間後再コール予定",
+  "書類提出催促",
+  "書類返却待ち",
+  "面接日程調整依頼",
+  "面接結果確認待ち",
+  "再提案準備中",
+  "求人選定中",
 ] as const

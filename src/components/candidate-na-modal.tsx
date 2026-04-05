@@ -8,7 +8,8 @@ import {
   CONTACT_COMMUNICATION_METHOD_OPTIONS,
   CONTACT_NA_CONTENT_OPTIONS,
   CONTACT_REASON_OPTIONS,
-  CONTACT_RESPONSE_STATUS_OPTIONS,
+  CONTACT_RESPONSE_STATUS_PHASES,
+  CONTACT_RESPONSE_STATUS_DETAILS,
 } from "@/lib/constants"
 
 type Props = {
@@ -57,6 +58,8 @@ export function CandidateNaModal({ candidateId }: Props) {
   const [respondedTime, setRespondedTime] = useState("")
   const [naDate, setNaDate] = useState("")
   const [naTime, setNaTime] = useState("")
+  const [statusPhase, setStatusPhase] = useState("")
+  const [statusDetail, setStatusDetail] = useState("")
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -72,6 +75,8 @@ export function CandidateNaModal({ candidateId }: Props) {
     setRespondedTime("")
     setNaDate("")
     setNaTime("")
+    setStatusPhase("")
+    setStatusDetail("")
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -151,15 +156,37 @@ export function CandidateNaModal({ candidateId }: Props) {
                       ))}
                     </select>
                   </div>
-                  {/* 対応中ステータス */}
-                  <div>
+                  {/* 対応中ステータス（2段） */}
+                  <div className="space-y-1.5">
                     <label className={sectionLabelCls}>対応中ステータス</label>
-                    <select name="responseStatus" className={selectCls}>
-                      <option value="">選択してください</option>
-                      {CONTACT_RESPONSE_STATUS_OPTIONS.map((o) => (
-                        <option key={o} value={o}>{o}</option>
+                    {/* hidden で結合値を送る */}
+                    <input
+                      type="hidden"
+                      name="responseStatus"
+                      value={statusPhase && statusDetail ? `${statusPhase}：${statusDetail}` : statusPhase}
+                    />
+                    <select
+                      value={statusPhase}
+                      onChange={(e) => { setStatusPhase(e.target.value); setStatusDetail("") }}
+                      className={selectCls}
+                    >
+                      <option value="">① フェーズを選択</option>
+                      {CONTACT_RESPONSE_STATUS_PHASES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
+                    {statusPhase && (
+                      <select
+                        value={statusDetail}
+                        onChange={(e) => setStatusDetail(e.target.value)}
+                        className={selectCls}
+                      >
+                        <option value="">② 詳細状況を選択</option>
+                        {(CONTACT_RESPONSE_STATUS_DETAILS[statusPhase] ?? []).map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </SectionBand>
 
