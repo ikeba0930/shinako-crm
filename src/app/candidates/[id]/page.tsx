@@ -1,9 +1,9 @@
+import { Phone } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
 import { SearchableSelect } from "@/components/searchable-select"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { createSelectionAction, saveCandidateAction } from "@/lib/actions"
@@ -39,6 +39,7 @@ type Props = {
 
 const compactInputClassName = "h-9 w-full rounded-2xl border border-zinc-200 bg-white px-3 text-[11px]"
 const inputClassName = "h-10 w-full rounded-2xl border border-zinc-200 px-3"
+const formId = "candidate-detail-form"
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values
@@ -70,7 +71,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   if (!candidate) notFound()
 
   const isUnemploymentInsurance = candidate.inflowSource === "失業保険"
-  const lineUrlLabel = isUnemploymentInsurance ? "LステURL（ひとなりのURL）" : "LステURL"
+  const lineUrlLabel = isUnemploymentInsurance ? "LINE URL（ひとなりのURL）" : "LINE URL"
   const qualificationOptions = Array.from(
     new Set([...qualificationMasters.map((item) => item.name), ...DETAILED_QUALIFICATION_OPTIONS, ...EXTRA_QUALIFICATION_OPTIONS])
   )
@@ -91,154 +92,204 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
   const inflowLabel =
     INFLOW_ROUTE_OPTIONS.find((option) => option.value === candidate.inflowSource)?.label ?? candidate.inflowSource ?? "未設定"
+  const topMetaItems = [
+    { label: "流入経路", value: inflowLabel, className: "bg-violet-100 text-violet-700" },
+    { label: "ランク", value: candidate.customerRank, className: CUSTOMER_RANK_BADGE[candidate.customerRank] },
+    { label: "ステータス", value: CANDIDATE_STATUS_LABELS[candidate.overallStatus], className: "bg-zinc-100 text-zinc-700" },
+    { label: "選考企業社数", value: `${activeCompanyCount}社`, className: "bg-rose-100 text-rose-700" },
+  ]
+  const headerStatusItems = [
+    { label: "流入日", value: candidate.inflowDate, className: "bg-violet-100 text-violet-700" },
+    { label: "初回対応日", value: candidate.firstResponseDate, className: "bg-sky-100 text-sky-700" },
+    { label: "面談日", value: candidate.interviewDate, className: "bg-pink-100 text-pink-700" },
+    { label: "書類作成日", value: candidate.documentCreatedDate, className: "bg-orange-100 text-orange-700" },
+    { label: "提案日", value: candidate.proposalDate, className: "bg-amber-100 text-amber-700" },
+    { label: "エントリー日", value: headerEntryDate, className: "bg-lime-100 text-lime-700" },
+    { label: "企業面談日", value: headerCompanyInterviewDate, className: "bg-emerald-100 text-emerald-700" },
+    { label: "内定日", value: candidate.offerDate, className: "bg-cyan-100 text-cyan-700" },
+    { label: "承諾日", value: candidate.offerAcceptedDate, className: "bg-blue-100 text-blue-700" },
+    { label: "入社日", value: candidate.joiningDate, className: "bg-indigo-100 text-indigo-700" },
+  ]
 
   return (
     <div className="space-y-6 p-6 lg:p-8">
-      <form action={saveCandidateAction} className="space-y-6">
-        <input type="hidden" name="id" value={candidate.id} />
+      {isSaved ? (
+        <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+          保存しました
+        </div>
+      ) : null}
 
-        {isSaved ? (
-          <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
-            保存しました
-          </div>
-        ) : null}
+      <Tabs defaultValue="support" className="space-y-4">
+        <TabsList className="rounded-full bg-white/85 p-1 shadow-sm">
+          <TabsTrigger value="support" className="rounded-full px-4 py-1.5 text-sm font-semibold">
+            対応履歴など
+          </TabsTrigger>
+          <TabsTrigger value="selections" className="rounded-full px-4 py-1.5 text-sm font-semibold">
+            選考企業
+          </TabsTrigger>
+        </TabsList>
 
-        <div className="rounded-[24px] border border-white/70 bg-white/90 p-4 shadow-sm">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex min-w-0 flex-1 flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
-                  <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
-                  <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 md:grid-cols-4">
-                    <div className="flex min-w-0 items-center justify-center rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700">
-                      <span className="truncate">{inflowLabel}</span>
+        <TabsContent value="support" className="space-y-6">
+          <form id={formId} action={saveCandidateAction} className="space-y-6">
+            <input type="hidden" name="id" value={candidate.id} />
+
+            <div className="rounded-[24px] border border-sky-100 bg-white/95 p-4 shadow-sm">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                  <div className="grid flex-1 gap-3 md:grid-cols-3">
+                    <label className="space-y-1">
+                      <HeaderLabel label="初回担当者" className="bg-teal-100 text-teal-700" />
+                      <SearchableSelect
+                        name="initialOwnerName"
+                        defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
+                        options={CANDIDATE_OWNER_OPTIONS}
+                        className={compactInputClassName}
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <HeaderLabel label="担当者" className="bg-purple-100 text-purple-700" />
+                      <SearchableSelect
+                        name="ownerName"
+                        defaultValue={candidate.ownerName ?? ""}
+                        options={CANDIDATE_OWNER_OPTIONS}
+                        className={compactInputClassName}
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <HeaderLabel label="電話番号" className="bg-sky-100 text-sky-700" />
+                      <div className="flex items-center gap-2">
+                        <input name="phone" defaultValue={candidate.phone ?? ""} className={compactInputClassName} />
+                        {candidate.phone ? (
+                          <a
+                            href={`tel:${candidate.phone}`}
+                            className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-3 text-sky-700 transition hover:bg-sky-100"
+                            title="架電する"
+                          >
+                            <Phone className="h-4 w-4" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-start gap-2 self-start">
+                    <details className="group min-w-[320px] rounded-3xl border border-zinc-200 bg-zinc-50/80 p-2">
+                      <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-600">
+                        ステータス変更
+                      </summary>
+                      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        <label className="space-y-1">
+                          <HeaderLabel label="流入日" className="bg-violet-100 text-violet-700" />
+                          <input type="date" name="inflowDate" defaultValue={formatDateInput(candidate.inflowDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="初回対応日" className="bg-sky-100 text-sky-700" />
+                          <input type="date" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="面談日" className="bg-pink-100 text-pink-700" />
+                          <input type="date" name="interviewDate" defaultValue={formatDateInput(candidate.interviewDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="書類作成日" className="bg-orange-100 text-orange-700" />
+                          <input
+                            type="date"
+                            name="documentCreatedDate"
+                            defaultValue={formatDateInput(candidate.documentCreatedDate)}
+                            className={compactInputClassName}
+                          />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="提案日" className="bg-amber-100 text-amber-700" />
+                          <input type="date" name="proposalDate" defaultValue={formatDateInput(candidate.proposalDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="エントリー日" className="bg-lime-100 text-lime-700" />
+                          <input type="date" name="entryDate" defaultValue={formatDateInput(headerEntryDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="企業面談日" className="bg-emerald-100 text-emerald-700" />
+                          <input
+                            type="date"
+                            name="companyInterviewDate"
+                            defaultValue={formatDateInput(headerCompanyInterviewDate)}
+                            className={compactInputClassName}
+                          />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="内定日" className="bg-cyan-100 text-cyan-700" />
+                          <input type="date" name="offerDate" defaultValue={formatDateInput(candidate.offerDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="承諾日" className="bg-blue-100 text-blue-700" />
+                          <input
+                            type="date"
+                            name="offerAcceptedDate"
+                            defaultValue={formatDateInput(candidate.offerAcceptedDate)}
+                            className={compactInputClassName}
+                          />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="入社日" className="bg-indigo-100 text-indigo-700" />
+                          <input type="date" name="joiningDate" defaultValue={formatDateInput(candidate.joiningDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="終了日" className="bg-slate-200 text-slate-700" />
+                          <input type="date" name="closedDate" defaultValue={formatDateInput(candidate.closedDate)} className={compactInputClassName} />
+                        </label>
+                        <label className="space-y-1">
+                          <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
+                          <SearchableSelect
+                            name="customerRank"
+                            defaultValue={candidate.customerRank}
+                            options={["S", "A", "B", "C"]}
+                            className={compactInputClassName}
+                          />
+                        </label>
+                        <label className="flex items-center gap-2 rounded-2xl bg-white px-3 text-[11px]">
+                          <input type="checkbox" name="rankManualOverride" defaultChecked={candidate.rankManualOverride} />
+                          ランクを手動で固定する
+                        </label>
+                      </div>
+                    </details>
+
+                    <button type="submit" className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white">
+                      保存
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3 rounded-[22px] bg-sky-50/70 p-4">
+                  <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
+                      <h1 className={`truncate text-3xl font-black tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
                     </div>
-                    <div
-                      className={`flex min-w-0 items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}
-                    >
-                      <span className="truncate">ランク {candidate.customerRank}</span>
+                    <div className="grid flex-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+                      {topMetaItems.map((item) => (
+                        <div key={item.label} className={`flex min-w-0 items-center justify-center rounded-full px-3 py-2 text-sm font-bold ${item.className}`}>
+                          <span className="truncate">
+                            {item.label} {item.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex min-w-0 items-center justify-center">
-                      <Badge variant="secondary" className="w-full justify-center truncate rounded-full px-3 py-1.5 text-xs">
-                        {CANDIDATE_STATUS_LABELS[candidate.overallStatus]}
-                      </Badge>
-                    </div>
-                    <div className="flex min-w-0 items-center justify-center rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700">
-                      <span className="truncate">選考企業 {activeCompanyCount}社</span>
-                    </div>
+                  </div>
+
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-10">
+                    {headerStatusItems.map((item) => (
+                      <div key={item.label} className="rounded-2xl bg-white px-3 py-2 text-center shadow-sm">
+                        <div className="flex justify-center">
+                          <HeaderLabel label={item.label} className={item.className} />
+                        </div>
+                        <div className="mt-2 text-[11px] font-semibold text-zinc-700">{formatDate(item.value)}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-end">
-                <button type="submit" className="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white">
-                  保存
-                </button>
-              </div>
             </div>
 
-            <div className="grid gap-2 md:grid-cols-4 xl:grid-cols-6">
-              <label className="space-y-1 md:col-span-2">
-                <HeaderLabel label={lineUrlLabel} className="bg-sky-100 text-sky-700" />
-                <input name="lineUrl" defaultValue={candidate.otherConditions ?? ""} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
-                <SearchableSelect name="customerRank" defaultValue={candidate.customerRank} options={["S", "A", "B", "C"]} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="ステータス" className="bg-sky-100 text-sky-700" />
-                <div className="flex h-9 items-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 text-[11px] font-semibold text-zinc-700">
-                  {CANDIDATE_STATUS_LABELS[candidate.overallStatus]}
-                </div>
-              </label>
-              <label className="space-y-1 md:col-span-2">
-                <HeaderLabel label="選考中企業" className="bg-rose-100 text-rose-700" />
-                <div className="flex h-9 items-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 text-[11px] text-zinc-700">
-                  {activeCompanies.join(" / ") || "-"}
-                </div>
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="流入日" className="bg-violet-100 text-violet-700" />
-                <input type="date" name="inflowDate" defaultValue={formatDateInput(candidate.inflowDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" />
-                <input type="date" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="面談日" className="bg-pink-100 text-pink-700" />
-                <input type="date" name="interviewDate" defaultValue={formatDateInput(candidate.interviewDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="書類作成日" className="bg-orange-100 text-orange-700" />
-                <input type="date" name="documentCreatedDate" defaultValue={formatDateInput(candidate.documentCreatedDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="提案日" className="bg-amber-100 text-amber-700" />
-                <input type="date" name="proposalDate" defaultValue={formatDateInput(candidate.proposalDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="エントリー日" className="bg-lime-100 text-lime-700" />
-                <input type="date" name="entryDate" defaultValue={formatDateInput(headerEntryDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="企業面談日" className="bg-emerald-100 text-emerald-700" />
-                <input type="date" name="companyInterviewDate" defaultValue={formatDateInput(headerCompanyInterviewDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="内定日" className="bg-cyan-100 text-cyan-700" />
-                <input type="date" name="offerDate" defaultValue={formatDateInput(candidate.offerDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="承諾日" className="bg-blue-100 text-blue-700" />
-                <input type="date" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="入社日" className="bg-indigo-100 text-indigo-700" />
-                <input type="date" name="joiningDate" defaultValue={formatDateInput(candidate.joiningDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="終了日" className="bg-slate-200 text-slate-700" />
-                <input type="date" name="closedDate" defaultValue={formatDateInput(candidate.closedDate)} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="初回担当者" className="bg-teal-100 text-teal-700" />
-                <SearchableSelect
-                  name="initialOwnerName"
-                  defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
-                  options={CANDIDATE_OWNER_OPTIONS.map((option) => option)}
-                  className={compactInputClassName}
-                />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="担当者" className="bg-purple-100 text-purple-700" />
-                <SearchableSelect
-                  name="ownerName"
-                  defaultValue={candidate.ownerName ?? ""}
-                  options={CANDIDATE_OWNER_OPTIONS.map((option) => option)}
-                  className={compactInputClassName}
-                />
-              </label>
-              <label className="flex items-center gap-2 rounded-2xl bg-zinc-50 px-3 text-[11px]">
-                <input type="checkbox" name="rankManualOverride" defaultChecked={candidate.rankManualOverride} />
-                ランクを手動固定
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <Tabs defaultValue="support" className="space-y-4">
-          <TabsList className="rounded-full bg-white/85 p-1 shadow-sm">
-            <TabsTrigger value="support" className="rounded-full px-4 py-1.5 text-sm font-semibold">
-              対応履歴など
-            </TabsTrigger>
-            <TabsTrigger value="selections" className="rounded-full px-4 py-1.5 text-sm font-semibold">
-              選考企業
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="support" className="space-y-6">
             <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg font-bold text-zinc-900">基本情報</CardTitle>
@@ -257,10 +308,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span>電話番号</span>
-                  <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
-                </label>
-                <label className="space-y-1 text-sm">
                   <span>性別</span>
                   <SearchableSelect
                     name="gender"
@@ -275,7 +322,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </label>
                 <label className="space-y-1 text-sm md:col-span-2">
                   <span>居住地</span>
-                  <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS.map((option) => option)} className={inputClassName} />
+                  <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm md:col-span-3">
+                  <span>{lineUrlLabel}</span>
+                  <input name="lineUrl" defaultValue={candidate.otherConditions ?? ""} className={inputClassName} />
                 </label>
               </CardContent>
             </Card>
@@ -287,7 +338,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <CardContent className="grid gap-4 md:grid-cols-3">
                 <label className="space-y-1 text-sm">
                   <span>最終学歴</span>
-                  <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS.map((option) => option)} className={inputClassName} />
+                  <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>経験社数</span>
@@ -303,7 +354,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   <SearchableSelect
                     name="managementExperience"
                     defaultValue={candidate.managementExperience ?? ""}
-                    options={MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => option)}
+                    options={MANAGEMENT_EXPERIENCE_OPTIONS}
                     className={inputClassName}
                   />
                 </label>
@@ -356,7 +407,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>離職予定日</span>
-                  <input type="date" name="resignationPlannedDate" defaultValue={formatDateInput(candidate.resignationPlannedDate)} className={inputClassName} />
+                  <input
+                    type="date"
+                    name="resignationPlannedDate"
+                    defaultValue={formatDateInput(candidate.resignationPlannedDate)}
+                    className={inputClassName}
+                  />
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>希望時期</span>
@@ -465,55 +521,55 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </label>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="selections">
-            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-zinc-900">選考企業を紐づけ</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {candidate.selections.map((selection) => (
-                  <div key={selection.id} className="rounded-2xl bg-zinc-50 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <p className="font-semibold text-zinc-900">{selection.companyName}</p>
-                        <p className="text-sm text-zinc-500">
-                          {selection.jobType ?? "-"} / {formatCurrency(Math.round((selection.unitPrice ?? 0) * (selection.feeRate ?? 0)))}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700">
-                        {SELECTION_STATUS_LABELS[selection.selectionStatus]}
-                      </span>
+            <div className="flex justify-end">
+              <button type="submit" className="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white">
+                保存
+              </button>
+            </div>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="selections">
+          <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold text-zinc-900">選考企業を紐づけ</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {candidate.selections.map((selection) => (
+                <div key={selection.id} className="rounded-2xl bg-zinc-50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-zinc-900">{selection.companyName}</p>
+                      <p className="text-sm text-zinc-500">
+                        {selection.jobType ?? "-"} / {formatCurrency(Math.round((selection.unitPrice ?? 0) * (selection.feeRate ?? 0)))}
+                      </p>
                     </div>
-                    <p className="mt-2 text-sm text-zinc-500">
-                      提案: {formatDate(selection.proposedAt)} / エントリー: {formatDate(selection.entryAt)} / オファー: {formatDate(selection.offerAt)}
-                    </p>
+                    <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700">
+                      {SELECTION_STATUS_LABELS[selection.selectionStatus]}
+                    </span>
                   </div>
-                ))}
+                  <p className="mt-2 text-sm text-zinc-500">
+                    提案日: {formatDate(selection.proposedAt)} / エントリー: {formatDate(selection.entryAt)} / オファー: {formatDate(selection.offerAt)}
+                  </p>
+                </div>
+              ))}
 
-                <form action={createSelectionAction} className="grid gap-3 rounded-2xl border border-dashed border-zinc-200 p-4 md:grid-cols-5">
-                  <input type="hidden" name="candidateId" value={candidate.id} />
-                  <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
-                  <input name="companyName" placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                  <input name="jobType" placeholder="募集職種" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                  <input name="unitPrice" placeholder="単価" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                  <input name="feeRate" placeholder="料率 0.35" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                  <button type="submit" className="h-10 rounded-2xl bg-zinc-900 px-4 text-sm font-semibold text-white">
-                    選考を追加
-                  </button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        <div className="flex justify-end">
-          <button type="submit" className="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white">
-            保存
-          </button>
-        </div>
-      </form>
+              <form action={createSelectionAction} className="grid gap-3 rounded-2xl border border-dashed border-zinc-200 p-4 md:grid-cols-5">
+                <input type="hidden" name="candidateId" value={candidate.id} />
+                <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
+                <input name="companyName" placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                <input name="jobType" placeholder="募集職種" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                <input name="unitPrice" placeholder="単価" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                <input name="feeRate" placeholder="料率 0.35" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                <button type="submit" className="h-10 rounded-2xl bg-zinc-900 px-4 text-sm font-semibold text-white">
+                  選考を追加
+                </button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
