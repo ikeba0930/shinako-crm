@@ -318,7 +318,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       <div className="flex justify-center">
                         <HeaderLabel label={item.label} className={`${item.className} text-[12px]`} />
                       </div>
-                      <div className="mt-1 text-[19px] font-black leading-none tracking-tight text-zinc-700">{formatDate(item.value)}</div>
+                      <div className="mt-1 text-[11px] font-semibold leading-none tracking-tight text-zinc-700">{formatDate(item.value)}</div>
                     </div>
                   ))}
                 </div>
