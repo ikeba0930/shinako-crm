@@ -6,6 +6,7 @@ import { calculateAutoRankFromAgeAndQualifications } from "@/lib/rank"
 import type { createCandidateAction } from "@/lib/actions"
 import {
   CANDIDATE_AGE_OPTIONS,
+  CANDIDATE_CONDITION_OPTIONS,
   CANDIDATE_GENDER_OPTIONS,
   CANDIDATE_JOB_OPTIONS,
   CANDIDATE_OWNER_OPTIONS,
@@ -42,10 +43,15 @@ function Field({
 export function CandidateBasicCreateForm({ action, qualificationOptions }: Props) {
   const [inflowSource, setInflowSource] = useState<string>(INFLOW_ROUTE_OPTIONS[0].value)
   const [age, setAge] = useState<string>("")
+  const [condition, setCondition] = useState<string>("")
   const [selectedQualifications, setSelectedQualifications] = useState<string[]>([])
   const isUnemploymentInsurance = inflowSource === "失業保険"
   const inputClassName = "h-11 w-full rounded-2xl border border-white/60 bg-white/80 px-3 text-sm"
-  const rankPreview = calculateAutoRankFromAgeAndQualifications(age ? Number(age) : null, selectedQualifications).rank
+  const rankPreview = calculateAutoRankFromAgeAndQualifications(
+    age ? Number(age) : null,
+    selectedQualifications,
+    condition || null
+  ).rank
 
   return (
     <form action={action} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -95,19 +101,10 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
-      <Field label="資格" className="md:col-span-2 xl:col-span-2">
-        <select
-          name="qualificationNames"
-          multiple
-          size={6}
-          value={selectedQualifications}
-          onChange={(event) => {
-            const values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
-            setSelectedQualifications(values)
-          }}
-          className="min-h-36 w-full rounded-2xl border border-white/60 bg-white/80 px-3 py-2 text-sm"
-        >
-          {qualificationOptions.map((option) => (
+      <Field label="条件" required>
+        <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_CONDITION_OPTIONS.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
@@ -116,6 +113,36 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
       </Field>
       <Field label="ランク" required>
         <input value={rankPreview} readOnly className={`${inputClassName} font-bold text-[#7c3aed]`} />
+      </Field>
+      <Field label="資格" className="md:col-span-2 xl:col-span-2">
+        <div className="w-full rounded-2xl border border-white/60 bg-white/80 p-3">
+          <select
+            name="qualificationNames"
+            multiple
+            size={6}
+            value={selectedQualifications}
+            onChange={(event) => {
+              let values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
+              if (values.includes("特になし")) {
+                values = ["特になし"]
+              } else {
+                values = values.filter((value) => value !== "特になし")
+              }
+              setSelectedQualifications(values)
+            }}
+            className="w-full bg-transparent text-sm outline-none"
+          >
+            {qualificationOptions.map((option) => (
+              <option
+                key={option}
+                value={option}
+                className={option === "普通自動車免許" ? "text-sky-600" : option === "特になし" ? "text-zinc-500" : undefined}
+              >
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
       </Field>
       <Field label="流入経路" required>
         <select

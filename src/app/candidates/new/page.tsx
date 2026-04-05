@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db"
 import { createCandidateAction } from "@/lib/actions"
+import { EXTRA_QUALIFICATION_OPTIONS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CandidateBasicCreateForm } from "./candidate-basic-create-form"
 
@@ -9,6 +10,7 @@ export default async function CandidateNewPage() {
     where: { isActive: true },
     orderBy: [{ rankCategory: "asc" }, { sortOrder: "asc" }],
   })
+  const qualificationOptions = [...qualificationMasters.map((item) => item.name), ...EXTRA_QUALIFICATION_OPTIONS]
 
   return (
     <div className="space-y-4 p-4 lg:p-5">
@@ -31,7 +33,7 @@ export default async function CandidateNewPage() {
           <CardTitle className="text-base font-black text-[#241433]">基本入力</CardTitle>
         </CardHeader>
         <CardContent>
-          <CandidateBasicCreateForm action={createCandidateAction} qualificationOptions={qualificationMasters.map((item) => item.name)} />
+          <CandidateBasicCreateForm action={createCandidateAction} qualificationOptions={qualificationOptions} />
         </CardContent>
       </Card>
     </div>

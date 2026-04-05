@@ -68,6 +68,18 @@ export const CANDIDATE_JOB_OPTIONS = [
   "その他",
 ] as const
 
+export const CANDIDATE_CONDITION_OPTIONS = [
+  "離職中",
+  "退職日確定している",
+  "転職活動中",
+  "転職時期未定",
+] as const
+
+export const EXTRA_QUALIFICATION_OPTIONS = [
+  "普通自動車免許",
+  "特になし",
+] as const
+
 export function inflowRouteMatches(currentValue: string | null | undefined, selectedValue: string) {
   if (!selectedValue) return true
   if (selectedValue === "ポータル（ブルー）") {

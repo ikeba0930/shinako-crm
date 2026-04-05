@@ -166,15 +166,17 @@ export async function createCandidateAction(formData: FormData) {
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const age = parseIntValue(formData.get("age"))
+  const condition = String(formData.get("jobSearchStatus") ?? "") || null
   const qualificationNames = formData
     .getAll("qualificationNames")
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim())
     .filter(Boolean)
+    .filter((value, index, values) => values.indexOf(value) === index)
   const autoRank = calculateCustomerRank(
     {
       age,
-      jobSearchStatus: null,
+      jobSearchStatus: condition,
       desiredTiming: null,
       rankManualOverride: false,
       customerRank: "C",
@@ -193,6 +195,7 @@ export async function createCandidateAction(formData: FormData) {
       gender: String(formData.get("gender") ?? "") || null,
       age,
       phone: String(formData.get("phone") ?? "") || null,
+      jobSearchStatus: condition,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
       otherConditions: String(formData.get("lineUrl") ?? "") || null,
