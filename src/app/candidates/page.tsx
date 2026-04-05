@@ -72,12 +72,21 @@ export default async function CandidatesPage({ searchParams }: Props) {
     orderBy: sort === "inflowDate" ? { inflowDate: "desc" } : { updatedAt: "desc" },
   })
 
-  const filteredCandidates = inflowSource
+  const baseFiltered = inflowSource
     ? candidates.filter((candidate) => inflowRouteMatches(candidate.inflowSource, inflowSource))
     : candidates
 
+  const filteredCandidates =
+    sort === "naAt"
+      ? [...baseFiltered].sort((a, b) => {
+          const aT = a.contactLogs[0]?.naAt?.getTime() ?? Number.MAX_SAFE_INTEGER
+          const bT = b.contactLogs[0]?.naAt?.getTime() ?? Number.MAX_SAFE_INTEGER
+          return aT - bT
+        })
+      : baseFiltered
+
   const owners = [...new Set(candidates.map((candidate) => candidate.ownerName).filter(Boolean))]
-  const hasActiveFilters = Boolean(keyword || rank || status || owner || inflowSource || sort !== "updatedAt")
+  const hasActiveFilters = Boolean(keyword || rank || status || owner || inflowSource || (sort && sort !== "updatedAt"))
 
   return (
     <div className="space-y-3 p-4 lg:p-5">
@@ -160,6 +169,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
               <select name="sort" defaultValue={sort} className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
                 <option value="updatedAt">更新日順</option>
                 <option value="inflowDate">流入日順</option>
+                <option value="naAt">NA日時順（近い順）</option>
               </select>
               <div className="flex gap-2 md:col-span-6 md:justify-end">
                 <Link
@@ -192,6 +202,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <TableHead className="px-1 py-2"><HeaderLabel label="氏名" className="bg-sky-100 text-sky-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="対応中ステータス" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="NA日時" className="bg-rose-100 text-rose-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="選考中企業" className="bg-rose-100 text-rose-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="流入日" className="bg-violet-100 text-violet-700" /></TableHead>
                 <TableHead className="px-1 py-2"><HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" /></TableHead>
@@ -219,12 +230,15 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 const companyInterviewDate = candidate.companyInterviewDate ?? getLatestSelectionDate(
                   candidate.selections.flatMap((selection) => [selection.firstInterviewAt, selection.secondInterviewAt, selection.interviewScheduledAt])
                 )
+                const latestLog = candidate.contactLogs[0]
+                const naAt = latestLog?.naAt ?? null
                 const bubbleLines = [
                   `氏名: ${candidate.name || "-"}`,
                   `LステURL: ${candidate.otherConditions || "-"}`,
                   `流入経路: ${candidate.inflowSource || "-"}`,
                   `ランク: ${candidate.customerRank}`,
                   `ステータス: ${CANDIDATE_STATUS_LABELS[candidate.overallStatus]}`,
+                  `NA日時: ${naAt ? naAt.toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }) : "-"}`,
                   `選考中企業: ${activeCompanies.join(" / ") || "-"}`,
                   `流入日: ${formatDate(candidate.inflowDate)}`,
                   `初回対応日: ${formatDate(candidate.firstResponseDate)}`,
@@ -274,8 +288,17 @@ export default async function CandidatesPage({ searchParams }: Props) {
                     </TableCell>
                     <TableCell className="px-1 py-2">
                       <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px]">
-                        {candidate.contactLogs[0]?.responseStatus ?? "-"}
+                        {latestLog?.responseStatus ?? "-"}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-1 py-2">
+                      {naAt ? (
+                        <span className={`text-[11px] font-semibold ${naAt < new Date() ? "text-rose-600" : "text-violet-700"}`}>
+                          {naAt.toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-300">-</span>
+                      )}
                     </TableCell>
                     <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanies.join(" / ") || "-"}>
                       <span className="block truncate text-rose-700">{activeCompanies.join(" / ") || "-"}</span>
