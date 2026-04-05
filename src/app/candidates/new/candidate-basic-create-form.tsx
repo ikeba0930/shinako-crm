@@ -11,6 +11,7 @@ import {
   CANDIDATE_JOB_OPTIONS,
   CANDIDATE_OWNER_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
+  UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS,
 } from "@/lib/constants"
 
 type Props = {
@@ -49,7 +50,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
   const inputClassName = "h-11 w-full rounded-2xl border border-white/60 bg-white/80 px-3 text-sm"
   const rankPreview = calculateAutoRankFromAgeAndQualifications(
     age ? Number(age) : null,
-    selectedQualifications,
+    isUnemploymentInsurance ? [] : selectedQualifications,
     condition || null
   ).rank
 
@@ -81,26 +82,6 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
-      <Field label="希望職種" required>
-        <select name="desiredJobType" defaultValue="" className={inputClassName}>
-          <option value="">選択してください</option>
-          {CANDIDATE_JOB_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label="初回担当者" required>
-        <select name="ownerName" defaultValue="" className={inputClassName}>
-          <option value="">選択してください</option>
-          {CANDIDATE_OWNER_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </Field>
       <Field label="条件" required>
         <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} className={inputClassName}>
           <option value="">選択してください</option>
@@ -113,36 +94,6 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
       </Field>
       <Field label="ランク" required>
         <input value={rankPreview} readOnly className={`${inputClassName} font-bold text-[#7c3aed]`} />
-      </Field>
-      <Field label="資格" className="md:col-span-2 xl:col-span-2">
-        <div className="w-full rounded-2xl border border-white/60 bg-white/80 p-3">
-          <select
-            name="qualificationNames"
-            multiple
-            size={6}
-            value={selectedQualifications}
-            onChange={(event) => {
-              let values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
-              if (values.includes("特になし")) {
-                values = ["特になし"]
-              } else {
-                values = values.filter((value) => value !== "特になし")
-              }
-              setSelectedQualifications(values)
-            }}
-            className="w-full bg-transparent text-sm outline-none"
-          >
-            {qualificationOptions.map((option) => (
-              <option
-                key={option}
-                value={option}
-                className={option === "普通自動車免許" ? "text-sky-600" : option === "特になし" ? "text-zinc-500" : undefined}
-              >
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
       </Field>
       <Field label="流入経路" required>
         <select
@@ -158,16 +109,84 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
+
       {isUnemploymentInsurance ? (
-        <Field label="エージェント パス日" required>
-          <input type="date" name="agentPassDate" required className={inputClassName} />
-        </Field>
-      ) : null}
-      {isUnemploymentInsurance ? (
-        <Field label="架電希望日時" required>
-          <input type="datetime-local" name="callPreferredAt" required className={inputClassName} />
-        </Field>
-      ) : null}
+        <>
+          <Field label="失業保険契約">
+            <select name="unemploymentInsuranceContract" defaultValue="" className={inputClassName}>
+              <option value="">選択してください</option>
+              {UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="退職日">
+            <input type="date" name="retirementDate" className={inputClassName} />
+          </Field>
+          <Field label="エージェント パス日" required>
+            <input type="date" name="agentPassDate" required className={inputClassName} />
+          </Field>
+          <Field label="架電希望日時" required>
+            <input type="datetime-local" name="callPreferredAt" required className={inputClassName} />
+          </Field>
+        </>
+      ) : (
+        <>
+          <Field label="希望職種" required>
+            <select name="desiredJobType" defaultValue="" className={inputClassName}>
+              <option value="">選択してください</option>
+              {CANDIDATE_JOB_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="初回担当者" required>
+            <select name="ownerName" defaultValue="" className={inputClassName}>
+              <option value="">選択してください</option>
+              {CANDIDATE_OWNER_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="資格" className="md:col-span-2 xl:col-span-2">
+            <div className="w-full rounded-2xl border border-white/60 bg-white/80 p-3">
+              <select
+                name="qualificationNames"
+                multiple
+                size={6}
+                value={selectedQualifications}
+                onChange={(event) => {
+                  let values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
+                  if (values.includes("特になし")) {
+                    values = ["特になし"]
+                  } else {
+                    values = values.filter((value) => value !== "特になし")
+                  }
+                  setSelectedQualifications(values)
+                }}
+                className="w-full bg-transparent text-sm outline-none"
+              >
+                {qualificationOptions.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                    className={option === "普通自動車免許" ? "text-sky-600" : option === "特になし" ? "text-zinc-500" : undefined}
+                  >
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Field>
+        </>
+      )}
+
       <div className="flex items-end md:col-span-2 xl:col-span-4">
         <button
           type="submit"

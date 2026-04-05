@@ -163,6 +163,8 @@ export async function createCandidateAction(formData: FormData) {
   const now = new Date()
   const count = await prisma.candidate.count()
   const inflowSource = String(formData.get("inflowSource") ?? "") || "ポータル（ブルー）"
+  const unemploymentInsuranceContract = String(formData.get("unemploymentInsuranceContract") ?? "") || null
+  const retirementDate = parseDate(formData.get("retirementDate"))
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const age = parseIntValue(formData.get("age"))
@@ -204,6 +206,8 @@ export async function createCandidateAction(formData: FormData) {
       rankSource: autoRank.source,
       qualificationText: qualificationNames.join("、"),
       inflowSource,
+      unemploymentInsuranceContract,
+      retirementDate,
       agentPassDate,
       callPreferredAt,
       inflowDate: now,

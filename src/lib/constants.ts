@@ -80,6 +80,11 @@ export const EXTRA_QUALIFICATION_OPTIONS = [
   "特になし",
 ] as const
 
+export const UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS = [
+  { value: "あり", label: "あり" },
+  { value: "なし", label: "なし" },
+] as const
+
 export function inflowRouteMatches(currentValue: string | null | undefined, selectedValue: string) {
   if (!selectedValue) return true
   if (selectedValue === "ポータル（ブルー）") {
