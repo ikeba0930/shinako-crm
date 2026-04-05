@@ -122,7 +122,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
       {isSaved ? <SaveSuccessNotice message="保存しました" /> : null}
 
       <Tabs defaultValue="support" className="space-y-2">
-        <TabsList className="rounded-full bg-white/85 p-0.5 shadow-sm">
+        <TabsList className="rounded-full border border-white/55 bg-white/85 p-0.5 shadow-[0_18px_38px_-28px_rgba(76,29,149,0.86)]">
           <TabsTrigger value="support" className="rounded-full px-3 py-1 text-xs font-semibold">
             対応履歴など
           </TabsTrigger>
@@ -135,8 +135,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           <form action={saveCandidateAction} className="space-y-3">
             <input type="hidden" name="id" value={candidate.id} />
 
-            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-              <div className="flex items-center justify-between gap-2 bg-sky-100/80 px-3 py-1.5">
+            <section className="fantasy-page-shell overflow-hidden rounded-[1.7rem] border border-fuchsia-100/70 bg-white/76 shadow-[0_24px_54px_-38px_rgba(76,29,149,0.88)]">
+              <div className="flex items-center justify-between gap-2 bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] px-3 py-2">
                 <div className="text-sm font-black tracking-tight text-zinc-800">求職者基本情報</div>
                 <div className="flex items-center gap-1.5">
                   <button

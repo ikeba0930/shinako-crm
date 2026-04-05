@@ -77,9 +77,10 @@ export default async function CandidatesPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-3 p-4 lg:p-5">
-      <div className="flex items-center justify-between gap-3 rounded-[20px] border border-white/55 bg-white/55 px-4 py-2.5 shadow-[0_18px_40px_-32px_rgba(88,28,135,0.72)] backdrop-blur-xl">
+      <div className="fantasy-page-shell flex items-center justify-between gap-3 px-4 py-3">
         <div>
-          <h1 className="bg-[linear-gradient(120deg,#5b21b6_0%,#db2777_42%,#0ea5e9_82%,#f59e0b_100%)] bg-clip-text text-[20px] font-black tracking-tight text-transparent">
+          <div className="fantasy-kicker mb-2">Moon Archive</div>
+          <h1 className="bg-[linear-gradient(120deg,#5b21b6_0%,#db2777_42%,#0ea5e9_82%,#f59e0b_100%)] bg-clip-text font-heading text-[1.45rem] font-bold tracking-[0.05em] text-transparent">
             求職者一覧
           </h1>
         </div>
@@ -177,7 +178,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
 
       <Card className="rounded-[24px] border-white/55 bg-white/62 shadow-[0_22px_48px_-34px_rgba(88,28,135,0.78)]">
         <CardHeader>
-          <CardTitle className="text-base font-black text-[#241433]">一覧</CardTitle>
+          <CardTitle className="text-[#241433]">一覧</CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="w-full table-auto text-[11px] leading-tight">
