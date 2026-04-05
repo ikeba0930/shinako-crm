@@ -10,6 +10,7 @@ import {
   CANDIDATE_STATUS_LABELS,
   CUSTOMER_RANK_BADGE,
   INFLOW_ROUTE_OPTIONS,
+  PREFECTURE_OPTIONS,
   SELECTION_STATUS_LABELS,
   UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS,
 } from "@/lib/constants"
@@ -251,7 +252,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </label>
             <label className="space-y-1 text-sm md:col-span-2">
               <span>居住地</span>
-              <input name="address" defaultValue={candidate.address ?? ""} className={inputClassName} />
+              <select name="address" defaultValue={candidate.address ?? ""} className={inputClassName}>
+                <option value="">選択してください</option>
+                {PREFECTURE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </label>
           </CardContent>
         </Card>
