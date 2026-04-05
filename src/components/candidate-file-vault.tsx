@@ -86,14 +86,17 @@ function FileRow({
             className="w-full rounded-lg border border-violet-300 bg-violet-50 px-2 py-1 text-[11px] font-medium text-violet-900 outline-none focus:ring-1 focus:ring-violet-400"
           />
         ) : (
-          <button
-            type="button"
-            onClick={startEdit}
-            title="クリックで名前を編集"
-            className="w-full text-left text-[11px] font-medium text-violet-900 hover:text-violet-600 hover:underline"
-          >
-            {att.name}
-          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-medium text-violet-900">{att.name}</span>
+            <button
+              type="button"
+              onClick={startEdit}
+              title="名前を編集"
+              className="shrink-0 rounded-full border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[9px] text-violet-500 transition hover:bg-violet-100 hover:text-violet-700"
+            >
+              ✏️ 編集
+            </button>
+          </div>
         )}
       </td>
 
@@ -248,14 +251,15 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
               </div>
             ) : (
               <div className="overflow-hidden rounded-2xl border border-violet-100/70 bg-white/80">
-                {/* テーブルヘッダー */}
-                <div className="grid grid-cols-[32px_1fr_130px_auto] border-b border-violet-100 bg-[linear-gradient(90deg,rgba(237,233,254,0.7),rgba(245,243,255,0.6))] px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider text-violet-500">
-                  <div />
-                  <div className="px-2">ファイル名</div>
-                  <div className="px-2">格納日時</div>
-                  <div className="pr-3 text-right">操作</div>
-                </div>
                 <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-violet-100 bg-[linear-gradient(90deg,rgba(237,233,254,0.7),rgba(245,243,255,0.6))] text-[9px] font-bold uppercase tracking-wider text-violet-500">
+                      <th className="py-1.5 pl-3 pr-1 text-center" style={{ width: 32 }} />
+                      <th className="px-2 py-1.5 text-left">ファイル名</th>
+                      <th className="px-2 py-1.5 text-left" style={{ width: 140 }}>格納日時</th>
+                      <th className="py-1.5 pr-3 text-right" style={{ width: 160 }}>操作</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {attachments.map((att) => (
                       <FileRow key={att.id} att={att} onDelete={handleDelete} onRename={handleRename} />
