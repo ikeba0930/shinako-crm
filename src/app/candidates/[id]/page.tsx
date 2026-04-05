@@ -158,7 +158,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         <SearchableSelect
                           name="initialOwnerName"
                           defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
-                          options={CANDIDATE_OWNER_OPTIONS}
+                          options={["", ...CANDIDATE_OWNER_OPTIONS]}
                           className={compactInputClassName}
                         />
                       </label>
@@ -167,7 +167,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         <SearchableSelect
                           name="ownerName"
                           defaultValue={candidate.ownerName ?? ""}
-                          options={CANDIDATE_OWNER_OPTIONS}
+                          options={["", ...CANDIDATE_OWNER_OPTIONS]}
                           className={compactInputClassName}
                         />
                       </label>
