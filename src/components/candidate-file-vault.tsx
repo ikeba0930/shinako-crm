@@ -24,6 +24,97 @@ function getFileIcon(mimeType: string | null, name: string) {
   return "📁"
 }
 
+function FileCard({
+  att,
+  onDelete,
+  onRename,
+}: {
+  att: Attachment
+  onDelete: (id: string) => void
+  onRename: (id: string, name: string) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [editValue, setEditValue] = useState(att.name)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function startEdit() {
+    setEditValue(att.name)
+    setEditing(true)
+    setTimeout(() => inputRef.current?.focus(), 0)
+  }
+
+  async function commitRename() {
+    const trimmed = editValue.trim()
+    if (!trimmed || trimmed === att.name) {
+      setEditing(false)
+      return
+    }
+    await fetch(`/api/files/${att.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: trimmed }),
+    })
+    onRename(att.id, trimmed)
+    setEditing(false)
+  }
+
+  return (
+    <div className="group relative flex flex-col gap-1.5 rounded-2xl border border-violet-100/70 bg-white/85 p-3 shadow-[0_6px_18px_-12px_rgba(109,40,217,0.38)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_rgba(109,40,217,0.5)]">
+      <div className="text-2xl leading-none">{getFileIcon(att.mimeType, att.name)}</div>
+
+      {/* ファイル名 */}
+      {editing ? (
+        <input
+          ref={inputRef}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={commitRename}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commitRename()
+            if (e.key === "Escape") setEditing(false)
+          }}
+          className="w-full rounded-lg border border-violet-300 bg-violet-50 px-1.5 py-0.5 text-[10px] font-semibold text-violet-900 outline-none focus:ring-1 focus:ring-violet-400"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={startEdit}
+          title="クリックで名前を編集"
+          className="text-left text-[10px] font-semibold leading-tight text-violet-900 line-clamp-2 break-all hover:text-violet-600"
+        >
+          {att.name}
+        </button>
+      )}
+
+      <div className="text-[8px] text-violet-400">
+        {new Date(att.createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "short", day: "numeric" })}
+      </div>
+
+      <div className="mt-auto flex gap-1 pt-0.5">
+        <a
+          href={att.filePath}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 items-center justify-center gap-0.5 rounded-full border border-violet-200 bg-violet-50 py-0.5 text-[9px] font-semibold text-violet-700 transition hover:bg-violet-100"
+        >
+          <span className="text-[9px]">📖</span>
+          開封
+        </a>
+        <button
+          type="button"
+          onClick={() => onDelete(att.id)}
+          className="flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-rose-400 transition hover:bg-rose-100 hover:text-rose-600"
+          title="封印を解除（削除）"
+        >
+          <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>(initialAttachments)
@@ -62,14 +153,17 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
     await uploadFile(file)
   }
 
-  async function handleDelete(id: string) {
-    await fetch(`/api/files/${id}`, { method: "DELETE" })
+  function handleDelete(id: string) {
+    fetch(`/api/files/${id}`, { method: "DELETE" })
     setAttachments((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  function handleRename(id: string, name: string) {
+    setAttachments((prev) => prev.map((a) => (a.id === id ? { ...a, name } : a)))
   }
 
   return (
     <>
-      {/* トリガーボタン */}
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
@@ -82,10 +176,8 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
         {isOpen ? "✦ 書庫を閉じる" : "✦ ファイル格納"}
       </button>
 
-      {/* 書庫パネル（w-full で flex-wrap の新行に落ちる） */}
       {isOpen && (
         <div className="order-last mt-1 w-full overflow-hidden rounded-[1.4rem] border border-violet-200/60 bg-[linear-gradient(135deg,rgba(252,247,255,0.98),rgba(248,245,255,0.97),rgba(242,249,255,0.96))] shadow-[0_20px_44px_-28px_rgba(109,40,217,0.52)] backdrop-blur-xl">
-          {/* ヘッダー */}
           <div className="flex items-center justify-between border-b border-violet-100/50 bg-[linear-gradient(90deg,rgba(167,139,250,0.16),rgba(196,167,253,0.12),rgba(147,197,253,0.12))] px-4 py-2.5">
             <div className="flex items-center gap-2">
               <span className="text-base leading-none">✦</span>
@@ -113,16 +205,10 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
                 </>
               )}
             </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+            <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
           </div>
 
-          <div className="p-3 space-y-3">
-            {/* ドロップゾーン */}
+          <div className="space-y-3 p-3">
             <div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
               onDragLeave={() => setDragOver(false)}
@@ -141,7 +227,6 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
               <div className="mt-0.5 text-[9px] text-violet-400">PDF・Word・画像・Excel など何でも可</div>
             </div>
 
-            {/* ファイル一覧 */}
             {attachments.length === 0 ? (
               <div className="flex flex-col items-center gap-1.5 py-6 text-center">
                 <div className="text-4xl leading-none opacity-30">📚</div>
@@ -151,37 +236,7 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
             ) : (
               <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {attachments.map((att) => (
-                  <div
-                    key={att.id}
-                    className="group relative flex flex-col gap-1.5 rounded-2xl border border-violet-100/70 bg-white/85 p-3 shadow-[0_6px_18px_-12px_rgba(109,40,217,0.38)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_rgba(109,40,217,0.5)]"
-                  >
-                    <div className="text-2xl leading-none">{getFileIcon(att.mimeType, att.name)}</div>
-                    <div className="text-[10px] font-semibold leading-tight text-violet-900 line-clamp-2 break-all">{att.name}</div>
-                    <div className="text-[8px] text-violet-400">
-                      {new Date(att.createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "short", day: "numeric" })}
-                    </div>
-                    <div className="mt-auto flex gap-1 pt-0.5">
-                      <a
-                        href={att.filePath}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-1 items-center justify-center gap-0.5 rounded-full border border-violet-200 bg-violet-50 py-0.5 text-[9px] font-semibold text-violet-700 transition hover:bg-violet-100"
-                      >
-                        <span className="text-[9px]">📖</span>
-                        開封
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(att.id)}
-                        className="flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-rose-400 transition hover:bg-rose-100 hover:text-rose-600"
-                        title="封印を解除（削除）"
-                      >
-                        <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                          <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                  <FileCard key={att.id} att={att} onDelete={handleDelete} onRename={handleRename} />
                 ))}
               </div>
             )}
