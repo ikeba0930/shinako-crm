@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
+import { SearchableSelect } from "@/components/searchable-select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createSelectionAction, saveCandidateAction } from "@/lib/actions"
 import {
   CANDIDATE_CONDITION_OPTIONS,
+  CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS,
   CANDIDATE_GENDER_OPTIONS,
-  CANDIDATE_JOB_OPTIONS,
   CANDIDATE_OWNER_OPTIONS,
   CANDIDATE_STATUS_LABELS,
   CUSTOMER_RANK_BADGE,
+  DETAILED_CANDIDATE_JOB_OPTIONS,
   FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
   MANAGEMENT_EXPERIENCE_OPTIONS,
@@ -123,12 +125,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
-                <select name="customerRank" defaultValue={candidate.customerRank} className={compactInputClassName}>
-                  <option value="S">S</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                </select>
+                <SearchableSelect name="customerRank" defaultValue={candidate.customerRank} options={["S", "A", "B", "C"]} className={compactInputClassName} />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="ステータス" className="bg-sky-100 text-sky-700" />
@@ -148,12 +145,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" />
-                <input
-                  type="date"
-                  name="firstResponseDate"
-                  defaultValue={formatDateInput(candidate.firstResponseDate)}
-                  className={compactInputClassName}
-                />
+                <input type="date" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} className={compactInputClassName} />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="面談日" className="bg-pink-100 text-pink-700" />
@@ -161,12 +153,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="書類作成日" className="bg-orange-100 text-orange-700" />
-                <input
-                  type="date"
-                  name="documentCreatedDate"
-                  defaultValue={formatDateInput(candidate.documentCreatedDate)}
-                  className={compactInputClassName}
-                />
+                <input type="date" name="documentCreatedDate" defaultValue={formatDateInput(candidate.documentCreatedDate)} className={compactInputClassName} />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="提案日" className="bg-amber-100 text-amber-700" />
@@ -178,12 +165,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="企業面談日" className="bg-emerald-100 text-emerald-700" />
-                <input
-                  type="date"
-                  name="companyInterviewDate"
-                  defaultValue={formatDateInput(headerCompanyInterviewDate)}
-                  className={compactInputClassName}
-                />
+                <input type="date" name="companyInterviewDate" defaultValue={formatDateInput(headerCompanyInterviewDate)} className={compactInputClassName} />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="内定日" className="bg-cyan-100 text-cyan-700" />
@@ -191,12 +173,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="承諾日" className="bg-blue-100 text-blue-700" />
-                <input
-                  type="date"
-                  name="offerAcceptedDate"
-                  defaultValue={formatDateInput(candidate.offerAcceptedDate)}
-                  className={compactInputClassName}
-                />
+                <input type="date" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} className={compactInputClassName} />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="入社日" className="bg-indigo-100 text-indigo-700" />
@@ -208,25 +185,21 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="初回担当者" className="bg-teal-100 text-teal-700" />
-                <select name="initialOwnerName" defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""} className={compactInputClassName}>
-                  <option value="">選択してください</option>
-                  {CANDIDATE_OWNER_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  name="initialOwnerName"
+                  defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
+                  options={CANDIDATE_OWNER_OPTIONS.map((option) => option)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="担当者" className="bg-purple-100 text-purple-700" />
-                <select name="ownerName" defaultValue={candidate.ownerName ?? ""} className={compactInputClassName}>
-                  <option value="">選択してください</option>
-                  {CANDIDATE_OWNER_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  name="ownerName"
+                  defaultValue={candidate.ownerName ?? ""}
+                  options={CANDIDATE_OWNER_OPTIONS.map((option) => option)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="flex items-center gap-2 rounded-2xl bg-zinc-50 px-3 text-[11px]">
                 <input type="checkbox" name="rankManualOverride" defaultChecked={candidate.rankManualOverride} />
@@ -259,14 +232,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </label>
             <label className="space-y-1 text-sm">
               <span>性別</span>
-              <select name="gender" defaultValue={candidate.gender ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {CANDIDATE_GENDER_OPTIONS.filter((option) => option.value === "男性" || option.value === "女性").map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect
+                name="gender"
+                defaultValue={candidate.gender ?? ""}
+                options={CANDIDATE_GENDER_OPTIONS.filter((option) => option.value === "男性" || option.value === "女性").map((option) => option.value)}
+                className={inputClassName}
+              />
             </label>
             <label className="space-y-1 text-sm">
               <span>生年月日</span>
@@ -274,14 +245,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </label>
             <label className="space-y-1 text-sm md:col-span-2">
               <span>居住地</span>
-              <select name="address" defaultValue={candidate.address ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {PREFECTURE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS.map((option) => option)} className={inputClassName} />
             </label>
           </CardContent>
         </Card>
@@ -293,33 +257,34 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           <CardContent className="grid gap-4 md:grid-cols-3">
             <label className="space-y-1 text-sm">
               <span>最終学歴</span>
-              <select name="finalEducation" defaultValue={candidate.finalEducation ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {FINAL_EDUCATION_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS.map((option) => option)} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
               <span>経験社数</span>
-              <input type="number" min="0" name="experienceCompanyCount" defaultValue={candidate.experienceCompanyCount ?? ""} className={inputClassName} />
+              <SearchableSelect
+                name="experienceCompanyCount"
+                defaultValue={candidate.experienceCompanyCount != null ? String(candidate.experienceCompanyCount) : ""}
+                options={CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS}
+                className={inputClassName}
+              />
             </label>
             <label className="space-y-1 text-sm">
               <span>マネジメント経験</span>
-              <select name="managementExperience" defaultValue={candidate.managementExperience ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect
+                name="managementExperience"
+                defaultValue={candidate.managementExperience ?? ""}
+                options={MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => option)}
+                className={inputClassName}
+              />
             </label>
             <label className="space-y-1 text-sm">
               <span>現在の職種</span>
-              <input name="currentJobType" defaultValue={candidate.currentJobType ?? ""} className={inputClassName} />
+              <SearchableSelect
+                name="currentJobType"
+                defaultValue={candidate.currentJobType ?? ""}
+                options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                className={inputClassName}
+              />
             </label>
             <label className="space-y-1 text-sm">
               <span>現在の年収</span>
@@ -335,32 +300,19 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           <CardContent className="grid gap-4 md:grid-cols-3">
             <label className="space-y-1 text-sm">
               <span>条件</span>
-              <select name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {CANDIDATE_CONDITION_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} options={CANDIDATE_CONDITION_OPTIONS} className={inputClassName} />
             </label>
 
             {isUnemploymentInsurance ? (
               <>
                 <label className="space-y-1 text-sm">
                   <span>失業保険契約</span>
-                  <select
+                  <SearchableSelect
                     name="unemploymentInsuranceContract"
                     defaultValue={candidate.unemploymentInsuranceContract ?? ""}
+                    options={UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => option.value)}
                     className={inputClassName}
-                  >
-                    <option value="">選択してください</option>
-                    {UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>退職日</span>
@@ -372,26 +324,19 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>架電希望日時</span>
-                  <input
-                    type="datetime-local"
-                    name="callPreferredAt"
-                    defaultValue={formatDateTimeInput(candidate.callPreferredAt)}
-                    className={inputClassName}
-                  />
+                  <input type="datetime-local" name="callPreferredAt" defaultValue={formatDateTimeInput(candidate.callPreferredAt)} className={inputClassName} />
                 </label>
               </>
             ) : (
               <>
                 <label className="space-y-1 text-sm">
                   <span>希望職種</span>
-                  <select name="desiredJobType" defaultValue={candidate.desiredJobType ?? ""} className={inputClassName}>
-                    <option value="">選択してください</option>
-                    {CANDIDATE_JOB_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  <SearchableSelect
+                    name="desiredJobType"
+                    defaultValue={candidate.desiredJobType ?? ""}
+                    options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                    className={inputClassName}
+                  />
                 </label>
                 <label className="space-y-1 text-sm md:col-span-3">
                   <span>資格</span>
