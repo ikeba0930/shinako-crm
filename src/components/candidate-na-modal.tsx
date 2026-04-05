@@ -24,6 +24,11 @@ function nowTime() {
   const d = new Date()
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
 }
+function addDays(n: number) {
+  const d = new Date()
+  d.setDate(d.getDate() + n)
+  return d.toLocaleDateString("sv-SE")
+}
 
 const inputCls =
   "h-9 w-full rounded-xl border border-fuchsia-100/80 bg-white px-2.5 text-[12px] text-[#2f1b3b] outline-none focus:border-fuchsia-300 focus:ring-1 focus:ring-fuchsia-200/70"
@@ -279,6 +284,9 @@ export function CandidateNaModal({ candidateId }: Props) {
                         className={`${inputCls} w-28 shrink-0`}
                       />
                       <NowButton onClick={() => { setNaDate(nowDate()); setNaTime(nowTime()) }} />
+                      <button type="button" onClick={() => setNaDate(addDays(1))} className="shrink-0 rounded-full bg-violet-400 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-violet-500">翌日</button>
+                      <button type="button" onClick={() => setNaDate(addDays(2))} className="shrink-0 rounded-full bg-violet-400 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-violet-500">2日後</button>
+                      <button type="button" onClick={() => setNaDate(addDays(7))} className="shrink-0 rounded-full bg-violet-400 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-violet-500">1週間後</button>
                     </div>
                   </div>
                   {/* NA内容 */}
