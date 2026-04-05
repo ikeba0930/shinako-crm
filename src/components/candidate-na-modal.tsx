@@ -94,9 +94,11 @@ export function CandidateNaModal({ candidateId }: Props) {
       </button>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex flex-col">
-          {/* 全画面モーダル */}
-          <div className="flex h-full flex-col overflow-hidden bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))]">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+          {/* 背景オーバーレイ */}
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={close} />
+          {/* モーダル本体 */}
+          <div className="relative flex w-full max-w-2xl max-h-[85vh] flex-col overflow-hidden rounded-[1.8rem] border border-fuchsia-100/60 bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))] shadow-[0_32px_64px_-24px_rgba(109,40,217,0.55)]">
 
             {/* トップバー */}
             <div className="flex shrink-0 items-center justify-between bg-[linear-gradient(90deg,rgba(244,114,182,0.22),rgba(168,85,247,0.18),rgba(56,189,248,0.16))] px-6 py-3 shadow-[0_4px_16px_-8px_rgba(109,40,217,0.3)]">
