@@ -21,7 +21,7 @@ export function AppSidebar() {
       <div className="border-b border-white/50 px-6 py-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-[1.35rem] bg-[linear-gradient(135deg,#fb7185_0%,#a855f7_34%,#38bdf8_66%,#facc15_100%)] font-bold text-white shadow-[0_14px_30px_-18px_rgba(168,85,247,0.95)]">
-            H
+            人
           </div>
           <div>
             <p className="bg-[linear-gradient(120deg,#7c3aed_0%,#ec4899_38%,#0ea5e9_72%,#f59e0b_100%)] bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
