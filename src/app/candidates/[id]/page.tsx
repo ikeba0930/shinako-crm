@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { SearchableSelect } from "@/components/searchable-select"
 import { Badge } from "@/components/ui/badge"
@@ -10,8 +11,11 @@ import {
   CANDIDATE_GENDER_OPTIONS,
   CANDIDATE_OWNER_OPTIONS,
   CANDIDATE_STATUS_LABELS,
+  CAREER_AXIS_OPTIONS,
   CUSTOMER_RANK_BADGE,
+  DESIRED_TIMING_OPTIONS,
   DETAILED_CANDIDATE_JOB_OPTIONS,
+  EMPLOYMENT_TYPE_OPTIONS,
   FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
   MANAGEMENT_EXPERIENCE_OPTIONS,
@@ -31,7 +35,6 @@ type Props = {
 
 const compactInputClassName = "h-9 w-full rounded-2xl border border-zinc-200 bg-white px-3 text-[11px]"
 const inputClassName = "h-10 w-full rounded-2xl border border-zinc-200 px-3"
-const textareaClassName = "min-h-24 w-full rounded-2xl border border-zinc-200 px-3 py-2"
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values
@@ -287,6 +290,15 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               />
             </label>
             <label className="space-y-1 text-sm">
+              <span>雇用形態</span>
+              <SearchableSelect
+                name="employmentStatus"
+                defaultValue={candidate.employmentStatus ?? ""}
+                options={EMPLOYMENT_TYPE_OPTIONS}
+                className={inputClassName}
+              />
+            </label>
+            <label className="space-y-1 text-sm">
               <span>現在の年収</span>
               <input type="number" min="0" name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
             </label>
@@ -301,6 +313,41 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             <label className="space-y-1 text-sm">
               <span>条件</span>
               <SearchableSelect name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} options={CANDIDATE_CONDITION_OPTIONS} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>離職日</span>
+              <input type="date" name="resignationDate" defaultValue={formatDateInput(candidate.resignationDate)} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>離職予定日</span>
+              <input type="date" name="resignationPlannedDate" defaultValue={formatDateInput(candidate.resignationPlannedDate)} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>希望時期</span>
+              <SearchableSelect
+                name="desiredTiming"
+                defaultValue={candidate.desiredTiming ?? ""}
+                options={DESIRED_TIMING_OPTIONS}
+                className={inputClassName}
+              />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>転職軸 第一候補</span>
+              <SearchableSelect
+                name="careerAxisPrimary"
+                defaultValue={candidate.careerAxisPrimary ?? ""}
+                options={CAREER_AXIS_OPTIONS}
+                className={inputClassName}
+              />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>転職軸 第二候補</span>
+              <SearchableSelect
+                name="careerAxisSecondary"
+                defaultValue={candidate.careerAxisSecondary ?? ""}
+                options={CAREER_AXIS_OPTIONS}
+                className={inputClassName}
+              />
             </label>
 
             {isUnemploymentInsurance ? (
@@ -330,10 +377,19 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             ) : (
               <>
                 <label className="space-y-1 text-sm">
-                  <span>希望職種</span>
+                  <span>希望職種 第一候補</span>
                   <SearchableSelect
                     name="desiredJobType"
                     defaultValue={candidate.desiredJobType ?? ""}
+                    options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>希望職種 第二候補</span>
+                  <SearchableSelect
+                    name="desiredJobTypeSecond"
+                    defaultValue={candidate.desiredJobTypeSecond ?? ""}
                     options={DETAILED_CANDIDATE_JOB_OPTIONS}
                     className={inputClassName}
                   />
@@ -349,62 +405,31 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
         <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">詳細情報</CardTitle>
+            <CardTitle className="text-lg font-bold text-zinc-900">希望条件</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
-            <label className="space-y-1 text-sm">
-              <span>希望勤務地</span>
-              <input name="desiredLocation" defaultValue={candidate.desiredLocation ?? ""} className={inputClassName} />
-            </label>
+            <div className="space-y-1 text-sm md:col-span-3">
+              <span className="block">希望勤務地</span>
+              <CandidateLocationFields
+                prefecture={candidate.desiredPrefecture}
+                city={candidate.desiredCity}
+                detail={candidate.desiredLocationDetail}
+                selectClassName={inputClassName}
+                inputClassName={inputClassName}
+              />
+            </div>
             <label className="space-y-1 text-sm">
               <span>希望年収</span>
-              <input name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>希望時期</span>
-              <input name="desiredTiming" defaultValue={candidate.desiredTiming ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>雇用形態</span>
-              <input name="employmentStatus" defaultValue={candidate.employmentStatus ?? ""} className={inputClassName} />
+              <input type="number" min="0" name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
               <span>雇用形態希望</span>
-              <input name="employmentTypePreference" defaultValue={candidate.employmentTypePreference ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>稼働開始時期</span>
-              <input name="availability" defaultValue={candidate.availability ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm md:col-span-3">
-              <span>内部メモ</span>
-              <textarea name="internalMemo" defaultValue={candidate.internalMemo ?? ""} className="min-h-28 w-full rounded-2xl border border-zinc-200 px-3 py-2" />
-            </label>
-            <label className="space-y-1 text-sm md:col-span-3">
-              <span>活かせるスキル</span>
-              <textarea name="transferableSkills" defaultValue={candidate.transferableSkills ?? ""} className={textareaClassName} />
-            </label>
-            <label className="space-y-1 text-sm md:col-span-3">
-              <span>強み</span>
-              <textarea name="strengths" defaultValue={candidate.strengths ?? ""} className={textareaClassName} />
-            </label>
-            <label className="space-y-1 text-sm md:col-span-3">
-              <span>転職理由</span>
-              <textarea name="reasonForChange" defaultValue={candidate.reasonForChange ?? ""} className={textareaClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>PCスキル</span>
-              <textarea name="pcSkills" defaultValue={candidate.pcSkills ?? ""} className={textareaClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>語学</span>
-              <textarea name="languageSkills" defaultValue={candidate.languageSkills ?? ""} className={textareaClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>アーカイブ</span>
-              <div className="flex h-10 items-center rounded-2xl border border-zinc-200 px-3">
-                <input type="checkbox" name="archived" defaultChecked={candidate.archived} />
-              </div>
+              <SearchableSelect
+                name="employmentTypePreference"
+                defaultValue={candidate.employmentTypePreference ?? ""}
+                options={EMPLOYMENT_TYPE_OPTIONS}
+                className={inputClassName}
+              />
             </label>
           </CardContent>
         </Card>

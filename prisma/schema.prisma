@@ -89,8 +89,14 @@ model Candidate {
   jobSearchStatus           String?
   desiredTiming             String?
   desiredJobType            String?
+  desiredJobTypeSecond      String?
   desiredLocation           String?
+  desiredPrefecture         String?
+  desiredCity              String?
+  desiredLocationDetail    String?
   employmentTypePreference  String?
+  careerAxisPrimary         String?
+  careerAxisSecondary       String?
   availability              String?
   otherConditions           String?
   resumePreferenceText      String?
@@ -121,6 +127,8 @@ model Candidate {
   inflowSource              String?
   unemploymentInsuranceContract String?
   retirementDate            DateTime?
+  resignationDate           DateTime?
+  resignationPlannedDate    DateTime?
   agentPassDate             DateTime?
   callPreferredAt           DateTime?
   inflowDate                DateTime?

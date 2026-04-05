@@ -100,6 +100,8 @@ export async function saveCandidateAction(formData: FormData) {
   const ownerName = String(formData.get("ownerName") ?? "") || null
   const unemploymentInsuranceContract = String(formData.get("unemploymentInsuranceContract") ?? "") || null
   const retirementDate = parseDate(formData.get("retirementDate"))
+  const resignationDate = parseDate(formData.get("resignationDate"))
+  const resignationPlannedDate = parseDate(formData.get("resignationPlannedDate"))
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const entryDate = parseDate(formData.get("entryDate"))
@@ -117,11 +119,17 @@ export async function saveCandidateAction(formData: FormData) {
       email: String(formData.get("email") ?? "") || null,
       address: String(formData.get("address") ?? "") || null,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
+      desiredJobTypeSecond: String(formData.get("desiredJobTypeSecond") ?? "") || null,
       desiredLocation: String(formData.get("desiredLocation") ?? "") || null,
+      desiredPrefecture: String(formData.get("desiredPrefecture") ?? "") || null,
+      desiredCity: String(formData.get("desiredCity") ?? "") || null,
+      desiredLocationDetail: String(formData.get("desiredLocationDetail") ?? "") || null,
       currentAnnualIncome: parseIntValue(formData.get("currentAnnualIncome")),
       desiredAnnualIncome: parseIntValue(formData.get("desiredAnnualIncome")),
       jobSearchStatus: String(formData.get("jobSearchStatus") ?? "") || null,
       desiredTiming: String(formData.get("desiredTiming") ?? "") || null,
+      careerAxisPrimary: String(formData.get("careerAxisPrimary") ?? "") || null,
+      careerAxisSecondary: String(formData.get("careerAxisSecondary") ?? "") || null,
       initialOwnerName,
       ownerName,
       otherConditions: String(formData.get("lineUrl") ?? "") || null,
@@ -131,6 +139,8 @@ export async function saveCandidateAction(formData: FormData) {
       currentJobType: String(formData.get("currentJobType") ?? "") || null,
       unemploymentInsuranceContract,
       retirementDate,
+      resignationDate,
+      resignationPlannedDate,
       agentPassDate,
       callPreferredAt,
       inflowDate: parseDate(formData.get("inflowDate")),
