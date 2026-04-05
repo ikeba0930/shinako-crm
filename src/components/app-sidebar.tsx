@@ -29,7 +29,7 @@ export function AppSidebar() {
             <p className="bg-[linear-gradient(120deg,#7c3aed_0%,#ec4899_38%,#0ea5e9_72%,#f59e0b_100%)] bg-clip-text font-heading text-[1.2rem] font-bold tracking-[0.06em] text-transparent">
               ひとなりDB
             </p>
-            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7b5d8b]">Fantasy CRM Atelier</p>
+            <p className="mt-1 text-[11px] font-semibold tracking-[0.18em] text-[#7b5d8b]">～次の一歩を、あなたとともに～</p>
           </div>
         </div>
       </div>
