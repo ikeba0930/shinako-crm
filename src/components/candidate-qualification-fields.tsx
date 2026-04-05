@@ -73,15 +73,17 @@ export function CandidateQualificationFields({
     <div className="space-y-3">
       {qualifications.map((qualification, index) => (
         <div key={`${index}-${qualification}`} className="flex items-center gap-2">
-          <SearchableSelect
-            name="qualificationNames"
-            defaultValue={qualification}
-            value={qualification}
-            onValueChange={(nextValue) => updateQualification(index, nextValue)}
-            options={searchableOptions}
-            required={required && index === 0}
-            className={className}
-          />
+          <div className="min-w-0 flex-1">
+            <SearchableSelect
+              name="qualificationNames"
+              defaultValue={qualification}
+              value={qualification}
+              onValueChange={(nextValue) => updateQualification(index, nextValue)}
+              options={searchableOptions}
+              required={required && index === 0}
+              className={className}
+            />
+          </div>
           <button
             type="button"
             onClick={() => removeQualification(index)}
