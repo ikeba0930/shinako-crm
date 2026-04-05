@@ -2,7 +2,7 @@ import Link from "next/link"
 import { deleteCandidateAction } from "@/lib/actions"
 import { DeleteCandidateButton } from "@/components/delete-candidate-button"
 import { prisma } from "@/lib/db"
-import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE } from "@/lib/constants"
+import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE, INFLOW_ROUTE_OPTIONS, inflowRouteMatches } from "@/lib/constants"
 import { formatDate, formatManYen } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,7 +44,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
   })
 
   const filteredCandidates = inflowSource
-    ? candidates.filter((candidate) => candidate.inflowSource === inflowSource)
+    ? candidates.filter((candidate) => inflowRouteMatches(candidate.inflowSource, inflowSource))
     : candidates
 
   const owners = [...new Set(candidates.map((candidate) => candidate.ownerName).filter(Boolean))]
@@ -112,9 +112,12 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 ))}
               </select>
               <select name="inflowSource" defaultValue={inflowSource} className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
-                <option value="">流入元すべて</option>
-                <option value="ポータル">ポータル</option>
-                <option value="紹介会社">紹介会社</option>
+                <option value="">流入経路すべて</option>
+                {INFLOW_ROUTE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
               <select name="owner" defaultValue={owner} className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
                 <option value="">担当者すべて</option>

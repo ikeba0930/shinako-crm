@@ -156,6 +156,7 @@ export async function saveCandidateAction(formData: FormData) {
 export async function createCandidateAction(formData: FormData) {
   const now = new Date()
   const count = await prisma.candidate.count()
+  const inflowSource = String(formData.get("inflowSource") ?? "") || "ポータル（ブルー）"
   const candidate = await prisma.candidate.create({
     data: {
       candidateCode: `C-${String(count + 1).padStart(4, "0")}`,
@@ -164,6 +165,7 @@ export async function createCandidateAction(formData: FormData) {
       email: String(formData.get("email") ?? "") || null,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
+      inflowSource,
       inflowDate: now,
     },
   })

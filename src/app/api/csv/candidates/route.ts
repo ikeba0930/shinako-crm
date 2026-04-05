@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db"
-import { CANDIDATE_STATUS_LABELS } from "@/lib/constants"
+import { CANDIDATE_STATUS_LABELS, inflowRouteMatches } from "@/lib/constants"
 import { formatDate } from "@/lib/format"
 
 function toCsvRow(values: Array<string | number | null | undefined>) {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   })
 
   const filteredCandidates = inflowSource
-    ? candidates.filter((candidate) => candidate.inflowSource === inflowSource)
+    ? candidates.filter((candidate) => inflowRouteMatches(candidate.inflowSource, inflowSource))
     : candidates
 
   const rows = [

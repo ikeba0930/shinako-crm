@@ -1,5 +1,6 @@
 import { CustomerRank } from "@prisma/client"
 import { prisma } from "./db"
+import { inflowRouteMatches } from "./constants"
 
 type PeriodKey = "month" | "year" | "day" | "all"
 
@@ -201,7 +202,7 @@ export async function getDashboardData(options: DashboardOptions = {}) {
   const activeCandidates = candidates.filter((candidate) => {
     if (candidate.archived) return false
     if (source === "all") return true
-    return candidate.inflowSource === source
+    return inflowRouteMatches(candidate.inflowSource, source)
   })
   const activeCandidateIds = new Set(activeCandidates.map((candidate) => candidate.id))
   const filteredSelections = selections.filter((selection) => activeCandidateIds.has(selection.candidateId))

@@ -12,6 +12,20 @@ export const CUSTOMER_RANK_BADGE = {
   C: "bg-slate-100 text-slate-700",
 } as const
 
+export const INFLOW_ROUTE_OPTIONS = [
+  { value: "ポータル（ブルー）", label: "ポータル（ブルー）" },
+  { value: "失業保険", label: "失業保険" },
+] as const
+
+export function inflowRouteMatches(currentValue: string | null | undefined, selectedValue: string) {
+  if (!selectedValue) return true
+  if (selectedValue === "ポータル（ブルー）") {
+    return currentValue === "ポータル（ブルー）" || currentValue === "ポータル"
+  }
+
+  return currentValue === selectedValue
+}
+
 export const CANDIDATE_STATUS_LABELS = {
   NEW: "新規流入",
   FIRST_CONTACTED: "初回対応済",
