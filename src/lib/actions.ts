@@ -393,10 +393,14 @@ export async function saveContactLogAction(formData: FormData) {
     return new Date(`${date}T${time || "00:00"}:00`)
   }
 
+  const respondedAt = parseDateTime("respondedAtDate", "respondedAtTime")
+  const setAsDocumentReturn = formData.get("setAsDocumentReturn") === "on"
+  const setAsInterviewDate = formData.get("setAsInterviewDate") === "on"
+
   await prisma.contactLog.create({
     data: {
       candidateId,
-      respondedAt: parseDateTime("respondedAtDate", "respondedAtTime"),
+      respondedAt,
       respondentName: String(formData.get("respondentName") ?? "") || null,
       responseStatus: String(formData.get("responseStatus") ?? "") || null,
       direction: String(formData.get("direction") ?? "") || null,
@@ -408,6 +412,16 @@ export async function saveContactLogAction(formData: FormData) {
       notes: String(formData.get("notes") ?? "") || null,
     },
   })
+
+  if (setAsDocumentReturn || setAsInterviewDate) {
+    await prisma.candidate.update({
+      where: { id: candidateId },
+      data: {
+        ...(setAsDocumentReturn ? { documentCreatedDate: respondedAt ?? new Date() } : {}),
+        ...(setAsInterviewDate ? { interviewDate: respondedAt ?? new Date() } : {}),
+      },
+    })
+  }
 
   revalidatePath(`/candidates/${candidateId}`)
 }
