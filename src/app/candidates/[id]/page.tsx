@@ -326,7 +326,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </section>
 
             <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="sky">
-              <CardHeader>
+              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] py-3">
                 <CardTitle className="text-zinc-900">基本情報</CardTitle>
               </CardHeader>
               <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
@@ -375,7 +375,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </Card>
 
             <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="violet">
-              <CardHeader>
+              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(168,85,247,0.14),rgba(236,72,153,0.12),rgba(96,165,250,0.12),rgba(244,114,182,0.14))] py-3">
                 <CardTitle className="text-zinc-900">経歴</CardTitle>
               </CardHeader>
               <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
@@ -436,7 +436,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </Card>
 
             <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="emerald">
-              <CardHeader>
+              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(52,211,153,0.16),rgba(45,212,191,0.12),rgba(96,165,250,0.12),rgba(250,204,21,0.14))] py-3">
                 <CardTitle className="text-zinc-900">活動情報</CardTitle>
               </CardHeader>
               <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
@@ -525,7 +525,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </Card>
 
             <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="amber">
-              <CardHeader>
+              <CardHeader className="border-b border-white/55 bg-[linear-gradient(90deg,rgba(250,204,21,0.18),rgba(251,146,60,0.12),rgba(236,72,153,0.1),rgba(168,85,247,0.12))] py-3">
                 <CardTitle className="text-zinc-900">希望条件</CardTitle>
               </CardHeader>
               <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
