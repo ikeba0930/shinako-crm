@@ -38,23 +38,23 @@ export function CandidateLineCopyButton({ gender, url }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <button
         type="button"
         onClick={handleCopy}
         disabled={isDisabled}
-        title={url ? "LステURLをコピー" : "LステURL未設定"}
+        title={url ? "LINE URLをコピー" : "LINE URL未設定"}
         className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors",
+          "inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
           buttonClassName,
           isDisabled ? "cursor-not-allowed" : "cursor-pointer"
         )}
       >
-        <UserRound className="h-4 w-4" />
+        <UserRound className="h-3.5 w-3.5" />
       </button>
       <span
         className={cn(
-          "inline-flex min-w-[96px] items-center justify-center rounded-full px-3 py-1 text-[11px] font-semibold transition-all",
+          "inline-flex min-w-[86px] items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all",
           copied ? "bg-emerald-100 text-emerald-700 opacity-100" : "bg-transparent text-transparent opacity-0"
         )}
       >
