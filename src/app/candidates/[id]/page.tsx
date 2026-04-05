@@ -56,6 +56,31 @@ function HeaderLabel({ label, className }: { label: string; className: string })
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-[9px] font-black leading-none tracking-tight ${className}`}>{label}</span>
 }
 
+function StatusDateField({
+  label,
+  colorClassName,
+  name,
+  defaultValue,
+  inputClassName,
+}: {
+  label: string
+  colorClassName: string
+  name: string
+  defaultValue: string
+  inputClassName: string
+}) {
+  return (
+    <label className="space-y-1">
+      <HeaderLabel label={label} className={colorClassName} />
+      <input type="date" name={name} defaultValue={defaultValue} className={inputClassName} />
+      <span className="flex items-center gap-1.5 px-1 text-[10px] font-semibold text-zinc-500">
+        <input type="checkbox" name={`setToday_${name}`} className="h-3.5 w-3.5 accent-fuchsia-500" />
+        今日を入れる
+      </span>
+    </label>
+  )
+}
+
 export default async function CandidateDetailPage({ params, searchParams }: Props) {
   const { id } = await params
   const query = (await searchParams) ?? {}
@@ -184,50 +209,17 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                           className={compactInputClassName}
                         />
                       </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="流入日" className="bg-stone-200 text-stone-700" />
-                        <input type="date" name="inflowDate" defaultValue={formatDateInput(candidate.inflowDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="初回対応日" className="bg-sky-100 text-sky-700" />
-                        <input type="date" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="面談日" className="bg-green-100 text-green-700" />
-                        <input type="date" name="interviewDate" defaultValue={formatDateInput(candidate.interviewDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="書類作成日" className="bg-violet-100 text-violet-700" />
-                        <input type="date" name="documentCreatedDate" defaultValue={formatDateInput(candidate.documentCreatedDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="提案日" className="bg-rose-100 text-rose-700" />
-                        <input type="date" name="proposalDate" defaultValue={formatDateInput(candidate.proposalDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="エントリー日" className="bg-amber-100 text-amber-700" />
-                        <input type="date" name="entryDate" defaultValue={formatDateInput(headerEntryDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="企業面談日" className="bg-blue-100 text-blue-700" />
-                        <input type="date" name="companyInterviewDate" defaultValue={formatDateInput(headerCompanyInterviewDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="内定日" className="bg-fuchsia-100 text-fuchsia-700" />
-                        <input type="date" name="offerDate" defaultValue={formatDateInput(candidate.offerDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="承諾日" className="bg-teal-100 text-teal-700" />
-                        <input type="date" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="入社日" className="bg-cyan-100 text-cyan-700" />
-                        <input type="date" name="joiningDate" defaultValue={formatDateInput(candidate.joiningDate)} className={compactInputClassName} />
-                      </label>
-                      <label className="space-y-1">
-                        <HeaderLabel label="終了日" className="bg-slate-200 text-slate-700" />
-                        <input type="date" name="closedDate" defaultValue={formatDateInput(candidate.closedDate)} className={compactInputClassName} />
-                      </label>
+                      <StatusDateField label="流入日" colorClassName="bg-stone-200 text-stone-700" name="inflowDate" defaultValue={formatDateInput(candidate.inflowDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="初回対応日" colorClassName="bg-sky-100 text-sky-700" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="面談日" colorClassName="bg-green-100 text-green-700" name="interviewDate" defaultValue={formatDateInput(candidate.interviewDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="書類作成日" colorClassName="bg-violet-100 text-violet-700" name="documentCreatedDate" defaultValue={formatDateInput(candidate.documentCreatedDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="提案日" colorClassName="bg-rose-100 text-rose-700" name="proposalDate" defaultValue={formatDateInput(candidate.proposalDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="エントリー日" colorClassName="bg-amber-100 text-amber-700" name="entryDate" defaultValue={formatDateInput(headerEntryDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="企業面談日" colorClassName="bg-blue-100 text-blue-700" name="companyInterviewDate" defaultValue={formatDateInput(headerCompanyInterviewDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="内定日" colorClassName="bg-fuchsia-100 text-fuchsia-700" name="offerDate" defaultValue={formatDateInput(candidate.offerDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="承諾日" colorClassName="bg-teal-100 text-teal-700" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="入社日" colorClassName="bg-cyan-100 text-cyan-700" name="joiningDate" defaultValue={formatDateInput(candidate.joiningDate)} inputClassName={compactInputClassName} />
+                      <StatusDateField label="終了日" colorClassName="bg-slate-200 text-slate-700" name="closedDate" defaultValue={formatDateInput(candidate.closedDate)} inputClassName={compactInputClassName} />
                       <label className="space-y-1">
                         <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
                         <SearchableSelect name="customerRank" defaultValue={candidate.customerRank} options={["S", "A", "B", "C"]} className={compactInputClassName} />

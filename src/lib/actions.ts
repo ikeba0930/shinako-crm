@@ -114,6 +114,8 @@ export async function saveCandidateAction(formData: FormData) {
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const entryDate = parseDate(formData.get("entryDate"))
   const companyInterviewDate = parseDate(formData.get("companyInterviewDate"))
+  const today = new Date()
+  const parseDateOrToday = (fieldName: string) => (formData.get(`setToday_${fieldName}`) === "on" ? today : parseDate(formData.get(fieldName)))
 
   await prisma.candidate.update({
     where: { id },
@@ -152,17 +154,17 @@ export async function saveCandidateAction(formData: FormData) {
       resignationPlannedDate,
       agentPassDate,
       callPreferredAt,
-      inflowDate: parseDate(formData.get("inflowDate")),
-      firstResponseDate: parseDate(formData.get("firstResponseDate")),
-      interviewDate: parseDate(formData.get("interviewDate")),
-      proposalDate: parseDate(formData.get("proposalDate")),
-      documentCreatedDate: parseDate(formData.get("documentCreatedDate")),
-      entryDate,
-      companyInterviewDate,
-      offerDate: parseDate(formData.get("offerDate")),
-      offerAcceptedDate: parseDate(formData.get("offerAcceptedDate")),
-      joiningDate: parseDate(formData.get("joiningDate")),
-      closedDate: parseDate(formData.get("closedDate")),
+      inflowDate: parseDateOrToday("inflowDate"),
+      firstResponseDate: parseDateOrToday("firstResponseDate"),
+      interviewDate: parseDateOrToday("interviewDate"),
+      proposalDate: parseDateOrToday("proposalDate"),
+      documentCreatedDate: parseDateOrToday("documentCreatedDate"),
+      entryDate: formData.get("setToday_entryDate") === "on" ? today : entryDate,
+      companyInterviewDate: formData.get("setToday_companyInterviewDate") === "on" ? today : companyInterviewDate,
+      offerDate: parseDateOrToday("offerDate"),
+      offerAcceptedDate: parseDateOrToday("offerAcceptedDate"),
+      joiningDate: parseDateOrToday("joiningDate"),
+      closedDate: parseDateOrToday("closedDate"),
       employmentStatus: String(formData.get("employmentStatus") ?? "") || null,
       employmentTypePreference: String(formData.get("employmentTypePreference") ?? "") || null,
       availability: String(formData.get("availability") ?? "") || null,

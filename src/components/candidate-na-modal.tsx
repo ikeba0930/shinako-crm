@@ -142,6 +142,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                         name="respondedAtDate"
                         value={respondedDate}
                         onChange={(e) => setRespondedDate(e.target.value)}
+                        required
                         className={`${inputCls} min-w-[152px] flex-1 md:flex-none`}
                       />
                       <input
