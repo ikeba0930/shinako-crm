@@ -379,6 +379,8 @@ export const CONTACT_RESPONSE_STATUS_PHASES = [
   "エントリー〜面談設置",
   "面接設置後〜内定",
   "内定〜入社",
+  "対応終了",
+  "不通",
 ] as const
 
 export const CONTACT_RESPONSE_STATUS_DETAILS: Record<string, string[]> = {
@@ -423,6 +425,26 @@ export const CONTACT_RESPONSE_STATUS_DETAILS: Record<string, string[]> = {
     "🔵 入社手続き中",
     "🔵 入社日確定",
     "🔴 内定後 入社",
+  ],
+  "対応終了": [
+    "入社完了",
+    "辞退・終了",
+    "NG・終了",
+    "連絡不通による終了",
+    "本人都合による終了",
+    "企業都合による終了",
+    "自社判断による終了",
+    "その他終了",
+  ],
+  "不通": [
+    "電話不通（1回目）",
+    "電話不通（2回目）",
+    "電話不通（3回目）",
+    "SMS不通",
+    "LINE未読",
+    "LINE既読スルー",
+    "メール不通",
+    "長期不通",
   ],
 }
 
