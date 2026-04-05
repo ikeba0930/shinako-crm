@@ -125,7 +125,7 @@ export function SearchableSelect({
         type="button"
         onClick={() => setOpen((current) => !current)}
         className={cn(
-          "flex w-full items-center justify-between gap-2 text-left",
+          "flex w-full items-center justify-between gap-2 text-left transition duration-200 hover:-translate-y-[1px] hover:border-fuchsia-200 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.94),0_20px_36px_-22px_rgba(168,85,247,0.48)] focus-visible:border-fuchsia-300 focus-visible:ring-2 focus-visible:ring-fuchsia-200/70",
           !selectedOption ? "text-zinc-400" : "text-zinc-900",
           className
         )}

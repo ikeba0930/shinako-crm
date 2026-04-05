@@ -39,9 +39,9 @@ type Props = {
 }
 
 const compactInputClassName =
-  "h-9 w-full rounded-[1rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(252,248,255,0.92))] px-2.5 text-[10px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_10px_22px_-20px_rgba(76,29,149,0.52)] outline-none transition focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60"
+  "h-9 w-full rounded-[1rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.99),rgba(249,243,255,0.97)_54%,rgba(239,246,255,0.95))] px-2.5 text-[10px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_26px_-20px_rgba(76,29,149,0.62)] outline-none transition duration-200 hover:-translate-y-[1px] hover:border-fuchsia-200 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_18px_34px_-20px_rgba(168,85,247,0.45)] focus:border-fuchsia-300 focus:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(252,244,255,0.99))] focus:ring-2 focus:ring-fuchsia-200/70"
 const inputClassName =
-  "h-10 w-full rounded-[1.25rem] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(252,248,255,0.95))] px-3 text-sm text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_28px_-24px_rgba(76,29,149,0.58)] outline-none transition focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60"
+  "h-10 w-full rounded-[1.25rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(250,243,255,0.98)_52%,rgba(239,247,255,0.96))] px-3 text-sm text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_16px_30px_-22px_rgba(76,29,149,0.64)] outline-none transition duration-200 hover:-translate-y-[1px] hover:border-fuchsia-200 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.94),0_20px_36px_-22px_rgba(168,85,247,0.48)] focus:border-fuchsia-300 focus:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(255,246,255,1))] focus:ring-2 focus:ring-fuchsia-200/70"
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values

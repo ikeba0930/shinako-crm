@@ -370,6 +370,26 @@
     box-shadow: 0 0 0 2px rgba(255,255,255,0.62), 0 0 18px -6px rgba(var(--fantasy-accent-rgb) / 0.9);
     flex-shrink: 0;
   }
+
+  .fantasy-form-grid label,
+  .fantasy-form-grid > div {
+    position: relative;
+  }
+
+  .fantasy-form-grid label::after,
+  .fantasy-form-grid > div::after {
+    content: "";
+    position: absolute;
+    left: 0.65rem;
+    right: 0.65rem;
+    bottom: 0.2rem;
+    height: 0.9rem;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, rgba(var(--fantasy-accent-rgb) / 0.1), rgba(255 255 255 / 0));
+    filter: blur(10px);
+    opacity: 0.9;
+    pointer-events: none;
+  }
 }
 
 @keyframes hue-drift {
