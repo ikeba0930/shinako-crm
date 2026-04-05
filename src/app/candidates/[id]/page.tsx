@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createSelectionAction, saveCandidateAction } from "@/lib/actions"
@@ -57,6 +58,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const lineUrlLabel = isUnemploymentInsurance ? "LステURL（ひとなりのURL）" : "LステURL"
   const qualificationLines = candidate.qualifications.map((item) => item.qualificationName).join("\n")
   const activeCompanies = [...new Set(candidate.selections.map((selection) => selection.companyName).filter(Boolean))]
+  const activeCompanyCount = activeCompanies.length
   const fallbackEntryDate = getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
   const fallbackCompanyInterviewDate = getLatestSelectionDate(
     candidate.selections.flatMap((selection) => [selection.firstInterviewAt, selection.secondInterviewAt, selection.interviewScheduledAt])
@@ -83,30 +85,28 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         <div className="rounded-[24px] border border-white/70 bg-white/90 p-4 shadow-sm">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  {candidate.otherConditions ? (
-                    <a
-                      href={candidate.otherConditions}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`inline-flex text-2xl font-extrabold tracking-tight underline decoration-2 underline-offset-4 ${nameColorClassName}`}
+              <div className="flex min-w-0 flex-1 flex-col gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                  <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
+                  <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 md:grid-cols-4">
+                    <div className="flex min-w-0 items-center justify-center rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700">
+                      <span className="truncate">{inflowLabel}</span>
+                    </div>
+                    <div
+                      className={`flex min-w-0 items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}
                     >
-                      {candidate.name}
-                    </a>
-                  ) : (
-                    <h1 className={`text-2xl font-extrabold tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
-                  )}
-                  <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">{inflowLabel}</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>
-                    {candidate.customerRank}
-                  </span>
-                  <Badge variant="secondary">{CANDIDATE_STATUS_LABELS[candidate.overallStatus]}</Badge>
-                  <span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
-                    {activeCompanies.join(" / ") || "選考中企業なし"}
-                  </span>
+                      <span className="truncate">ランク {candidate.customerRank}</span>
+                    </div>
+                    <div className="flex min-w-0 items-center justify-center">
+                      <Badge variant="secondary" className="w-full justify-center truncate rounded-full px-3 py-1.5 text-xs">
+                        {CANDIDATE_STATUS_LABELS[candidate.overallStatus]}
+                      </Badge>
+                    </div>
+                    <div className="flex min-w-0 items-center justify-center rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700">
+                      <span className="truncate">選考企業 {activeCompanyCount}社</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center justify-end">
@@ -148,7 +148,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" />
-                <input type="date" name="firstResponseDate" defaultValue={formatDateInput(candidate.firstResponseDate)} className={compactInputClassName} />
+                <input
+                  type="date"
+                  name="firstResponseDate"
+                  defaultValue={formatDateInput(candidate.firstResponseDate)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="面談日" className="bg-pink-100 text-pink-700" />
@@ -156,7 +161,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="書類作成日" className="bg-orange-100 text-orange-700" />
-                <input type="date" name="documentCreatedDate" defaultValue={formatDateInput(candidate.documentCreatedDate)} className={compactInputClassName} />
+                <input
+                  type="date"
+                  name="documentCreatedDate"
+                  defaultValue={formatDateInput(candidate.documentCreatedDate)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="提案日" className="bg-amber-100 text-amber-700" />
@@ -168,7 +178,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="企業面談日" className="bg-emerald-100 text-emerald-700" />
-                <input type="date" name="companyInterviewDate" defaultValue={formatDateInput(headerCompanyInterviewDate)} className={compactInputClassName} />
+                <input
+                  type="date"
+                  name="companyInterviewDate"
+                  defaultValue={formatDateInput(headerCompanyInterviewDate)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="内定日" className="bg-cyan-100 text-cyan-700" />
@@ -176,7 +191,12 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="承諾日" className="bg-blue-100 text-blue-700" />
-                <input type="date" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} className={compactInputClassName} />
+                <input
+                  type="date"
+                  name="offerAcceptedDate"
+                  defaultValue={formatDateInput(candidate.offerAcceptedDate)}
+                  className={compactInputClassName}
+                />
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="入社日" className="bg-indigo-100 text-indigo-700" />
@@ -303,14 +323,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             </label>
             <label className="space-y-1 text-sm">
               <span>現在の年収</span>
-              <input name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
+              <input type="number" min="0" name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
             </label>
           </CardContent>
         </Card>
 
         <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">登録情報</CardTitle>
+            <CardTitle className="text-lg font-bold text-zinc-900">活動情報</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
             <label className="space-y-1 text-sm">
@@ -396,11 +416,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <input name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
-              <span>転職時期</span>
+              <span>希望時期</span>
               <input name="desiredTiming" defaultValue={candidate.desiredTiming ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
-              <span>雇用状況</span>
+              <span>雇用形態</span>
               <input name="employmentStatus" defaultValue={candidate.employmentStatus ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
@@ -408,7 +428,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <input name="employmentTypePreference" defaultValue={candidate.employmentTypePreference ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
-              <span>稼働可能時期</span>
+              <span>稼働開始時期</span>
               <input name="availability" defaultValue={candidate.availability ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm md:col-span-3">
