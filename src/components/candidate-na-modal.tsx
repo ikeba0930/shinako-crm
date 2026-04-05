@@ -104,11 +104,14 @@ export function CandidateNaModal({ candidateId }: Props) {
       </button>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           {/* 背景オーバーレイ */}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={close} />
           {/* モーダル本体 */}
-          <div className="relative flex w-full max-w-2xl max-h-[85vh] flex-col overflow-hidden rounded-[1.8rem] border border-fuchsia-100/60 bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))] shadow-[0_32px_64px_-24px_rgba(109,40,217,0.55)]">
+          <div
+            className="relative flex flex-col overflow-hidden rounded-[1.8rem] border border-fuchsia-100/60 bg-[linear-gradient(135deg,rgba(255,250,255,0.99),rgba(250,246,255,0.99),rgba(243,249,255,0.99))] shadow-[0_32px_64px_-24px_rgba(109,40,217,0.55)]"
+            style={{ width: "96vw", maxWidth: "1680px", maxHeight: "92vh" }}
+          >
 
             {/* トップバー */}
             <div className="flex shrink-0 items-center justify-between bg-[linear-gradient(90deg,rgba(244,114,182,0.22),rgba(168,85,247,0.18),rgba(56,189,248,0.16))] px-6 py-3 shadow-[0_4px_16px_-8px_rgba(109,40,217,0.3)]">
@@ -126,27 +129,27 @@ export function CandidateNaModal({ candidateId }: Props) {
             <form ref={formRef} onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-y-auto">
               <input type="hidden" name="candidateId" value={candidateId} />
 
-              <div className="mx-auto w-full max-w-4xl flex-1 space-y-3 px-6 py-5">
+              <div className="mx-auto w-full max-w-6xl flex-1 space-y-3 px-6 py-5">
 
                 {/* ─── 対応情報 ─── */}
-                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(245,243,255,0.8),rgba(250,246,255,0.7))] grid-cols-1 md:grid-cols-[1fr_1fr_1fr]">
+                <SectionBand className="border border-violet-100/60 bg-[linear-gradient(135deg,rgba(245,243,255,0.8),rgba(250,246,255,0.7))] grid-cols-[auto_1fr_1.4fr]">
                   {/* 対応日時 */}
-                  <div className="md:col-span-1">
+                  <div>
                     <label className={sectionLabelCls}>対応日時</label>
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="flex items-center gap-1.5">
                       <input
                         type="date"
                         name="respondedAtDate"
                         value={respondedDate}
                         onChange={(e) => setRespondedDate(e.target.value)}
-                        className={`${inputCls} flex-1 min-w-[120px]`}
+                        className={`${inputCls} w-36 shrink-0`}
                       />
                       <input
                         type="time"
                         name="respondedAtTime"
                         value={respondedTime}
                         onChange={(e) => setRespondedTime(e.target.value)}
-                        className={`${inputCls} w-28 shrink-0`}
+                        className={`${inputCls} w-24 shrink-0`}
                       />
                       <NowButton onClick={() => { setRespondedDate(nowDate()); setRespondedTime(nowTime()) }} />
                     </div>
@@ -241,7 +244,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                 )}
 
                 {/* ─── NA情報 ─── */}
-                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-1 md:grid-cols-2">
+                <SectionBand className="border border-rose-100/70 bg-[linear-gradient(135deg,rgba(255,245,245,0.8),rgba(255,240,240,0.7))] grid-cols-[1fr_auto]">
                   {/* NA日時 */}
                   <div>
                     <label className={sectionLabelCls}>NA日時</label>
@@ -251,14 +254,14 @@ export function CandidateNaModal({ candidateId }: Props) {
                         name="naAtDate"
                         value={naDate}
                         onChange={(e) => setNaDate(e.target.value)}
-                        className={`${inputCls} flex-1 min-w-[120px]`}
+                        className={`${inputCls} w-36 shrink-0`}
                       />
                       <input
                         type="time"
                         name="naAtTime"
                         value={naTime}
                         onChange={(e) => setNaTime(e.target.value)}
-                        className={`${inputCls} w-28 shrink-0`}
+                        className={`${inputCls} w-24 shrink-0`}
                       />
                       <NowButton onClick={() => { setNaDate(nowDate()); setNaTime(nowTime()) }} />
                       <button type="button" onClick={() => setNaDate(addDays(1))} className="shrink-0 rounded-full bg-violet-400 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-violet-500">翌日</button>
@@ -267,7 +270,7 @@ export function CandidateNaModal({ candidateId }: Props) {
                     </div>
                   </div>
                   {/* NA内容 */}
-                  <div>
+                  <div className="min-w-[180px]">
                     <label className={sectionLabelCls}>NA内容</label>
                     <select name="naContent" className={selectCls}>
                       <option value="">選択してください</option>
@@ -289,25 +292,28 @@ export function CandidateNaModal({ candidateId }: Props) {
                   />
                 </div>
 
-                {/* ─── 面談実績日 ─── */}
-                <div className="rounded-2xl border border-green-100/60 bg-[linear-gradient(135deg,rgba(240,253,244,0.8),rgba(236,252,243,0.7))] px-5 py-3">
-                  <div className="mb-2 text-[10px] font-bold text-green-700">面談実績日</div>
-                  <label className="flex cursor-pointer items-center gap-2 text-[12px] font-semibold text-green-800">
-                    <input type="checkbox" name="linkInterview" className="h-4 w-4 accent-green-500" />
-                    面談を結びつける
-                  </label>
-                </div>
-
-                {/* ─── 底部オプション ─── */}
-                <div className="flex flex-wrap items-center justify-center gap-8 rounded-2xl border border-violet-100/40 bg-white/60 px-5 py-3">
-                  <label className="flex cursor-pointer items-center gap-2 text-[12px] font-semibold text-violet-700">
-                    <input type="checkbox" name="setAsDocumentReturn" className="h-4 w-4 accent-violet-500" />
-                    書類戻りとして設定
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2 text-[12px] font-semibold text-violet-700">
-                    <input type="checkbox" name="setAsInterviewDate" className="h-4 w-4 accent-violet-500" />
-                    面談実施日として設定
-                  </label>
+                {/* ─── このステータスとして設定 ─── */}
+                <div className="rounded-2xl border border-violet-100/60 bg-[linear-gradient(135deg,rgba(245,243,255,0.85),rgba(250,246,255,0.75))] px-5 py-4">
+                  <div className="mb-3 text-[10px] font-bold text-violet-700">このステータスとして設定（登録日が自動入力されます）</div>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 md:grid-cols-5">
+                    {[
+                      { name: "setAs_firstResponseDate", label: "初回対応日" },
+                      { name: "setAs_interviewDate", label: "面談日" },
+                      { name: "setAs_documentCreatedDate", label: "書類作成日" },
+                      { name: "setAs_proposalDate", label: "提案日" },
+                      { name: "setAs_entryDate", label: "エントリー日" },
+                      { name: "setAs_companyInterviewDate", label: "企業面談日" },
+                      { name: "setAs_offerDate", label: "内定日" },
+                      { name: "setAs_offerAcceptedDate", label: "承諾日" },
+                      { name: "setAs_joiningDate", label: "入社日" },
+                      { name: "setAs_closedDate", label: "終了日" },
+                    ].map(({ name, label }) => (
+                      <label key={name} className="flex cursor-pointer items-center gap-1.5 text-[11px] font-semibold text-violet-800">
+                        <input type="checkbox" name={name} className="h-3.5 w-3.5 accent-fuchsia-500" />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
