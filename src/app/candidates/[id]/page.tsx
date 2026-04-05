@@ -225,7 +225,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
               <div className="space-y-1.5 px-2 py-2">
                 <div className="grid gap-x-4 gap-y-1 text-[10px] md:grid-cols-[84px_84px_170px_170px]">
-                  <div className="leading-tight">
+                  <div className="leading-tight md:col-start-2">
                     <div className="font-bold text-zinc-500">初回担当者</div>
                     <div className="mt-0.5 font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
                   </div>
