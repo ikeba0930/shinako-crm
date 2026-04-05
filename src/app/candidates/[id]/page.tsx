@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createSelectionAction, saveCandidateAction } from "@/lib/actions"
 import {
-  CANDIDATE_AGE_OPTIONS,
   CANDIDATE_CONDITION_OPTIONS,
   CANDIDATE_GENDER_OPTIONS,
   CANDIDATE_JOB_OPTIONS,
@@ -64,6 +63,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const isSaved = query.saved === "1"
   const nameColorClassName =
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
+  const inflowLabel =
+    INFLOW_ROUTE_OPTIONS.find((option) => option.value === candidate.inflowSource)?.label ?? candidate.inflowSource ?? "未設定"
 
   return (
     <div className="space-y-6 p-6 lg:p-8">
@@ -80,18 +81,21 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-2">
-                {candidate.otherConditions ? (
-                  <a
-                    href={candidate.otherConditions}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`inline-flex text-2xl font-extrabold tracking-tight underline decoration-2 underline-offset-4 ${nameColorClassName}`}
-                  >
-                    {candidate.name}
-                  </a>
-                ) : (
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {candidate.otherConditions ? (
+                    <a
+                      href={candidate.otherConditions}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`inline-flex text-2xl font-extrabold tracking-tight underline decoration-2 underline-offset-4 ${nameColorClassName}`}
+                    >
+                      {candidate.name}
+                    </a>
+                  ) : (
+                    <h1 className={`text-2xl font-extrabold tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                  )}
+                  <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">{inflowLabel}</span>
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>
                     {candidate.customerRank}
@@ -111,23 +115,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
             <div className="grid gap-2 md:grid-cols-4 xl:grid-cols-6">
               <label className="space-y-1 md:col-span-2">
-                <HeaderLabel label="氏名" className="bg-sky-100 text-sky-700" />
-                <input name="name" defaultValue={candidate.name} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1 md:col-span-2">
                 <HeaderLabel label={lineUrlLabel} className="bg-sky-100 text-sky-700" />
                 <input name="lineUrl" defaultValue={candidate.otherConditions ?? ""} className={compactInputClassName} />
-              </label>
-              <label className="space-y-1">
-                <HeaderLabel label="性別" className="bg-sky-100 text-sky-700" />
-                <select name="gender" defaultValue={candidate.gender ?? ""} className={compactInputClassName}>
-                  <option value="">選択してください</option>
-                  {CANDIDATE_GENDER_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
               </label>
               <label className="space-y-1">
                 <HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" />
@@ -230,27 +219,28 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
             <label className="space-y-1 text-sm">
-              <span>流入経路</span>
-              <select name="inflowSource" defaultValue={candidate.inflowSource ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {INFLOW_ROUTE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <span>氏名</span>
+              <input name="name" defaultValue={candidate.name} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
               <span>氏名（かな）</span>
               <input name="nameKana" defaultValue={candidate.nameKana ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
-              <span>年齢</span>
-              <select name="age" defaultValue={candidate.age ? String(candidate.age) : ""} className={inputClassName}>
+              <span>メールアドレス</span>
+              <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>電話番号</span>
+              <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>性別</span>
+              <select name="gender" defaultValue={candidate.gender ?? ""} className={inputClassName}>
                 <option value="">選択してください</option>
-                {CANDIDATE_AGE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}歳
+                {CANDIDATE_GENDER_OPTIONS.filter((option) => option.value === "男性" || option.value === "女性").map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -259,13 +249,9 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <span>生年月日</span>
               <input type="date" name="birthDate" defaultValue={formatDateInput(candidate.birthDate)} className={inputClassName} />
             </label>
-            <label className="space-y-1 text-sm">
-              <span>電話番号</span>
-              <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>メールアドレス</span>
-              <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
+            <label className="space-y-1 text-sm md:col-span-2">
+              <span>居住地</span>
+              <input name="address" defaultValue={candidate.address ?? ""} className={inputClassName} />
             </label>
           </CardContent>
         </Card>
@@ -282,6 +268,17 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 {CANDIDATE_CONDITION_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>流入経路</span>
+              <select name="inflowSource" defaultValue={candidate.inflowSource ?? ""} className={inputClassName}>
+                <option value="">選択してください</option>
+                {INFLOW_ROUTE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
