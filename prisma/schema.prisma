@@ -94,6 +94,9 @@ model Candidate {
   availability              String?
   otherConditions           String?
   resumePreferenceText      String?
+  finalEducation           String?
+  experienceCompanyCount   Int?
+  currentJobType           String?
   managementExperience      String?
   circusExperiencedIndustry String?
   circusExperiencedJobType  String?

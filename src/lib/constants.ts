@@ -35,6 +35,27 @@ export const CANDIDATE_OWNER_OPTIONS = [
 
 export const CANDIDATE_AGE_OPTIONS = Array.from({ length: 48 }, (_, index) => String(index + 18))
 
+export const FINAL_EDUCATION_OPTIONS = [
+  "中学校卒",
+  "高校中退",
+  "高校卒",
+  "専門学校中退",
+  "専門学校卒",
+  "短大卒",
+  "高専卒",
+  "大学中退",
+  "大学卒",
+  "大学院卒",
+] as const
+
+export const MANAGEMENT_EXPERIENCE_OPTIONS = [
+  "なし",
+  "5名未満",
+  "5名以上",
+  "10名以上",
+  "30名以上",
+] as const
+
 export const PREFECTURE_OPTIONS = [
   "北海道",
   "青森県",

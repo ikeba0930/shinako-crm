@@ -9,7 +9,9 @@ import {
   CANDIDATE_OWNER_OPTIONS,
   CANDIDATE_STATUS_LABELS,
   CUSTOMER_RANK_BADGE,
+  FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
+  MANAGEMENT_EXPERIENCE_OPTIONS,
   PREFECTURE_OPTIONS,
   SELECTION_STATUS_LABELS,
   UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS,
@@ -266,6 +268,48 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
         <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
           <CardHeader>
+            <CardTitle className="text-lg font-bold text-zinc-900">経歴</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <label className="space-y-1 text-sm">
+              <span>最終学歴</span>
+              <select name="finalEducation" defaultValue={candidate.finalEducation ?? ""} className={inputClassName}>
+                <option value="">選択してください</option>
+                {FINAL_EDUCATION_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>経験社数</span>
+              <input type="number" min="0" name="experienceCompanyCount" defaultValue={candidate.experienceCompanyCount ?? ""} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>マネジメント経験</span>
+              <select name="managementExperience" defaultValue={candidate.managementExperience ?? ""} className={inputClassName}>
+                <option value="">選択してください</option>
+                {MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>現在の職種</span>
+              <input name="currentJobType" defaultValue={candidate.currentJobType ?? ""} className={inputClassName} />
+            </label>
+            <label className="space-y-1 text-sm">
+              <span>現在の年収</span>
+              <input name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
+            </label>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+          <CardHeader>
             <CardTitle className="text-lg font-bold text-zinc-900">登録情報</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
@@ -276,17 +320,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 {CANDIDATE_CONDITION_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>流入経路</span>
-              <select name="inflowSource" defaultValue={candidate.inflowSource ?? ""} className={inputClassName}>
-                <option value="">選択してください</option>
-                {INFLOW_ROUTE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
                   </option>
                 ))}
               </select>
@@ -359,11 +392,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <input name="desiredLocation" defaultValue={candidate.desiredLocation ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
-              <span>現在年収（万円）</span>
-              <input name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>希望年収（万円）</span>
+              <span>希望年収</span>
               <input name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
             </label>
             <label className="space-y-1 text-sm">
