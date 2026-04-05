@@ -209,6 +209,17 @@ export default async function CandidateDetailPage({ params }: Props) {
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>初回担当者</span>
+                  <select name="initialOwnerName" defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""} className={inputClassName}>
+                    <option value="">選択してください</option>
+                    {CANDIDATE_OWNER_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>担当者</span>
                   <select name="ownerName" defaultValue={candidate.ownerName ?? ""} className={inputClassName}>
                     <option value="">選択してください</option>
                     {CANDIDATE_OWNER_OPTIONS.map((option) => (

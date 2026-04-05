@@ -113,6 +113,7 @@ model Candidate {
   rankAutoResult            CustomerRank           @default(C)
   rankSource                RankSource             @default(auto)
   rankManualOverride        Boolean                @default(false)
+  initialOwnerName          String?
   ownerName                 String?
   inflowSource              String?
   unemploymentInsuranceContract String?
@@ -145,6 +146,7 @@ model Candidate {
 
   @@index([customerRank])
   @@index([overallStatus])
+  @@index([initialOwnerName])
   @@index([ownerName])
   @@index([inflowDate])
 }

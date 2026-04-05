@@ -181,7 +181,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
             </select>
           </Field>
           <Field label="初回担当者" required accentClassName="from-cyan-500 to-blue-500">
-            <select name="ownerName" defaultValue="" required className={inputClassName}>
+            <select name="initialOwnerName" defaultValue="" required className={inputClassName}>
               <option value="">選択してください</option>
               {CANDIDATE_OWNER_OPTIONS.map((option) => (
                 <option key={option} value={option}>

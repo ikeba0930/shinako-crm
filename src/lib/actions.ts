@@ -96,6 +96,8 @@ export async function saveCandidateAction(formData: FormData) {
   const manualRank = String(formData.get("customerRank") ?? "C") as CustomerRank
   const rankManualOverride = formData.get("rankManualOverride") === "on"
   const inflowSource = String(formData.get("inflowSource") ?? "") || null
+  const initialOwnerName = String(formData.get("initialOwnerName") ?? "") || null
+  const ownerName = String(formData.get("ownerName") ?? "") || null
   const unemploymentInsuranceContract = String(formData.get("unemploymentInsuranceContract") ?? "") || null
   const retirementDate = parseDate(formData.get("retirementDate"))
   const agentPassDate = parseDate(formData.get("agentPassDate"))
@@ -117,7 +119,8 @@ export async function saveCandidateAction(formData: FormData) {
       desiredAnnualIncome: parseIntValue(formData.get("desiredAnnualIncome")),
       jobSearchStatus: String(formData.get("jobSearchStatus") ?? "") || null,
       desiredTiming: String(formData.get("desiredTiming") ?? "") || null,
-      ownerName: String(formData.get("ownerName") ?? "") || null,
+      initialOwnerName,
+      ownerName,
       otherConditions: String(formData.get("lineUrl") ?? "") || null,
       inflowSource,
       unemploymentInsuranceContract,
@@ -175,6 +178,7 @@ export async function createCandidateAction(formData: FormData) {
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
   const age = parseIntValue(formData.get("age"))
   const condition = String(formData.get("jobSearchStatus") ?? "") || null
+  const initialOwnerName = String(formData.get("initialOwnerName") ?? "") || null
   const qualificationNames = formData
     .getAll("qualificationNames")
     .filter((value): value is string => typeof value === "string")
@@ -205,7 +209,8 @@ export async function createCandidateAction(formData: FormData) {
       phone: String(formData.get("phone") ?? "") || null,
       jobSearchStatus: condition,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
-      ownerName: String(formData.get("ownerName") ?? "") || null,
+      initialOwnerName,
+      ownerName: initialOwnerName,
       otherConditions: String(formData.get("lineUrl") ?? "") || null,
       customerRank: autoRank.rank,
       rankAutoResult: autoRank.rank,

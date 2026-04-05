@@ -1,17 +1,35 @@
 import Link from "next/link"
-import { deleteCandidateAction } from "@/lib/actions"
+import { SelectionStatus } from "@prisma/client"
 import { DeleteCandidateButton } from "@/components/delete-candidate-button"
-import { prisma } from "@/lib/db"
-import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE, INFLOW_ROUTE_OPTIONS, inflowRouteMatches } from "@/lib/constants"
-import { formatDate, formatManYen } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { deleteCandidateAction } from "@/lib/actions"
+import { CANDIDATE_STATUS_LABELS, CUSTOMER_RANK_BADGE, INFLOW_ROUTE_OPTIONS, inflowRouteMatches } from "@/lib/constants"
+import { prisma } from "@/lib/db"
+import { formatDate } from "@/lib/format"
 
 export const dynamic = "force-dynamic"
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+const inactiveSelectionStatuses = new Set<SelectionStatus>([
+  SelectionStatus.DECLINED,
+  SelectionStatus.REJECTED,
+  SelectionStatus.CLOSED,
+  SelectionStatus.JOINED,
+])
+
+function getLatestSelectionDate(values: Array<Date | null>) {
+  return values
+    .filter((value): value is Date => value instanceof Date)
+    .sort((a, b) => b.getTime() - a.getTime())[0] ?? null
+}
+
+function HeaderLabel({ label, className }: { label: string; className: string }) {
+  return <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black tracking-tight ${className}`}>{label}</span>
 }
 
 export default async function CandidatesPage({ searchParams }: Props) {
@@ -33,12 +51,19 @@ export default async function CandidatesPage({ searchParams }: Props) {
               { name: { contains: keyword } },
               { desiredJobType: { contains: keyword } },
               { ownerName: { contains: keyword } },
+              { initialOwnerName: { contains: keyword } },
+              { otherConditions: { contains: keyword } },
             ],
           }
         : {}),
       ...(rank ? { customerRank: rank as never } : {}),
       ...(status ? { overallStatus: status as never } : {}),
       ...(owner ? { ownerName: owner } : {}),
+    },
+    include: {
+      selections: {
+        orderBy: { updatedAt: "desc" },
+      },
     },
     orderBy: sort === "inflowDate" ? { inflowDate: "desc" } : { updatedAt: "desc" },
   })
@@ -93,7 +118,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
               <input
                 name="keyword"
                 defaultValue={keyword}
-                placeholder="氏名 / 求職者ID / 希望職種"
+                placeholder="氏名 / URL / 希望職種"
                 className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm"
               />
               <select name="rank" defaultValue={rank} className="h-9 rounded-2xl border border-white/60 bg-white/80 px-3 text-sm">
@@ -155,59 +180,127 @@ export default async function CandidatesPage({ searchParams }: Props) {
           <CardTitle className="text-base font-black text-[#241433]">一覧</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table className="w-full table-auto text-[11px] leading-tight">
             <TableHeader>
-              <TableRow>
-                <TableHead>求職者ID</TableHead>
-                <TableHead>氏名</TableHead>
-                <TableHead>年齢</TableHead>
-                <TableHead>現在年収</TableHead>
-                <TableHead>希望年収</TableHead>
-                <TableHead>ランク</TableHead>
-                <TableHead>希望職種</TableHead>
-                <TableHead>全体ステータス</TableHead>
-                <TableHead>提案求人数</TableHead>
-                <TableHead>選考中数</TableHead>
-                <TableHead>流入日</TableHead>
-                <TableHead>面談日</TableHead>
-                <TableHead>担当者</TableHead>
-                <TableHead className="text-right">操作</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="px-1 py-2"><HeaderLabel label="LステURL" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="氏名" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="ランク" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="ステータス" className="bg-sky-100 text-sky-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="選考中企業" className="bg-rose-100 text-rose-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="流入日" className="bg-violet-100 text-violet-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="初回対応日" className="bg-fuchsia-100 text-fuchsia-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="面談日" className="bg-pink-100 text-pink-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="書類作成日" className="bg-orange-100 text-orange-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="提案日" className="bg-amber-100 text-amber-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="エントリー日" className="bg-lime-100 text-lime-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="企業面談日" className="bg-emerald-100 text-emerald-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="内定日" className="bg-cyan-100 text-cyan-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="承諾日" className="bg-blue-100 text-blue-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="入社日" className="bg-indigo-100 text-indigo-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="終了日" className="bg-slate-200 text-slate-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="初回担当者" className="bg-teal-100 text-teal-700" /></TableHead>
+                <TableHead className="px-1 py-2"><HeaderLabel label="担当者" className="bg-purple-100 text-purple-700" /></TableHead>
+                <TableHead className="px-1 py-2 text-right"><HeaderLabel label="操作" className="bg-zinc-100 text-zinc-700" /></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCandidates.map((candidate) => (
-                <TableRow key={candidate.id}>
-                  <TableCell>{candidate.candidateCode}</TableCell>
-                  <TableCell>
-                    <Link href={`/candidates/${candidate.id}`} className="font-semibold text-zinc-900 hover:text-rose-600">
-                      {candidate.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{candidate.age ?? "-"}</TableCell>
-                  <TableCell>{formatManYen(candidate.currentAnnualIncome)}</TableCell>
-                  <TableCell>{formatManYen(candidate.desiredAnnualIncome)}</TableCell>
-                  <TableCell>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>
-                      {candidate.customerRank}
-                    </span>
-                  </TableCell>
-                  <TableCell>{candidate.desiredJobType ?? "-"}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{CANDIDATE_STATUS_LABELS[candidate.overallStatus]}</Badge>
-                  </TableCell>
-                  <TableCell>{candidate.proposalCount}</TableCell>
-                  <TableCell>{candidate.activeSelectionCount}</TableCell>
-                  <TableCell>{formatDate(candidate.inflowDate)}</TableCell>
-                  <TableCell>{formatDate(candidate.interviewDate)}</TableCell>
-                  <TableCell>{candidate.ownerName ?? "-"}</TableCell>
-                  <TableCell className="text-right">
-                    <form action={deleteCandidateAction}>
-                      <input type="hidden" name="candidateId" value={candidate.id} />
-                      <DeleteCandidateButton candidateName={candidate.name} />
-                    </form>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredCandidates.map((candidate) => {
+                const activeSelections = candidate.selections.filter(
+                  (selection) => !inactiveSelectionStatuses.has(selection.selectionStatus)
+                )
+                const activeCompanies = [...new Set(activeSelections.map((selection) => selection.companyName).filter(Boolean))]
+                const entryDate = getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
+                const companyInterviewDate = getLatestSelectionDate(
+                  candidate.selections.flatMap((selection) => [selection.firstInterviewAt, selection.secondInterviewAt, selection.interviewScheduledAt])
+                )
+                const bubbleLines = [
+                  `氏名: ${candidate.name || "-"}`,
+                  `LステURL: ${candidate.otherConditions || "-"}`,
+                  `流入経路: ${candidate.inflowSource || "-"}`,
+                  `ランク: ${candidate.customerRank}`,
+                  `ステータス: ${CANDIDATE_STATUS_LABELS[candidate.overallStatus]}`,
+                  `選考中企業: ${activeCompanies.join(" / ") || "-"}`,
+                  `流入日: ${formatDate(candidate.inflowDate)}`,
+                  `初回対応日: ${formatDate(candidate.firstResponseDate)}`,
+                  `面談日: ${formatDate(candidate.interviewDate)}`,
+                  `書類作成日: ${formatDate(candidate.documentCreatedDate)}`,
+                  `提案日: ${formatDate(candidate.proposalDate)}`,
+                  `エントリー日: ${formatDate(entryDate)}`,
+                  `企業面談日: ${formatDate(companyInterviewDate)}`,
+                  `内定日: ${formatDate(candidate.offerDate)}`,
+                  `承諾日: ${formatDate(candidate.offerAcceptedDate)}`,
+                  `入社日: ${formatDate(candidate.joiningDate)}`,
+                  `終了日: ${formatDate(candidate.closedDate)}`,
+                  `初回担当者: ${candidate.initialOwnerName || "-"}`,
+                  `担当者: ${candidate.ownerName || "-"}`,
+                ].join("\n")
+
+                return (
+                  <TableRow key={candidate.id} title={bubbleLines} className="hover:bg-white/50">
+                    <TableCell className="px-1 py-2">
+                      {candidate.otherConditions ? (
+                        <a
+                          href={candidate.otherConditions}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={candidate.otherConditions}
+                          className="font-semibold text-sky-600 underline underline-offset-2"
+                        >
+                          開く
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                    <TableCell className="max-w-[92px] px-1 py-2">
+                      <Link
+                        href={`/candidates/${candidate.id}`}
+                        title={candidate.name}
+                        className="block truncate font-semibold text-zinc-900 hover:text-rose-600"
+                      >
+                        {candidate.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="px-1 py-2">
+                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${CUSTOMER_RANK_BADGE[candidate.customerRank]}`}>
+                        {candidate.customerRank}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-1 py-2">
+                      <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px]">
+                        {CANDIDATE_STATUS_LABELS[candidate.overallStatus]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanies.join(" / ") || "-"}>
+                      <span className="block truncate text-rose-700">{activeCompanies.join(" / ") || "-"}</span>
+                    </TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.inflowDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.firstResponseDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.interviewDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.documentCreatedDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.proposalDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(entryDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(companyInterviewDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.offerDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.offerAcceptedDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.joiningDate)}</TableCell>
+                    <TableCell className="px-1 py-2">{formatDate(candidate.closedDate)}</TableCell>
+                    <TableCell className="max-w-[84px] px-1 py-2" title={candidate.initialOwnerName ?? "-"}>
+                      <span className="block truncate">{candidate.initialOwnerName ?? "-"}</span>
+                    </TableCell>
+                    <TableCell className="max-w-[84px] px-1 py-2" title={candidate.ownerName ?? "-"}>
+                      <span className="block truncate">{candidate.ownerName ?? "-"}</span>
+                    </TableCell>
+                    <TableCell className="px-1 py-2 text-right">
+                      <form action={deleteCandidateAction}>
+                        <input type="hidden" name="candidateId" value={candidate.id} />
+                        <DeleteCandidateButton candidateName={candidate.name} />
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </CardContent>
