@@ -98,10 +98,10 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const ageLabel = candidate.age != null ? `満${candidate.age}歳` : null
 
   const topMetaItems = [
-    { label: "流入経路", value: inflowLabel, className: "bg-violet-100 text-violet-700" },
-    { label: "ランク", value: candidate.customerRank, className: CUSTOMER_RANK_BADGE[candidate.customerRank] },
-    { label: "ステータス", value: CANDIDATE_STATUS_LABELS[candidate.overallStatus], className: "bg-zinc-100 text-zinc-700" },
-    { label: "選考企業社数", value: `${activeCompanyCount}社`, className: "bg-rose-100 text-rose-700" },
+    { key: "inflow", label: "流入経路", value: inflowLabel },
+    { key: "rank", label: "ランク", value: candidate.customerRank },
+    { key: "status", label: "ステータス", value: CANDIDATE_STATUS_LABELS[candidate.overallStatus] },
+    { key: "companyCount", label: "選考企業社数", value: `${activeCompanyCount}社` },
   ]
 
   const headerStatusItems = [
@@ -301,13 +301,13 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     </div>
                   </div>
 
-                  <div className="grid flex-1 gap-x-5 gap-y-1 sm:grid-cols-2 xl:ml-3 xl:grid-cols-4">
+                  <div className="grid flex-1 gap-x-4 gap-y-1 sm:grid-cols-2 xl:ml-2 xl:grid-cols-4">
                     {topMetaItems.map((item) => (
-                      <div key={item.label} className="leading-tight">
-                        <div className="font-bold text-zinc-500">{item.label}</div>
+                      <div key={item.key} className="min-w-0 leading-tight">
+                        <div className="text-[11px] font-bold text-zinc-500">{item.label}</div>
                         <div
-                          className={`mt-0.5 truncate font-semibold ${
-                            item.label === "豬∝・邨瑚ｷｯ"
+                          className={`mt-0.5 truncate text-[12px] font-semibold ${
+                            item.key === "inflow"
                               ? item.value === "ポータル（ブルー）" || item.value === "ポータル"
                                 ? "text-sky-600"
                                 : item.value === "失業保険"
