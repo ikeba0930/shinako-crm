@@ -94,6 +94,9 @@ export async function saveCandidateAction(formData: FormData) {
   const birthDate = parseDate(formData.get("birthDate"))
   const manualRank = String(formData.get("customerRank") ?? "C") as CustomerRank
   const rankManualOverride = formData.get("rankManualOverride") === "on"
+  const inflowSource = String(formData.get("inflowSource") ?? "") || null
+  const agentPassDate = parseDate(formData.get("agentPassDate"))
+  const callPreferredAt = parseDate(formData.get("callPreferredAt"))
 
   await prisma.candidate.update({
     where: { id },
@@ -112,6 +115,9 @@ export async function saveCandidateAction(formData: FormData) {
       jobSearchStatus: String(formData.get("jobSearchStatus") ?? "") || null,
       desiredTiming: String(formData.get("desiredTiming") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
+      inflowSource,
+      agentPassDate,
+      callPreferredAt,
       inflowDate: parseDate(formData.get("inflowDate")),
       firstResponseDate: parseDate(formData.get("firstResponseDate")),
       interviewDate: parseDate(formData.get("interviewDate")),
@@ -157,6 +163,13 @@ export async function createCandidateAction(formData: FormData) {
   const now = new Date()
   const count = await prisma.candidate.count()
   const inflowSource = String(formData.get("inflowSource") ?? "") || "ポータル（ブルー）"
+  const agentPassDate = parseDate(formData.get("agentPassDate"))
+  const callPreferredAt = parseDate(formData.get("callPreferredAt"))
+
+  if (inflowSource === "失業保険" && (!agentPassDate || !callPreferredAt)) {
+    throw new Error("失業保険を選択した場合は、エージェント パス日と架電希望日時が必須です。")
+  }
+
   const candidate = await prisma.candidate.create({
     data: {
       candidateCode: `C-${String(count + 1).padStart(4, "0")}`,
@@ -166,6 +179,8 @@ export async function createCandidateAction(formData: FormData) {
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
       inflowSource,
+      agentPassDate,
+      callPreferredAt,
       inflowDate: now,
     },
   })

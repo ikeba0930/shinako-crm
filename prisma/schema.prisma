@@ -115,6 +115,8 @@ model Candidate {
   rankManualOverride        Boolean                @default(false)
   ownerName                 String?
   inflowSource              String?
+  agentPassDate             DateTime?
+  callPreferredAt           DateTime?
   inflowDate                DateTime?
   firstResponseDate         DateTime?
   interviewDate             DateTime?
