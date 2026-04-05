@@ -87,7 +87,7 @@ export function CandidateQualificationFields({
           <button
             type="button"
             onClick={() => removeQualification(index)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-50"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,244,255,0.94))] text-zinc-500 shadow-[0_12px_26px_-22px_rgba(76,29,149,0.78)] transition-colors hover:bg-white"
             aria-label="資格を削除"
           >
             <Trash2 className="h-4 w-4" />
@@ -97,7 +97,7 @@ export function CandidateQualificationFields({
       <button
         type="button"
         onClick={addQualification}
-        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-100"
+        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-[linear-gradient(135deg,rgba(255,241,242,0.96),rgba(250,245,255,0.94))] px-3 py-2 text-sm font-semibold text-rose-700 shadow-[0_14px_28px_-24px_rgba(244,63,94,0.72)] transition-colors hover:bg-rose-100"
       >
         <Plus className="h-4 w-4" />
         資格を追加

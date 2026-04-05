@@ -145,7 +145,7 @@ export function SearchableSelect({
                 width: popupPosition.width,
                 zIndex: 9999,
               }}
-              className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl ring-1 ring-black/5"
+              className="rounded-[1.2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(250,244,255,0.95))] p-2 shadow-[0_28px_50px_-28px_rgba(76,29,149,0.88)] ring-1 ring-fuchsia-100/60 backdrop-blur-xl"
             >
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
@@ -154,7 +154,7 @@ export function SearchableSelect({
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="候補を検索"
-                  className="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50 pr-3 pl-9 text-sm outline-none"
+                  className="h-10 w-full rounded-xl border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(251,247,255,0.95))] pr-3 pl-9 text-sm text-[#2f1b3b] outline-none"
                 />
               </div>
               <div className="mt-2 max-h-56 overflow-y-auto">
@@ -169,7 +169,7 @@ export function SearchableSelect({
                         onClick={() => handleSelect(option.value)}
                         className={cn(
                           "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors",
-                          isSelected ? "bg-rose-50 text-rose-700" : "text-zinc-700 hover:bg-zinc-50"
+                          isSelected ? "bg-[linear-gradient(135deg,rgba(251,113,133,0.12),rgba(168,85,247,0.12))] text-rose-700" : "text-zinc-700 hover:bg-[linear-gradient(135deg,rgba(250,245,255,0.92),rgba(239,246,255,0.92))]"
                         )}
                       >
                         <span>{option.label}</span>

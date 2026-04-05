@@ -38,8 +38,10 @@ type Props = {
   searchParams?: Promise<{ saved?: string }>
 }
 
-const compactInputClassName = "h-8 w-full rounded-xl border border-zinc-200 bg-white px-2.5 text-[10px]"
-const inputClassName = "h-10 w-full rounded-2xl border border-zinc-200 px-3"
+const compactInputClassName =
+  "h-9 w-full rounded-[1rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(252,248,255,0.92))] px-2.5 text-[10px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_10px_22px_-20px_rgba(76,29,149,0.52)] outline-none transition focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60"
+const inputClassName =
+  "h-10 w-full rounded-[1.25rem] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(252,248,255,0.95))] px-3 text-sm text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_28px_-24px_rgba(76,29,149,0.58)] outline-none transition focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60"
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values
@@ -323,11 +325,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
             </section>
 
-            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="sky">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-zinc-900">基本情報</CardTitle>
+                <CardTitle className="text-zinc-900">基本情報</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
+              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
                 <label className="space-y-1 text-sm">
                   <span>氏名</span>
                   <input name="name" defaultValue={candidate.name} className={inputClassName} />
@@ -372,11 +374,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="violet">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-zinc-900">経歴</CardTitle>
+                <CardTitle className="text-zinc-900">経歴</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
+              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
                 <label className="space-y-1 text-sm">
                   <span>最終学歴</span>
                   <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS} className={inputClassName} />
@@ -433,11 +435,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="emerald">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-zinc-900">活動情報</CardTitle>
+                <CardTitle className="text-zinc-900">活動情報</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
+              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
                 <label className="space-y-1 text-sm">
                   <span>条件</span>
                   <SearchableSelect name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} options={CANDIDATE_CONDITION_OPTIONS} className={inputClassName} />
@@ -522,11 +524,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+            <Card className="fantasy-form-card rounded-3xl border-white/70 bg-white/90 shadow-sm" data-tone="amber">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-zinc-900">希望条件</CardTitle>
+                <CardTitle className="text-zinc-900">希望条件</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
+              <CardContent className="fantasy-form-grid grid gap-4 md:grid-cols-3">
                 <div className="space-y-1 text-sm md:col-span-3">
                   <span className="block">希望勤務地</span>
                   <CandidateLocationFields
@@ -558,7 +560,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         <TabsContent value="selections">
           <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-bold text-zinc-900">選考企業を紐づけ</CardTitle>
+              <CardTitle className="text-zinc-900">選考企業を紐づけ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {candidate.selections.map((selection) => (

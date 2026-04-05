@@ -302,6 +302,74 @@
     font-size: 0.9rem;
     color: #76598a;
   }
+
+  .fantasy-form-card {
+    --fantasy-accent-rgb: 244 114 182;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.72)),
+      linear-gradient(135deg, rgba(var(--fantasy-accent-rgb) / 0.08), rgba(255 255 255 / 0.18));
+    box-shadow:
+      0 24px 52px -40px rgba(88, 28, 135, 0.76),
+      inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  }
+
+  .fantasy-form-card::after {
+    content: "";
+    position: absolute;
+    right: -2rem;
+    top: -2rem;
+    height: 8rem;
+    width: 8rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(var(--fantasy-accent-rgb) / 0.2) 0%, rgba(var(--fantasy-accent-rgb) / 0) 70%);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  .fantasy-form-card[data-tone="sky"] {
+    --fantasy-accent-rgb: 56 189 248;
+  }
+
+  .fantasy-form-card[data-tone="violet"] {
+    --fantasy-accent-rgb: 168 85 247;
+  }
+
+  .fantasy-form-card[data-tone="emerald"] {
+    --fantasy-accent-rgb: 52 211 153;
+  }
+
+  .fantasy-form-card[data-tone="amber"] {
+    --fantasy-accent-rgb: 250 204 21;
+  }
+
+  .fantasy-form-grid label > span,
+  .fantasy-form-grid label > span.block,
+  .fantasy-form-grid > div > span,
+  .fantasy-form-grid > div > span.block {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #513267;
+    letter-spacing: 0.01em;
+  }
+
+  .fantasy-form-grid label > span::before,
+  .fantasy-form-grid label > span.block::before,
+  .fantasy-form-grid > div > span::before,
+  .fantasy-form-grid > div > span.block::before {
+    content: "";
+    height: 0.65rem;
+    width: 0.65rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95) 0%, rgba(var(--fantasy-accent-rgb) / 0.86) 42%, rgba(124,58,237,0.85) 100%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.62), 0 0 18px -6px rgba(var(--fantasy-accent-rgb) / 0.9);
+    flex-shrink: 0;
+  }
 }
 
 @keyframes hue-drift {
