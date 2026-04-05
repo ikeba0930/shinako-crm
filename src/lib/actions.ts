@@ -125,6 +125,7 @@ export async function saveCandidateAction(formData: FormData) {
       gender: String(formData.get("gender") ?? "") || null,
       phone: String(formData.get("phone") ?? "") || null,
       email: String(formData.get("email") ?? "") || null,
+      postalCode: String(formData.get("postalCode") ?? "") || null,
       address: String(formData.get("address") ?? "") || null,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       desiredJobTypeSecond: String(formData.get("desiredJobTypeSecond") ?? "") || null,

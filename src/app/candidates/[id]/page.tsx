@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
+import { PostalCodeAddressFields } from "@/components/postal-code-address-fields"
 import { SearchableSelect } from "@/components/searchable-select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,7 +23,6 @@ import {
   FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
   MANAGEMENT_EXPERIENCE_OPTIONS,
-  PREFECTURE_OPTIONS,
   SELECTION_STATUS_LABELS,
   UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS,
 } from "@/lib/constants"
@@ -91,6 +91,9 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
   const inflowLabel =
     INFLOW_ROUTE_OPTIONS.find((option) => option.value === candidate.inflowSource)?.label ?? candidate.inflowSource ?? "未設定"
+
+  const headerAddress = [candidate.postalCode ? `〒${candidate.postalCode}` : null, candidate.address ?? null].filter(Boolean).join(" ")
+  const ageLabel = candidate.age != null ? `満${candidate.age}歳` : null
 
   const topMetaItems = [
     { label: "流入経路", value: inflowLabel, className: "bg-violet-100 text-violet-700" },
@@ -278,8 +281,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     )}
                   </div>
                   <div className="leading-tight">
-                    <div className="font-bold text-zinc-500">住所</div>
-                    <div className="mt-0.5 font-semibold text-zinc-800">{candidate.address ?? "-"}</div>
+                    <div className="font-bold text-zinc-500">現住所</div>
+                    <div className="mt-0.5 font-semibold text-zinc-800">{headerAddress || "-"}</div>
                   </div>
                 </div>
 
@@ -289,6 +292,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     <div className="flex items-center gap-1">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
                       <h1 className={`truncate text-[18px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                      {ageLabel ? <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">{ageLabel}</span> : null}
                     </div>
                   </div>
 
@@ -350,10 +354,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   <span>生年月日</span>
                   <input type="date" name="birthDate" defaultValue={formatDateInput(candidate.birthDate)} className={inputClassName} />
                 </label>
-                <label className="space-y-1 text-sm md:col-span-2">
-                  <span>居住地</span>
-                  <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS} className={inputClassName} />
-                </label>
+                <div className="text-sm md:col-span-3">
+                  <PostalCodeAddressFields
+                    postalCode={candidate.postalCode}
+                    address={candidate.address}
+                    postalCodeClassName={inputClassName}
+                    addressClassName={inputClassName}
+                  />
+                </div>
                 <label className="space-y-1 text-sm md:col-span-3">
                   <span>{lineUrlLabel}</span>
                   <input name="lineUrl" defaultValue={candidate.otherConditions ?? ""} className={inputClassName} />
