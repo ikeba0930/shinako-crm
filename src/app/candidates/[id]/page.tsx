@@ -11,6 +11,7 @@ import {
   CANDIDATE_CONDITION_OPTIONS,
   CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS,
   CANDIDATE_GENDER_OPTIONS,
+  CANDIDATE_OWNER_OPTIONS,
   CANDIDATE_STATUS_LABELS,
   CAREER_AXIS_OPTIONS,
   CUSTOMER_RANK_BADGE,
@@ -133,9 +134,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         <TabsContent value="support" className="space-y-4">
           <form action={saveCandidateAction} className="space-y-4">
             <input type="hidden" name="id" value={candidate.id} />
-            <input type="hidden" name="initialOwnerName" value={candidate.initialOwnerName ?? candidate.ownerName ?? ""} />
-            <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
-            <input type="hidden" name="phone" value={candidate.phone ?? ""} />
 
             <section className="overflow-hidden rounded-[18px] border border-sky-100 bg-white shadow-sm">
               <div className="flex flex-col gap-2 bg-sky-100/85 px-3 py-1.5 md:flex-row md:items-center md:justify-between">
@@ -284,6 +282,28 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 <label className="space-y-1 text-sm">
                   <span>メールアドレス</span>
                   <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>初回担当者</span>
+                  <SearchableSelect
+                    name="initialOwnerName"
+                    defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
+                    options={CANDIDATE_OWNER_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>担当者</span>
+                  <SearchableSelect
+                    name="ownerName"
+                    defaultValue={candidate.ownerName ?? ""}
+                    options={CANDIDATE_OWNER_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>電話番号</span>
+                  <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
                   <span>性別</span>
