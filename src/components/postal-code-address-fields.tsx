@@ -86,8 +86,8 @@ export function PostalCodeAddressFields({
   }, [postalCodeValue])
 
   return (
-    <div className="flex flex-col gap-3">
-      <label className="max-w-[240px] space-y-1 text-sm">
+    <div className="space-y-3">
+      <label className="space-y-1 text-sm">
         <span>郵便番号</span>
         <input
           name={postalCodeName}
@@ -105,7 +105,7 @@ export function PostalCodeAddressFields({
         </div>
       </label>
 
-      <label className="w-full space-y-1 text-sm">
+      <label className="space-y-1 text-sm">
         <span>現住所</span>
         <input
           name={addressName}

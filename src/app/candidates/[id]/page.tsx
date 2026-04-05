@@ -93,7 +93,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
   const inflowLabel =
     INFLOW_ROUTE_OPTIONS.find((option) => option.value === candidate.inflowSource)?.label ?? candidate.inflowSource ?? "未設定"
 
-  const headerAddress = [candidate.postalCode ? `〒${candidate.postalCode}` : null, candidate.address ?? null].filter(Boolean).join(" ")
   const ageLabel = candidate.age != null ? `満${candidate.age}歳` : null
 
   const topMetaItems = [
@@ -279,7 +278,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   </div>
                   <div className="leading-tight">
                     <div className="font-bold text-zinc-500">現住所</div>
-                    <div className="mt-0.5 font-semibold text-zinc-800">{headerAddress || "-"}</div>
+                    {candidate.postalCode || candidate.address ? (
+                      <div className="mt-0.5 space-y-0.5 font-semibold text-zinc-800">
+                        <div>{candidate.postalCode ? `〒${candidate.postalCode}` : "-"}</div>
+                        <div>{candidate.address ?? "-"}</div>
+                      </div>
+                    ) : (
+                      <div className="mt-0.5 font-semibold text-zinc-800">-</div>
+                    )}
                   </div>
                 </div>
 
