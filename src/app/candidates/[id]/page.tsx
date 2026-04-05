@@ -141,20 +141,20 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <div className="flex items-center bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] px-3 py-2">
                 <div className="text-sm font-black tracking-tight text-zinc-800">求職者基本情報</div>
               </div>
-              <div className="flex items-center justify-end gap-1.5 border-b border-white/55 bg-white/55 px-3 py-2">
+              <div className="flex items-center justify-end gap-1.5 border-b border-white/55 bg-[linear-gradient(90deg,rgba(255,245,251,0.58),rgba(248,244,255,0.56),rgba(241,248,255,0.54),rgba(255,250,239,0.56))] px-3 py-2 backdrop-blur-xl">
                   <button
                     type="button"
-                    className="rounded-full border border-violet-200 bg-white px-3 py-1 text-[10px] font-semibold text-violet-700 transition hover:bg-violet-50"
+                    className="rounded-full border border-violet-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,243,255,0.92))] px-3 py-1 text-[10px] font-semibold text-violet-700 shadow-[0_14px_26px_-22px_rgba(124,58,237,0.7)] transition hover:bg-violet-50"
                   >
                     ファイル格納
                   </button>
                   <button
                     type="button"
-                    className="rounded-full border border-rose-200 bg-white px-3 py-1 text-[10px] font-semibold text-rose-700 transition hover:bg-rose-50"
+                    className="rounded-full border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,242,246,0.92))] px-3 py-1 text-[10px] font-semibold text-rose-700 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.68)] transition hover:bg-rose-50"
                   >
                     対応NA
                   </button>
-                  <details className="group rounded-2xl border border-rose-200 bg-white/90 p-1">
+                  <details className="group rounded-2xl border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,244,248,0.86))] p-1 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.64)]">
                     <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600">
                       ステータス変更
                     </summary>
@@ -241,7 +241,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     </div>
                   </details>
 
-                  <button type="submit" className="rounded-full bg-zinc-900 px-3 py-1 text-[10px] font-semibold text-white">
+                  <button type="submit" className="rounded-full bg-[linear-gradient(135deg,#18181b_0%,#312e81_100%)] px-3 py-1 text-[10px] font-semibold text-white shadow-[0_14px_26px_-18px_rgba(49,46,129,0.72)]">
                     保存
                   </button>
               </div>
