@@ -138,9 +138,10 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             <input type="hidden" name="id" value={candidate.id} />
 
             <section className="fantasy-page-shell overflow-hidden rounded-[1.7rem] border border-fuchsia-100/70 bg-white/76 shadow-[0_24px_54px_-38px_rgba(76,29,149,0.88)]">
-              <div className="flex items-center justify-between gap-2 bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] px-3 py-2">
+              <div className="flex items-center bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] px-3 py-2">
                 <div className="text-sm font-black tracking-tight text-zinc-800">求職者基本情報</div>
-                <div className="flex items-center gap-1.5">
+              </div>
+              <div className="flex items-center justify-end gap-1.5 border-b border-white/55 bg-white/55 px-3 py-2">
                   <button
                     type="button"
                     className="rounded-full border border-violet-200 bg-white px-3 py-1 text-[10px] font-semibold text-violet-700 transition hover:bg-violet-50"
@@ -243,7 +244,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   <button type="submit" className="rounded-full bg-zinc-900 px-3 py-1 text-[10px] font-semibold text-white">
                     保存
                   </button>
-                </div>
               </div>
 
               <div className="space-y-1.5 px-2 py-2">
