@@ -112,6 +112,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
     { label: "入社", value: candidate.joiningDate, className: "bg-cyan-100 text-cyan-700" },
     { label: "終", value: candidate.closedDate, className: "bg-slate-200 text-slate-700" },
   ]
+  const ownerOptionsWithBlank = [{ label: "空欄", value: "" }, ...CANDIDATE_OWNER_OPTIONS.map((option) => ({ label: option, value: option }))]
 
   return (
     <div className="space-y-3 p-3 lg:p-4">
@@ -158,7 +159,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         <SearchableSelect
                           name="initialOwnerName"
                           defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
-                          options={["", ...CANDIDATE_OWNER_OPTIONS]}
+                          options={ownerOptionsWithBlank}
                           className={compactInputClassName}
                         />
                       </label>
@@ -167,7 +168,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         <SearchableSelect
                           name="ownerName"
                           defaultValue={candidate.ownerName ?? ""}
-                          options={["", ...CANDIDATE_OWNER_OPTIONS]}
+                          options={ownerOptionsWithBlank}
                           className={compactInputClassName}
                         />
                       </label>
