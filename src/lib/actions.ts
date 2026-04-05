@@ -92,9 +92,12 @@ export async function saveCandidateAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
   const qualificationLines = parseQualificationLines(String(formData.get("qualificationLines") ?? ""))
   const birthDate = parseDate(formData.get("birthDate"))
+  const age = parseIntValue(formData.get("age"))
   const manualRank = String(formData.get("customerRank") ?? "C") as CustomerRank
   const rankManualOverride = formData.get("rankManualOverride") === "on"
   const inflowSource = String(formData.get("inflowSource") ?? "") || null
+  const unemploymentInsuranceContract = String(formData.get("unemploymentInsuranceContract") ?? "") || null
+  const retirementDate = parseDate(formData.get("retirementDate"))
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
 
@@ -104,7 +107,7 @@ export async function saveCandidateAction(formData: FormData) {
       name: String(formData.get("name") ?? ""),
       nameKana: String(formData.get("nameKana") ?? "") || null,
       birthDate,
-      age: calculateAgeFromBirthDate(birthDate),
+      age: birthDate ? calculateAgeFromBirthDate(birthDate) : age,
       gender: String(formData.get("gender") ?? "") || null,
       phone: String(formData.get("phone") ?? "") || null,
       email: String(formData.get("email") ?? "") || null,
@@ -115,7 +118,10 @@ export async function saveCandidateAction(formData: FormData) {
       jobSearchStatus: String(formData.get("jobSearchStatus") ?? "") || null,
       desiredTiming: String(formData.get("desiredTiming") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
+      otherConditions: String(formData.get("lineUrl") ?? "") || null,
       inflowSource,
+      unemploymentInsuranceContract,
+      retirementDate,
       agentPassDate,
       callPreferredAt,
       inflowDate: parseDate(formData.get("inflowDate")),

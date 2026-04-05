@@ -15,6 +15,14 @@ export function formatDateInput(value?: Date | string | null) {
   return `${y}-${m}-${d}`
 }
 
+export function formatDateTimeInput(value?: Date | string | null) {
+  if (!value) return ""
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ""
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+  return localDate.toISOString().slice(0, 16)
+}
+
 export function formatCurrency(value?: number | null) {
   if (!value && value !== 0) return "-"
   return `¥${value.toLocaleString("ja-JP")}`
