@@ -247,7 +247,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
 
               <div className="space-y-1.5 px-2 py-2">
-                <div className="grid gap-x-4 gap-y-1 pl-6 text-[10px] md:grid-cols-[84px_84px_170px_170px_minmax(0,1fr)]">
+                <div className="grid gap-x-4 gap-y-1 pl-6 text-[10px] md:grid-cols-[84px_84px_170px_190px_220px_repeat(4,minmax(80px,1fr))]">
                   <div className="leading-tight">
                     <div className="font-bold text-zinc-500">初回担当者</div>
                     <div className="mt-0.5 font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
@@ -289,37 +289,32 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       <div className="mt-0.5 font-semibold text-zinc-800">-</div>
                     )}
                   </div>
+                  {topMetaItems.map((item) => (
+                    <div key={item.key} className="min-w-0 self-start leading-tight">
+                      <div className="text-[9px] font-bold text-zinc-500">{item.label}</div>
+                      <div
+                        className={`mt-0.5 truncate text-[10px] font-semibold ${
+                          item.key === "inflow"
+                            ? item.value === "ポータル（ブルー）" || item.value === "ポータル"
+                              ? "text-sky-600"
+                              : item.value === "失業保険"
+                                ? "text-rose-600"
+                                : "text-zinc-700"
+                            : "text-zinc-700"
+                        }`}
+                      >
+                        {item.value}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="flex flex-col gap-1 xl:flex-row xl:items-end xl:justify-between">
-                  <div className="min-w-0">
-                    <div className="mb-0.5 pl-6 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
-                    <div className="flex items-center gap-1">
-                      <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
-                      <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
-                      {ageLabel ? <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">{ageLabel}</span> : null}
-                    </div>
-                  </div>
-
-                  <div className="grid flex-1 gap-x-4 gap-y-1 sm:grid-cols-2 xl:ml-2 xl:grid-cols-4">
-                    {topMetaItems.map((item) => (
-                      <div key={item.key} className="min-w-0 leading-tight">
-                        <div className="text-[11px] font-bold text-zinc-500">{item.label}</div>
-                        <div
-                          className={`mt-0.5 truncate text-[12px] font-semibold ${
-                            item.key === "inflow"
-                              ? item.value === "ポータル（ブルー）" || item.value === "ポータル"
-                                ? "text-sky-600"
-                                : item.value === "失業保険"
-                                  ? "text-rose-600"
-                                  : "text-zinc-700"
-                              : "text-zinc-700"
-                          }`}
-                        >
-                          {item.value}
-                        </div>
-                      </div>
-                    ))}
+                <div className="min-w-0">
+                  <div className="mb-0.5 pl-6 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
+                  <div className="flex items-center gap-1">
+                    <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
+                    <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                    {ageLabel ? <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">{ageLabel}</span> : null}
                   </div>
                 </div>
 
