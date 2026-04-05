@@ -210,7 +210,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </div>
               </div>
 
-              <div className="space-y-2 px-3 py-2.5">
+              <div className="space-y-2 px-2 py-2.5">
                 <div className="grid gap-x-5 gap-y-2 text-[11px] md:grid-cols-[140px_140px_minmax(0,1fr)]">
                   <div className="space-y-0.5">
                     <div className="font-bold text-zinc-600">初回担当者</div>
@@ -234,15 +234,15 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </div>
 
                 <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
-                  <div className="min-w-0">
+                  <div className="min-w-0 xl:pl-0">
                     <div className="mb-0.5 text-[10px] font-semibold tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
                       <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
                     </div>
                   </div>
 
-                  <div className="grid flex-1 gap-1.5 sm:grid-cols-2 xl:ml-6 xl:grid-cols-4">
+                  <div className="grid flex-1 gap-1.5 sm:grid-cols-2 xl:ml-3 xl:grid-cols-4">
                     {topMetaItems.map((item) => (
                       <div key={item.label} className={`flex min-w-0 items-center justify-center rounded-full px-2.5 py-1 text-[10px] font-bold ${item.className}`}>
                         <span className="truncate">
