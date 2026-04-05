@@ -11,7 +11,6 @@ import {
   CANDIDATE_CONDITION_OPTIONS,
   CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS,
   CANDIDATE_GENDER_OPTIONS,
-  CANDIDATE_OWNER_OPTIONS,
   CANDIDATE_STATUS_LABELS,
   CAREER_AXIS_OPTIONS,
   CUSTOMER_RANK_BADGE,
@@ -39,7 +38,6 @@ type Props = {
 
 const compactInputClassName = "h-8 w-full rounded-xl border border-zinc-200 bg-white px-2.5 text-[10px]"
 const inputClassName = "h-10 w-full rounded-2xl border border-zinc-200 px-3"
-const formId = "candidate-detail-form"
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values
@@ -92,23 +90,26 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
     candidate.gender === "男性" ? "text-sky-600" : candidate.gender === "女性" ? "text-rose-600" : "text-zinc-900"
   const inflowLabel =
     INFLOW_ROUTE_OPTIONS.find((option) => option.value === candidate.inflowSource)?.label ?? candidate.inflowSource ?? "未設定"
+
   const topMetaItems = [
     { label: "流入経路", value: inflowLabel, className: "bg-violet-100 text-violet-700" },
     { label: "ランク", value: candidate.customerRank, className: CUSTOMER_RANK_BADGE[candidate.customerRank] },
     { label: "ステータス", value: CANDIDATE_STATUS_LABELS[candidate.overallStatus], className: "bg-zinc-100 text-zinc-700" },
     { label: "選考企業社数", value: `${activeCompanyCount}社`, className: "bg-rose-100 text-rose-700" },
   ]
+
   const headerStatusItems = [
-    { label: "流入日", value: candidate.inflowDate, className: "bg-stone-200 text-stone-700" },
-    { label: "初回通話", value: candidate.firstResponseDate, className: "bg-sky-100 text-sky-700" },
-    { label: "初期ヒア", value: candidate.interviewDate, className: "bg-green-100 text-green-700" },
-    { label: "提案アポ", value: candidate.documentCreatedDate, className: "bg-violet-100 text-violet-700" },
+    { label: "流入", value: candidate.inflowDate, className: "bg-stone-200 text-stone-700" },
+    { label: "初回", value: candidate.firstResponseDate, className: "bg-sky-100 text-sky-700" },
+    { label: "面談", value: candidate.interviewDate, className: "bg-green-100 text-green-700" },
+    { label: "書類", value: candidate.documentCreatedDate, className: "bg-violet-100 text-violet-700" },
     { label: "提案", value: candidate.proposalDate, className: "bg-rose-100 text-rose-700" },
-    { label: "予", value: headerEntryDate, className: "bg-amber-100 text-amber-700" },
-    { label: "戻", value: headerCompanyInterviewDate, className: "bg-blue-100 text-blue-700" },
-    { label: "面", value: candidate.offerDate, className: "bg-fuchsia-100 text-fuchsia-700" },
-    { label: "受", value: candidate.offerAcceptedDate, className: "bg-teal-100 text-teal-700" },
-    { label: "終", value: candidate.joiningDate ?? candidate.closedDate, className: "bg-slate-200 text-slate-700" },
+    { label: "ｴﾝﾄﾘｰ", value: headerEntryDate, className: "bg-amber-100 text-amber-700" },
+    { label: "企面", value: headerCompanyInterviewDate, className: "bg-blue-100 text-blue-700" },
+    { label: "内定", value: candidate.offerDate, className: "bg-fuchsia-100 text-fuchsia-700" },
+    { label: "承諾", value: candidate.offerAcceptedDate, className: "bg-teal-100 text-teal-700" },
+    { label: "入社", value: candidate.joiningDate, className: "bg-cyan-100 text-cyan-700" },
+    { label: "終", value: candidate.closedDate, className: "bg-slate-200 text-slate-700" },
   ]
 
   return (
@@ -130,8 +131,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
         </TabsList>
 
         <TabsContent value="support" className="space-y-4">
-          <form id={formId} action={saveCandidateAction} className="space-y-4">
+          <form action={saveCandidateAction} className="space-y-4">
             <input type="hidden" name="id" value={candidate.id} />
+            <input type="hidden" name="initialOwnerName" value={candidate.initialOwnerName ?? candidate.ownerName ?? ""} />
+            <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
+            <input type="hidden" name="phone" value={candidate.phone ?? ""} />
 
             <section className="overflow-hidden rounded-[18px] border border-sky-100 bg-white shadow-sm">
               <div className="flex flex-col gap-2 bg-sky-100/85 px-3 py-1.5 md:flex-row md:items-center md:justify-between">
@@ -179,7 +183,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         <input type="date" name="offerAcceptedDate" defaultValue={formatDateInput(candidate.offerAcceptedDate)} className={compactInputClassName} />
                       </label>
                       <label className="space-y-1">
-                        <HeaderLabel label="入社日" className="bg-slate-200 text-slate-700" />
+                        <HeaderLabel label="入社日" className="bg-cyan-100 text-cyan-700" />
                         <input type="date" name="joiningDate" defaultValue={formatDateInput(candidate.joiningDate)} className={compactInputClassName} />
                       </label>
                       <label className="space-y-1">
@@ -210,39 +214,25 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
               <div className="space-y-2 px-3 py-2.5">
                 <div className="grid gap-x-5 gap-y-2 text-[11px] md:grid-cols-[140px_140px_minmax(0,1fr)]">
-                  <label className="space-y-1">
+                  <div className="space-y-0.5">
                     <div className="font-bold text-zinc-600">初回担当者</div>
-                    <SearchableSelect
-                      name="initialOwnerName"
-                      defaultValue={candidate.initialOwnerName ?? candidate.ownerName ?? ""}
-                      options={CANDIDATE_OWNER_OPTIONS}
-                      className={compactInputClassName}
-                    />
-                  </label>
-                  <label className="space-y-1">
+                    <div className="text-xs font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
+                  </div>
+                  <div className="space-y-0.5">
                     <div className="font-bold text-zinc-600">担当者</div>
-                    <SearchableSelect
-                      name="ownerName"
-                      defaultValue={candidate.ownerName ?? ""}
-                      options={CANDIDATE_OWNER_OPTIONS}
-                      className={compactInputClassName}
-                    />
-                  </label>
-                  <label className="space-y-1">
+                    <div className="text-xs font-semibold text-zinc-800">{candidate.ownerName ?? "-"}</div>
+                  </div>
+                  <div className="space-y-0.5">
                     <div className="font-bold text-zinc-600">電話番号</div>
-                    <div className="flex items-center gap-1.5">
-                      <input name="phone" defaultValue={candidate.phone ?? ""} className={compactInputClassName} />
-                      {candidate.phone ? (
-                        <a
-                          href={`tel:${candidate.phone}`}
-                          className="inline-flex h-8 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-2.5 text-sky-700 transition hover:bg-sky-100"
-                          title="架電する"
-                        >
-                          <Phone className="h-3.5 w-3.5" />
-                        </a>
-                      ) : null}
-                    </div>
-                  </label>
+                    {candidate.phone ? (
+                      <a href={`tel:${candidate.phone}`} className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 underline-offset-2 hover:underline">
+                        <Phone className="h-3.5 w-3.5" />
+                        {candidate.phone}
+                      </a>
+                    ) : (
+                      <div className="text-xs font-semibold text-zinc-800">-</div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
@@ -250,7 +240,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     <div className="mb-0.5 text-[10px] font-semibold tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
                     <div className="flex items-center gap-2">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
-                      <h1 className={`truncate text-[32px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                      <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
                     </div>
                   </div>
 
@@ -265,7 +255,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                   </div>
                 </div>
 
-                <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-10">
+                <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-6 xl:grid-cols-11">
                   {headerStatusItems.map((item) => (
                     <div key={item.label} className="rounded-lg border border-zinc-100 bg-white px-1.5 py-1 text-center">
                       <div className="flex justify-center">
