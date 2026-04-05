@@ -90,7 +90,14 @@ async function syncCandidateDerivedFields(candidateId: string) {
 
 export async function saveCandidateAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
-  const qualificationLines = parseQualificationLines(String(formData.get("qualificationLines") ?? ""))
+  const qualificationNames = formData
+    .getAll("qualificationNames")
+    .filter((value): value is string => typeof value === "string")
+    .map((value) => value.trim())
+    .filter(Boolean)
+  const qualificationLines = qualificationNames.length > 0
+    ? qualificationNames.filter((value, index, values) => values.indexOf(value) === index)
+    : parseQualificationLines(String(formData.get("qualificationLines") ?? ""))
   const birthDate = parseDate(formData.get("birthDate"))
   const age = parseIntValue(formData.get("age"))
   const manualRank = String(formData.get("customerRank") ?? "C") as CustomerRank

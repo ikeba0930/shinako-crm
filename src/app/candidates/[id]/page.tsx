@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
+import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
 import { SearchableSelect } from "@/components/searchable-select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,6 +26,7 @@ import {
 } from "@/lib/constants"
 import { prisma } from "@/lib/db"
 import { formatCurrency, formatDate, formatDateInput, formatDateTimeInput } from "@/lib/format"
+import { DETAILED_QUALIFICATION_OPTIONS } from "@/lib/qualification-options"
 
 export const dynamic = "force-dynamic"
 
@@ -61,7 +63,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
   const isUnemploymentInsurance = candidate.inflowSource === "失業保険"
   const lineUrlLabel = isUnemploymentInsurance ? "LステURL（ひとなりのURL）" : "LステURL"
-  const qualificationLines = candidate.qualifications.map((item) => item.qualificationName).join("\n")
+  const qualificationValues = candidate.qualifications.map((item) => item.qualificationName)
   const activeCompanies = [...new Set(candidate.selections.map((selection) => selection.companyName).filter(Boolean))]
   const activeCompanyCount = activeCompanies.length
   const fallbackEntryDate = getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
@@ -302,6 +304,14 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <span>現在の年収</span>
               <input type="number" min="0" name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
             </label>
+            <div className="space-y-1 text-sm md:col-span-3">
+              <span className="block">資格</span>
+              <CandidateQualificationFields
+                initialQualifications={qualificationValues}
+                options={DETAILED_QUALIFICATION_OPTIONS}
+                className={inputClassName}
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -393,10 +403,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     options={DETAILED_CANDIDATE_JOB_OPTIONS}
                     className={inputClassName}
                   />
-                </label>
-                <label className="space-y-1 text-sm md:col-span-3">
-                  <span>資格</span>
-                  <textarea name="qualificationLines" defaultValue={qualificationLines} className="min-h-28 w-full rounded-2xl border border-zinc-200 px-3 py-2" />
                 </label>
               </>
             )}
