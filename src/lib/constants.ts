@@ -428,11 +428,8 @@ export const CONTACT_RESPONSE_STATUS_DETAILS: Record<string, string[]> = {
 
 export const CONTACT_COMMUNICATION_METHOD_OPTIONS = [
   "電話",
-  "SMS",
   "メール",
   "LINE",
-  "対面",
-  "その他",
 ] as const
 
 export const CONTACT_REASON_OPTIONS = [
