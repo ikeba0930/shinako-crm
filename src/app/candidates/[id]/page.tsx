@@ -140,6 +140,18 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <div className="flex items-center justify-between gap-2 bg-sky-100/80 px-3 py-1.5">
                 <div className="text-sm font-black tracking-tight text-zinc-800">求職者基本情報</div>
                 <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    className="rounded-full border border-violet-200 bg-white px-3 py-1 text-[10px] font-semibold text-violet-700 transition hover:bg-violet-50"
+                  >
+                    ファイル格納
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full border border-rose-200 bg-white px-3 py-1 text-[10px] font-semibold text-rose-700 transition hover:bg-rose-50"
+                  >
+                    対応NA
+                  </button>
                   <details className="group rounded-2xl border border-rose-200 bg-white/90 p-1">
                     <summary className="cursor-pointer list-none rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold text-white transition hover:bg-rose-600">
                       ステータス変更
