@@ -22,19 +22,22 @@ type Props = {
 function Field({
   label,
   required,
+  accentClassName = "from-fuchsia-500 to-sky-500",
   className = "",
   children,
 }: {
   label: string
   required?: boolean
+  accentClassName?: string
   className?: string
   children: ReactNode
 }) {
   return (
     <label className={`space-y-1.5 text-sm text-[#241433] ${className}`}>
-      <span className="block font-semibold">
-        {label}
-        {required ? <span className="ml-1 text-rose-500">*</span> : null}
+      <span className="inline-flex items-center gap-2 font-semibold">
+        <span className={`h-2.5 w-2.5 rounded-full bg-gradient-to-br ${accentClassName}`} />
+        <span>{label}</span>
+        {required ? <span className="text-rose-500">*</span> : null}
       </span>
       {children}
     </label>
@@ -56,46 +59,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
 
   return (
     <form action={action} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-      <Field label="氏名" required>
-        <input name="name" className={inputClassName} />
-      </Field>
-      <Field label="性別" required>
-        <select name="gender" defaultValue="" className={inputClassName}>
-          <option value="">選択してください</option>
-          {CANDIDATE_GENDER_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label="LINE URL">
-        <input name="lineUrl" className={inputClassName} />
-      </Field>
-      <Field label="年齢" required>
-        <select name="age" value={age} onChange={(event) => setAge(event.target.value)} className={inputClassName}>
-          <option value="">選択してください</option>
-          {CANDIDATE_AGE_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}歳
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label="条件" required>
-        <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} className={inputClassName}>
-          <option value="">選択してください</option>
-          {CANDIDATE_CONDITION_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label="ランク" required>
-        <input value={rankPreview} readOnly className={`${inputClassName} font-bold text-[#7c3aed]`} />
-      </Field>
-      <Field label="流入経路" required>
+      <Field label="流入経路" required accentClassName="from-violet-500 to-pink-500">
         <select
           name="inflowSource"
           value={inflowSource}
@@ -109,10 +73,49 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
           ))}
         </select>
       </Field>
+      <Field label="氏名" required accentClassName="from-rose-500 to-orange-400">
+        <input name="name" className={inputClassName} />
+      </Field>
+      <Field label="性別" required accentClassName="from-sky-500 to-cyan-400">
+        <select name="gender" defaultValue="" className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_GENDER_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="LINE URL" accentClassName="from-emerald-500 to-lime-400">
+        <input name="lineUrl" className={inputClassName} />
+      </Field>
+      <Field label="年齢" required accentClassName="from-amber-500 to-yellow-400">
+        <select name="age" value={age} onChange={(event) => setAge(event.target.value)} className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_AGE_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}歳
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="条件" required accentClassName="from-indigo-500 to-violet-500">
+        <select name="jobSearchStatus" value={condition} onChange={(event) => setCondition(event.target.value)} className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_CONDITION_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="ランク" required accentClassName="from-fuchsia-500 to-pink-500">
+        <input value={rankPreview} readOnly className={`${inputClassName} font-bold text-[#7c3aed]`} />
+      </Field>
 
       {isUnemploymentInsurance ? (
         <>
-          <Field label="失業保険契約">
+          <Field label="失業保険契約" accentClassName="from-cyan-500 to-sky-500">
             <select name="unemploymentInsuranceContract" defaultValue="" className={inputClassName}>
               <option value="">選択してください</option>
               {UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => (
@@ -122,19 +125,19 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
               ))}
             </select>
           </Field>
-          <Field label="退職日">
+          <Field label="退職日" accentClassName="from-orange-500 to-rose-500">
             <input type="date" name="retirementDate" className={inputClassName} />
           </Field>
-          <Field label="エージェント パス日" required>
+          <Field label="エージェント パス日" required accentClassName="from-teal-500 to-emerald-500">
             <input type="date" name="agentPassDate" required className={inputClassName} />
           </Field>
-          <Field label="架電希望日時" required>
+          <Field label="架電希望日時" required accentClassName="from-blue-500 to-indigo-500">
             <input type="datetime-local" name="callPreferredAt" required className={inputClassName} />
           </Field>
         </>
       ) : (
         <>
-          <Field label="希望職種" required>
+          <Field label="希望職種" required accentClassName="from-pink-500 to-rose-500">
             <select name="desiredJobType" defaultValue="" className={inputClassName}>
               <option value="">選択してください</option>
               {CANDIDATE_JOB_OPTIONS.map((option) => (
@@ -144,7 +147,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
               ))}
             </select>
           </Field>
-          <Field label="初回担当者" required>
+          <Field label="初回担当者" required accentClassName="from-cyan-500 to-blue-500">
             <select name="ownerName" defaultValue="" className={inputClassName}>
               <option value="">選択してください</option>
               {CANDIDATE_OWNER_OPTIONS.map((option) => (
@@ -154,7 +157,7 @@ export function CandidateBasicCreateForm({ action, qualificationOptions }: Props
               ))}
             </select>
           </Field>
-          <Field label="資格" className="md:col-span-2 xl:col-span-2">
+          <Field label="資格" className="md:col-span-2 xl:col-span-2" accentClassName="from-lime-500 to-emerald-500">
             <div className="w-full rounded-2xl border border-white/60 bg-white/80 p-3">
               <select
                 name="qualificationNames"
