@@ -5,6 +5,7 @@ import { CandidateQualificationFields } from "@/components/candidate-qualificati
 import { SearchableSelect } from "@/components/searchable-select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { createSelectionAction, saveCandidateAction } from "@/lib/actions"
 import {
   CANDIDATE_CONDITION_OPTIONS,
@@ -227,232 +228,285 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           </div>
         </div>
 
-        <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">基本情報</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <label className="space-y-1 text-sm">
-              <span>氏名</span>
-              <input name="name" defaultValue={candidate.name} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>氏名（かな）</span>
-              <input name="nameKana" defaultValue={candidate.nameKana ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>メールアドレス</span>
-              <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>電話番号</span>
-              <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>性別</span>
-              <SearchableSelect
-                name="gender"
-                defaultValue={candidate.gender ?? ""}
-                options={CANDIDATE_GENDER_OPTIONS.filter((option) => option.value === "男性" || option.value === "女性").map((option) => option.value)}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>生年月日</span>
-              <input type="date" name="birthDate" defaultValue={formatDateInput(candidate.birthDate)} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm md:col-span-2">
-              <span>居住地</span>
-              <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS.map((option) => option)} className={inputClassName} />
-            </label>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="support" className="space-y-4">
+          <TabsList className="rounded-full bg-white/85 p-1 shadow-sm">
+            <TabsTrigger value="support" className="rounded-full px-4 py-1.5 text-sm font-semibold">
+              対応履歴など
+            </TabsTrigger>
+            <TabsTrigger value="selections" className="rounded-full px-4 py-1.5 text-sm font-semibold">
+              選考企業
+            </TabsTrigger>
+          </TabsList>
 
-        <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">経歴</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <label className="space-y-1 text-sm">
-              <span>最終学歴</span>
-              <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS.map((option) => option)} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>経験社数</span>
-              <SearchableSelect
-                name="experienceCompanyCount"
-                defaultValue={candidate.experienceCompanyCount != null ? String(candidate.experienceCompanyCount) : ""}
-                options={CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>マネジメント経験</span>
-              <SearchableSelect
-                name="managementExperience"
-                defaultValue={candidate.managementExperience ?? ""}
-                options={MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => option)}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>現在の職種</span>
-              <SearchableSelect
-                name="currentJobType"
-                defaultValue={candidate.currentJobType ?? ""}
-                options={DETAILED_CANDIDATE_JOB_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>雇用形態</span>
-              <SearchableSelect
-                name="employmentStatus"
-                defaultValue={candidate.employmentStatus ?? ""}
-                options={EMPLOYMENT_TYPE_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>現在の年収</span>
-              <input type="number" min="0" name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
-            </label>
-            <div className="space-y-1 text-sm md:col-span-3">
-              <span className="block">資格</span>
-              <CandidateQualificationFields
-                initialQualifications={presetQualifications}
-                initialFreeText={freeTextQualifications}
-                options={qualificationOptions}
-                className={inputClassName}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">活動情報</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <label className="space-y-1 text-sm">
-              <span>条件</span>
-              <SearchableSelect name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} options={CANDIDATE_CONDITION_OPTIONS} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>離職日</span>
-              <input type="date" name="resignationDate" defaultValue={formatDateInput(candidate.resignationDate)} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>離職予定日</span>
-              <input type="date" name="resignationPlannedDate" defaultValue={formatDateInput(candidate.resignationPlannedDate)} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>希望時期</span>
-              <SearchableSelect
-                name="desiredTiming"
-                defaultValue={candidate.desiredTiming ?? ""}
-                options={DESIRED_TIMING_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>転職軸 第一候補</span>
-              <SearchableSelect
-                name="careerAxisPrimary"
-                defaultValue={candidate.careerAxisPrimary ?? ""}
-                options={CAREER_AXIS_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>転職軸 第二候補</span>
-              <SearchableSelect
-                name="careerAxisSecondary"
-                defaultValue={candidate.careerAxisSecondary ?? ""}
-                options={CAREER_AXIS_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-
-            {isUnemploymentInsurance ? (
-              <>
+          <TabsContent value="support" className="space-y-6">
+            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-zinc-900">基本情報</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-3">
                 <label className="space-y-1 text-sm">
-                  <span>失業保険契約</span>
+                  <span>氏名</span>
+                  <input name="name" defaultValue={candidate.name} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>氏名（かな）</span>
+                  <input name="nameKana" defaultValue={candidate.nameKana ?? ""} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>メールアドレス</span>
+                  <input name="email" defaultValue={candidate.email ?? ""} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>電話番号</span>
+                  <input name="phone" defaultValue={candidate.phone ?? ""} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>性別</span>
                   <SearchableSelect
-                    name="unemploymentInsuranceContract"
-                    defaultValue={candidate.unemploymentInsuranceContract ?? ""}
-                    options={UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => option.value)}
+                    name="gender"
+                    defaultValue={candidate.gender ?? ""}
+                    options={CANDIDATE_GENDER_OPTIONS.filter((option) => option.value === "男性" || option.value === "女性").map((option) => option.value)}
                     className={inputClassName}
                   />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span>退職日</span>
-                  <input type="date" name="retirementDate" defaultValue={formatDateInput(candidate.retirementDate)} className={inputClassName} />
+                  <span>生年月日</span>
+                  <input type="date" name="birthDate" defaultValue={formatDateInput(candidate.birthDate)} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm md:col-span-2">
+                  <span>居住地</span>
+                  <SearchableSelect name="address" defaultValue={candidate.address ?? ""} options={PREFECTURE_OPTIONS.map((option) => option)} className={inputClassName} />
+                </label>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-zinc-900">経歴</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-3">
+                <label className="space-y-1 text-sm">
+                  <span>最終学歴</span>
+                  <SearchableSelect name="finalEducation" defaultValue={candidate.finalEducation ?? ""} options={FINAL_EDUCATION_OPTIONS.map((option) => option)} className={inputClassName} />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span>エージェント パス日</span>
-                  <input type="date" name="agentPassDate" defaultValue={formatDateInput(candidate.agentPassDate)} className={inputClassName} />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span>架電希望日時</span>
-                  <input type="datetime-local" name="callPreferredAt" defaultValue={formatDateTimeInput(candidate.callPreferredAt)} className={inputClassName} />
-                </label>
-              </>
-            ) : (
-              <>
-                <label className="space-y-1 text-sm">
-                  <span>希望職種 第一候補</span>
+                  <span>経験社数</span>
                   <SearchableSelect
-                    name="desiredJobType"
-                    defaultValue={candidate.desiredJobType ?? ""}
+                    name="experienceCompanyCount"
+                    defaultValue={candidate.experienceCompanyCount != null ? String(candidate.experienceCompanyCount) : ""}
+                    options={CANDIDATE_EXPERIENCE_COMPANY_COUNT_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>マネジメント経験</span>
+                  <SearchableSelect
+                    name="managementExperience"
+                    defaultValue={candidate.managementExperience ?? ""}
+                    options={MANAGEMENT_EXPERIENCE_OPTIONS.map((option) => option)}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>現在の職種</span>
+                  <SearchableSelect
+                    name="currentJobType"
+                    defaultValue={candidate.currentJobType ?? ""}
                     options={DETAILED_CANDIDATE_JOB_OPTIONS}
                     className={inputClassName}
                   />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span>希望職種 第二候補</span>
+                  <span>雇用形態</span>
                   <SearchableSelect
-                    name="desiredJobTypeSecond"
-                    defaultValue={candidate.desiredJobTypeSecond ?? ""}
-                    options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                    name="employmentStatus"
+                    defaultValue={candidate.employmentStatus ?? ""}
+                    options={EMPLOYMENT_TYPE_OPTIONS}
                     className={inputClassName}
                   />
                 </label>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                <label className="space-y-1 text-sm">
+                  <span>現在の年収</span>
+                  <input type="number" min="0" name="currentAnnualIncome" defaultValue={candidate.currentAnnualIncome ?? ""} className={inputClassName} />
+                </label>
+                <div className="space-y-1 text-sm md:col-span-3">
+                  <span className="block">資格</span>
+                  <CandidateQualificationFields
+                    initialQualifications={presetQualifications}
+                    initialFreeText={freeTextQualifications}
+                    options={qualificationOptions}
+                    className={inputClassName}
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-bold text-zinc-900">希望条件</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-1 text-sm md:col-span-3">
-              <span className="block">希望勤務地</span>
-              <CandidateLocationFields
-                prefecture={candidate.desiredPrefecture}
-                city={candidate.desiredCity}
-                detail={candidate.desiredLocationDetail}
-                selectClassName={inputClassName}
-                inputClassName={inputClassName}
-              />
-            </div>
-            <label className="space-y-1 text-sm">
-              <span>希望年収</span>
-              <input type="number" min="0" name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>雇用形態希望</span>
-              <SearchableSelect
-                name="employmentTypePreference"
-                defaultValue={candidate.employmentTypePreference ?? ""}
-                options={EMPLOYMENT_TYPE_OPTIONS}
-                className={inputClassName}
-              />
-            </label>
-          </CardContent>
-        </Card>
+            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-zinc-900">活動情報</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-3">
+                <label className="space-y-1 text-sm">
+                  <span>条件</span>
+                  <SearchableSelect name="jobSearchStatus" defaultValue={candidate.jobSearchStatus ?? ""} options={CANDIDATE_CONDITION_OPTIONS} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>離職日</span>
+                  <input type="date" name="resignationDate" defaultValue={formatDateInput(candidate.resignationDate)} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>離職予定日</span>
+                  <input type="date" name="resignationPlannedDate" defaultValue={formatDateInput(candidate.resignationPlannedDate)} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>希望時期</span>
+                  <SearchableSelect
+                    name="desiredTiming"
+                    defaultValue={candidate.desiredTiming ?? ""}
+                    options={DESIRED_TIMING_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>転職軸 第一候補</span>
+                  <SearchableSelect
+                    name="careerAxisPrimary"
+                    defaultValue={candidate.careerAxisPrimary ?? ""}
+                    options={CAREER_AXIS_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>転職軸 第二候補</span>
+                  <SearchableSelect
+                    name="careerAxisSecondary"
+                    defaultValue={candidate.careerAxisSecondary ?? ""}
+                    options={CAREER_AXIS_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+
+                {isUnemploymentInsurance ? (
+                  <>
+                    <label className="space-y-1 text-sm">
+                      <span>失業保険契約</span>
+                      <SearchableSelect
+                        name="unemploymentInsuranceContract"
+                        defaultValue={candidate.unemploymentInsuranceContract ?? ""}
+                        options={UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS.map((option) => option.value)}
+                        className={inputClassName}
+                      />
+                    </label>
+                    <label className="space-y-1 text-sm">
+                      <span>退職日</span>
+                      <input type="date" name="retirementDate" defaultValue={formatDateInput(candidate.retirementDate)} className={inputClassName} />
+                    </label>
+                    <label className="space-y-1 text-sm">
+                      <span>エージェント パス日</span>
+                      <input type="date" name="agentPassDate" defaultValue={formatDateInput(candidate.agentPassDate)} className={inputClassName} />
+                    </label>
+                    <label className="space-y-1 text-sm">
+                      <span>架電希望日時</span>
+                      <input type="datetime-local" name="callPreferredAt" defaultValue={formatDateTimeInput(candidate.callPreferredAt)} className={inputClassName} />
+                    </label>
+                  </>
+                ) : (
+                  <>
+                    <label className="space-y-1 text-sm">
+                      <span>希望職種 第一候補</span>
+                      <SearchableSelect
+                        name="desiredJobType"
+                        defaultValue={candidate.desiredJobType ?? ""}
+                        options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                        className={inputClassName}
+                      />
+                    </label>
+                    <label className="space-y-1 text-sm">
+                      <span>希望職種 第二候補</span>
+                      <SearchableSelect
+                        name="desiredJobTypeSecond"
+                        defaultValue={candidate.desiredJobTypeSecond ?? ""}
+                        options={DETAILED_CANDIDATE_JOB_OPTIONS}
+                        className={inputClassName}
+                      />
+                    </label>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-zinc-900">希望条件</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-3">
+                <div className="space-y-1 text-sm md:col-span-3">
+                  <span className="block">希望勤務地</span>
+                  <CandidateLocationFields
+                    prefecture={candidate.desiredPrefecture}
+                    city={candidate.desiredCity}
+                    detail={candidate.desiredLocationDetail}
+                    selectClassName={inputClassName}
+                    inputClassName={inputClassName}
+                  />
+                </div>
+                <label className="space-y-1 text-sm">
+                  <span>希望年収</span>
+                  <input type="number" min="0" name="desiredAnnualIncome" defaultValue={candidate.desiredAnnualIncome ?? ""} className={inputClassName} />
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span>雇用形態希望</span>
+                  <SearchableSelect
+                    name="employmentTypePreference"
+                    defaultValue={candidate.employmentTypePreference ?? ""}
+                    options={EMPLOYMENT_TYPE_OPTIONS}
+                    className={inputClassName}
+                  />
+                </label>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="selections">
+            <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-zinc-900">選考企業を紐づけ</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {candidate.selections.map((selection) => (
+                  <div key={selection.id} className="rounded-2xl bg-zinc-50 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="font-semibold text-zinc-900">{selection.companyName}</p>
+                        <p className="text-sm text-zinc-500">
+                          {selection.jobType ?? "-"} / {formatCurrency(Math.round((selection.unitPrice ?? 0) * (selection.feeRate ?? 0)))}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700">
+                        {SELECTION_STATUS_LABELS[selection.selectionStatus]}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-zinc-500">
+                      提案: {formatDate(selection.proposedAt)} / エントリー: {formatDate(selection.entryAt)} / オファー: {formatDate(selection.offerAt)}
+                    </p>
+                  </div>
+                ))}
+
+                <form action={createSelectionAction} className="grid gap-3 rounded-2xl border border-dashed border-zinc-200 p-4 md:grid-cols-5">
+                  <input type="hidden" name="candidateId" value={candidate.id} />
+                  <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
+                  <input name="companyName" placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                  <input name="jobType" placeholder="募集職種" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                  <input name="unitPrice" placeholder="単価" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                  <input name="feeRate" placeholder="料率 0.35" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                  <button type="submit" className="h-10 rounded-2xl bg-zinc-900 px-4 text-sm font-semibold text-white">
+                    選考を追加
+                  </button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         <div className="flex justify-end">
           <button type="submit" className="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white">
@@ -460,44 +514,6 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
           </button>
         </div>
       </form>
-
-      <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold text-zinc-900">選考一覧</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {candidate.selections.map((selection) => (
-            <div key={selection.id} className="rounded-2xl bg-zinc-50 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <p className="font-semibold text-zinc-900">{selection.companyName}</p>
-                  <p className="text-sm text-zinc-500">
-                    {selection.jobType ?? "-"} / {formatCurrency(Math.round((selection.unitPrice ?? 0) * (selection.feeRate ?? 0)))}
-                  </p>
-                </div>
-                <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700">
-                  {SELECTION_STATUS_LABELS[selection.selectionStatus]}
-                </span>
-              </div>
-              <p className="mt-2 text-sm text-zinc-500">
-                提案: {formatDate(selection.proposedAt)} / エントリー: {formatDate(selection.entryAt)} / オファー: {formatDate(selection.offerAt)}
-              </p>
-            </div>
-          ))}
-
-          <form action={createSelectionAction} className="grid gap-3 rounded-2xl border border-dashed border-zinc-200 p-4 md:grid-cols-5">
-            <input type="hidden" name="candidateId" value={candidate.id} />
-            <input type="hidden" name="ownerName" value={candidate.ownerName ?? ""} />
-            <input name="companyName" placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-            <input name="jobType" placeholder="募集職種" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-            <input name="unitPrice" placeholder="単価" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-            <input name="feeRate" placeholder="料率 0.35" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-            <button type="submit" className="h-10 rounded-2xl bg-zinc-900 px-4 text-sm font-semibold text-white">
-              選考を追加
-            </button>
-          </form>
-        </CardContent>
-      </Card>
     </div>
   )
 }
