@@ -1,12 +1,19 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { Check, ChevronDown, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type SearchableOption = {
   label: string
   value: string
+}
+
+type PopupPosition = {
+  top: number
+  left: number
+  width: number
 }
 
 type Props = {
@@ -39,11 +46,19 @@ export function SearchableSelect({
   const [internalValue, setInternalValue] = useState(defaultValue)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
+  const [mounted, setMounted] = useState(false)
+  const [popupPosition, setPopupPosition] = useState<PopupPosition | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const popupRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const selectedValue = isControlled ? value : internalValue
   const selectedOption = normalizedOptions.find((option) => option.value === selectedValue)
   const filteredOptions = normalizedOptions.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()))
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (!open) {
@@ -56,15 +71,39 @@ export function SearchableSelect({
   }, [open])
 
   useEffect(() => {
+    if (!open) return
+
     function handlePointerDown(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false)
-      }
+      const target = event.target as Node
+      if (rootRef.current?.contains(target) || popupRef.current?.contains(target)) return
+      setOpen(false)
     }
 
     document.addEventListener("mousedown", handlePointerDown)
     return () => document.removeEventListener("mousedown", handlePointerDown)
-  }, [])
+  }, [open])
+
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) return
+
+    function updatePosition() {
+      if (!buttonRef.current) return
+      const rect = buttonRef.current.getBoundingClientRect()
+      setPopupPosition({
+        top: rect.bottom + window.scrollY + 6,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      })
+    }
+
+    updatePosition()
+    window.addEventListener("resize", updatePosition)
+    window.addEventListener("scroll", updatePosition, true)
+    return () => {
+      window.removeEventListener("resize", updatePosition)
+      window.removeEventListener("scroll", updatePosition, true)
+    }
+  }, [open])
 
   function commitValue(nextValue: string) {
     if (!isControlled) {
@@ -82,6 +121,7 @@ export function SearchableSelect({
     <div ref={rootRef} className="relative">
       {name ? <input type="hidden" name={name} value={selectedValue} data-searchable-select-value={required ? "required" : "optional"} readOnly /> : null}
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
         className={cn(
@@ -94,44 +134,57 @@ export function SearchableSelect({
         <ChevronDown className={cn("h-4 w-4 shrink-0 text-zinc-500 transition-transform", open && "rotate-180")} />
       </button>
 
-      {open ? (
-        <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-full rounded-2xl border border-zinc-200 bg-white p-2 shadow-lg">
-          <div className="relative">
-            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <input
-              ref={searchInputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="候補を検索"
-              className="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50 pr-3 pl-9 text-sm outline-none"
-            />
-          </div>
-          <div className="mt-2 max-h-56 overflow-y-auto">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => {
-                const isSelected = option.value === selectedValue
+      {mounted && open && popupPosition
+        ? createPortal(
+            <div
+              ref={popupRef}
+              style={{
+                position: "absolute",
+                top: popupPosition.top,
+                left: popupPosition.left,
+                width: popupPosition.width,
+                zIndex: 9999,
+              }}
+              className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl ring-1 ring-black/5"
+            >
+              <div className="relative">
+                <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <input
+                  ref={searchInputRef}
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="候補を検索"
+                  className="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50 pr-3 pl-9 text-sm outline-none"
+                />
+              </div>
+              <div className="mt-2 max-h-56 overflow-y-auto">
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((option) => {
+                    const isSelected = option.value === selectedValue
 
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleSelect(option.value)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors",
-                      isSelected ? "bg-rose-50 text-rose-700" : "text-zinc-700 hover:bg-zinc-50"
-                    )}
-                  >
-                    <span>{option.label}</span>
-                    {isSelected ? <Check className="h-4 w-4" /> : null}
-                  </button>
-                )
-              })
-            ) : (
-              <div className="px-3 py-2 text-sm text-zinc-400">候補がありません</div>
-            )}
-          </div>
-        </div>
-      ) : null}
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => handleSelect(option.value)}
+                        className={cn(
+                          "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors",
+                          isSelected ? "bg-rose-50 text-rose-700" : "text-zinc-700 hover:bg-zinc-50"
+                        )}
+                      >
+                        <span>{option.label}</span>
+                        {isSelected ? <Check className="h-4 w-4" /> : null}
+                      </button>
+                    )
+                  })
+                ) : (
+                  <div className="px-3 py-2 text-sm text-zinc-400">候補がありません</div>
+                )}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   )
 }
