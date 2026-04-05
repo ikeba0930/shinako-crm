@@ -144,7 +144,16 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       ステータス変更
                     </summary>
                     <div className="mt-2 grid gap-1.5 md:grid-cols-2 xl:grid-cols-4">
-                      <label className="space-y-1">
+                      <label className="space-y-1 rounded-2xl border border-violet-200 bg-violet-50/70 p-2">
+                        <HeaderLabel label="流入経路" className="bg-violet-100 text-violet-700" />
+                        <SearchableSelect
+                          name="inflowSource"
+                          defaultValue={candidate.inflowSource ?? ""}
+                          options={INFLOW_ROUTE_OPTIONS.map((option) => option.value)}
+                          className={compactInputClassName}
+                        />
+                      </label>
+                      <label className="space-y-1 rounded-2xl border border-teal-200 bg-teal-50/70 p-2">
                         <HeaderLabel label="初回担当者" className="bg-teal-100 text-teal-700" />
                         <SearchableSelect
                           name="initialOwnerName"
@@ -153,7 +162,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                           className={compactInputClassName}
                         />
                       </label>
-                      <label className="space-y-1">
+                      <label className="space-y-1 rounded-2xl border border-purple-200 bg-purple-50/70 p-2">
                         <HeaderLabel label="担当者" className="bg-purple-100 text-purple-700" />
                         <SearchableSelect
                           name="ownerName"
