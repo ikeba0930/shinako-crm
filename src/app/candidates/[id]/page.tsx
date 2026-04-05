@@ -104,8 +104,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
   const topMetaItems = [
     { key: "inflow", label: "流入経路", value: inflowLabel },
-    { key: "rank", label: "ランク", value: candidate.customerRank },
     { key: "status", label: "対応中ステータス", value: candidate.contactLogs[0]?.responseStatus ?? "未設定" },
+    { key: "rank", label: "ランク", value: candidate.customerRank },
     { key: "companyCount", label: "選考企業社数", value: `${activeCompanyCount}社` },
   ]
 
@@ -245,7 +245,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
 
               <div className="space-y-1.5 px-2 py-2">
-                <div className="grid gap-x-4 gap-y-1 pl-6 text-[10px] md:grid-cols-[84px_84px_170px_190px_220px_repeat(4,minmax(80px,1fr))]">
+                <div className="grid gap-x-4 gap-y-1 pl-6 text-[10px] md:grid-cols-[84px_84px_170px_190px_220px_minmax(80px,1fr)_minmax(180px,2fr)_minmax(50px,auto)_minmax(70px,auto)]">
                   <div className="leading-tight">
                     <div className="font-bold text-zinc-500">初回担当者</div>
                     <div className="mt-0.5 font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
