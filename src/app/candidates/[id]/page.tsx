@@ -259,7 +259,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
                 <div className="flex flex-col gap-1 xl:flex-row xl:items-end xl:justify-between">
                   <div className="min-w-0">
-                    <div className="mb-0.5 pl-8 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
+                    <div className="mb-0.5 pl-6 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
                     <div className="flex items-center gap-1">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
                       <h1 className={`truncate text-[18px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
