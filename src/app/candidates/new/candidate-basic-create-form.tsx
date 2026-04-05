@@ -2,11 +2,19 @@
 
 import type { ReactNode } from "react"
 import { useState } from "react"
+import { calculateAutoRankFromAgeAndQualifications } from "@/lib/rank"
 import type { createCandidateAction } from "@/lib/actions"
-import { INFLOW_ROUTE_OPTIONS } from "@/lib/constants"
+import {
+  CANDIDATE_AGE_OPTIONS,
+  CANDIDATE_GENDER_OPTIONS,
+  CANDIDATE_JOB_OPTIONS,
+  CANDIDATE_OWNER_OPTIONS,
+  INFLOW_ROUTE_OPTIONS,
+} from "@/lib/constants"
 
 type Props = {
   action: typeof createCandidateAction
+  qualificationOptions: string[]
 }
 
 function Field({
@@ -31,24 +39,83 @@ function Field({
   )
 }
 
-export function CandidateBasicCreateForm({ action }: Props) {
+export function CandidateBasicCreateForm({ action, qualificationOptions }: Props) {
   const [inflowSource, setInflowSource] = useState<string>(INFLOW_ROUTE_OPTIONS[0].value)
+  const [age, setAge] = useState<string>("")
+  const [selectedQualifications, setSelectedQualifications] = useState<string[]>([])
   const isUnemploymentInsurance = inflowSource === "失業保険"
   const inputClassName = "h-11 w-full rounded-2xl border border-white/60 bg-white/80 px-3 text-sm"
+  const rankPreview = calculateAutoRankFromAgeAndQualifications(age ? Number(age) : null, selectedQualifications).rank
 
   return (
     <form action={action} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-      <Field label="求職者氏名" required>
+      <Field label="氏名" required>
         <input name="name" className={inputClassName} />
       </Field>
-      <Field label="電話番号">
-        <input name="phone" className={inputClassName} />
+      <Field label="性別" required>
+        <select name="gender" defaultValue="" className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_GENDER_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </Field>
-      <Field label="メールアドレス">
-        <input name="email" className={inputClassName} />
+      <Field label="LINE URL">
+        <input name="lineUrl" className={inputClassName} />
       </Field>
-      <Field label="希望職種">
-        <input name="desiredJobType" className={inputClassName} />
+      <Field label="年齢" required>
+        <select name="age" value={age} onChange={(event) => setAge(event.target.value)} className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_AGE_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}歳
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="希望職種" required>
+        <select name="desiredJobType" defaultValue="" className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_JOB_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="初回担当者" required>
+        <select name="ownerName" defaultValue="" className={inputClassName}>
+          <option value="">選択してください</option>
+          {CANDIDATE_OWNER_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="資格" className="md:col-span-2 xl:col-span-2">
+        <select
+          name="qualificationNames"
+          multiple
+          size={6}
+          value={selectedQualifications}
+          onChange={(event) => {
+            const values = Array.from(event.currentTarget.selectedOptions, (option) => option.value)
+            setSelectedQualifications(values)
+          }}
+          className="min-h-36 w-full rounded-2xl border border-white/60 bg-white/80 px-3 py-2 text-sm"
+        >
+          {qualificationOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="ランク" required>
+        <input value={rankPreview} readOnly className={`${inputClassName} font-bold text-[#7c3aed]`} />
       </Field>
       <Field label="流入経路" required>
         <select
@@ -74,10 +141,7 @@ export function CandidateBasicCreateForm({ action }: Props) {
           <input type="datetime-local" name="callPreferredAt" required className={inputClassName} />
         </Field>
       ) : null}
-      <Field label="担当者" className="md:col-span-2 xl:col-span-2">
-        <input name="ownerName" className={inputClassName} />
-      </Field>
-      <div className="flex items-end xl:col-span-1">
+      <div className="flex items-end md:col-span-2 xl:col-span-4">
         <button
           type="submit"
           className="h-11 w-full rounded-2xl bg-[linear-gradient(135deg,#7c3aed_0%,#ec4899_52%,#38bdf8_100%)] px-4 text-sm font-semibold text-white shadow-[0_18px_34px_-22px_rgba(168,85,247,0.92)]"

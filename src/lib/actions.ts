@@ -165,6 +165,22 @@ export async function createCandidateAction(formData: FormData) {
   const inflowSource = String(formData.get("inflowSource") ?? "") || "ポータル（ブルー）"
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
+  const age = parseIntValue(formData.get("age"))
+  const qualificationNames = formData
+    .getAll("qualificationNames")
+    .filter((value): value is string => typeof value === "string")
+    .map((value) => value.trim())
+    .filter(Boolean)
+  const autoRank = calculateCustomerRank(
+    {
+      age,
+      jobSearchStatus: null,
+      desiredTiming: null,
+      rankManualOverride: false,
+      customerRank: "C",
+    },
+    qualificationNames.map((qualificationName) => ({ qualificationName }))
+  )
 
   if (inflowSource === "失業保険" && (!agentPassDate || !callPreferredAt)) {
     throw new Error("失業保険を選択した場合は、エージェント パス日と架電希望日時が必須です。")
@@ -173,15 +189,28 @@ export async function createCandidateAction(formData: FormData) {
   const candidate = await prisma.candidate.create({
     data: {
       candidateCode: `C-${String(count + 1).padStart(4, "0")}`,
-      name: String(formData.get("name") ?? "新規候補者"),
+      name: String(formData.get("name") ?? "新規求職者"),
+      gender: String(formData.get("gender") ?? "") || null,
+      age,
       phone: String(formData.get("phone") ?? "") || null,
-      email: String(formData.get("email") ?? "") || null,
       desiredJobType: String(formData.get("desiredJobType") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
+      otherConditions: String(formData.get("lineUrl") ?? "") || null,
+      customerRank: autoRank.rank,
+      rankAutoResult: autoRank.rank,
+      rankSource: autoRank.source,
+      qualificationText: qualificationNames.join("、"),
       inflowSource,
       agentPassDate,
       callPreferredAt,
       inflowDate: now,
+      qualifications: {
+        create: qualificationNames.map((qualificationName, index) => ({
+          qualificationName,
+          isRankRelevant: true,
+          sortOrder: index,
+        })),
+      },
     },
   })
 

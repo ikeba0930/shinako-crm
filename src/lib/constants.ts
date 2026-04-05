@@ -17,6 +17,57 @@ export const INFLOW_ROUTE_OPTIONS = [
   { value: "失業保険", label: "失業保険" },
 ] as const
 
+export const CANDIDATE_GENDER_OPTIONS = [
+  { value: "男性", label: "男性" },
+  { value: "女性", label: "女性" },
+  { value: "その他", label: "その他" },
+] as const
+
+export const CANDIDATE_OWNER_OPTIONS = [
+  "池場敬太",
+  "土師優翔",
+  "銭谷勇太",
+  "共田悠馬",
+  "水見倫",
+  "杉山翔太",
+  "高木琴乃",
+] as const
+
+export const CANDIDATE_AGE_OPTIONS = Array.from({ length: 48 }, (_, index) => String(index + 18))
+
+export const CANDIDATE_JOB_OPTIONS = [
+  "営業",
+  "事務",
+  "経理",
+  "総務",
+  "人事",
+  "受付",
+  "販売",
+  "接客",
+  "コールセンター",
+  "カスタマーサポート",
+  "マーケティング",
+  "広報",
+  "企画",
+  "デザイナー",
+  "エンジニア",
+  "WEB制作",
+  "施工管理",
+  "製造",
+  "軽作業",
+  "物流",
+  "ドライバー",
+  "警備",
+  "介護",
+  "看護",
+  "保育",
+  "清掃",
+  "飲食",
+  "ホテル",
+  "不動産",
+  "その他",
+] as const
+
 export function inflowRouteMatches(currentValue: string | null | undefined, selectedValue: string) {
   if (!selectedValue) return true
   if (selectedValue === "ポータル（ブルー）") {

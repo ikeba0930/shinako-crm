@@ -1,9 +1,15 @@
 import Link from "next/link"
+import { prisma } from "@/lib/db"
 import { createCandidateAction } from "@/lib/actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CandidateBasicCreateForm } from "./candidate-basic-create-form"
 
-export default function CandidateNewPage() {
+export default async function CandidateNewPage() {
+  const qualificationMasters = await prisma.qualificationMaster.findMany({
+    where: { isActive: true },
+    orderBy: [{ rankCategory: "asc" }, { sortOrder: "asc" }],
+  })
+
   return (
     <div className="space-y-4 p-4 lg:p-5">
       <div className="flex items-center justify-between gap-4 rounded-[22px] border border-white/55 bg-white/55 px-4 py-3 shadow-[0_18px_40px_-32px_rgba(88,28,135,0.72)] backdrop-blur-xl">
@@ -25,7 +31,7 @@ export default function CandidateNewPage() {
           <CardTitle className="text-base font-black text-[#241433]">基本入力</CardTitle>
         </CardHeader>
         <CardContent>
-          <CandidateBasicCreateForm action={createCandidateAction} />
+          <CandidateBasicCreateForm action={createCandidateAction} qualificationOptions={qualificationMasters.map((item) => item.name)} />
         </CardContent>
       </Card>
     </div>
