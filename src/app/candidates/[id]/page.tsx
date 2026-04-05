@@ -4,6 +4,7 @@ import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
 import { PostalCodeAddressFields } from "@/components/postal-code-address-fields"
+import { SaveSuccessNotice } from "@/components/save-success-notice"
 import { SearchableSelect } from "@/components/searchable-select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -119,11 +120,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
   return (
     <div className="space-y-3 p-3 lg:p-4">
-      {isSaved ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
-          保存しました
-        </div>
-      ) : null}
+      {isSaved ? <SaveSuccessNotice message="保存しました" /> : null}
 
       <Tabs defaultValue="support" className="space-y-2">
         <TabsList className="rounded-full bg-white/85 p-0.5 shadow-sm">
