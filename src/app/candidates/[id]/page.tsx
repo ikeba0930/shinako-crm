@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react"
+import { Mail, Phone } from "lucide-react"
 import { notFound } from "next/navigation"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
@@ -206,7 +206,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               </div>
 
               <div className="space-y-1.5 px-2 py-2">
-                <div className="grid gap-x-4 gap-y-1 text-[10px] md:grid-cols-[110px_110px_minmax(0,1fr)]">
+                <div className="grid gap-x-4 gap-y-1 text-[10px] md:grid-cols-[96px_96px_minmax(0,1fr)_minmax(0,1fr)]">
                   <div className="leading-tight">
                     <div className="font-bold text-zinc-500">初回担当者</div>
                     <div className="mt-0.5 font-semibold text-zinc-800">{candidate.initialOwnerName ?? candidate.ownerName ?? "-"}</div>
@@ -226,11 +226,22 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       <div className="mt-0.5 font-semibold text-zinc-800">-</div>
                     )}
                   </div>
+                  <div className="leading-tight">
+                    <div className="font-bold text-zinc-500">メールアドレス</div>
+                    {candidate.email ? (
+                      <a href={`mailto:${candidate.email}`} className="mt-0.5 inline-flex items-center gap-1 font-semibold text-sky-700 underline-offset-2 hover:underline">
+                        <Mail className="h-3 w-3" />
+                        {candidate.email}
+                      </a>
+                    ) : (
+                      <div className="mt-0.5 font-semibold text-zinc-800">-</div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1 xl:flex-row xl:items-end xl:justify-between">
                   <div className="min-w-0">
-                    <div className="mb-0.5 pl-0 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
+                    <div className="mb-0.5 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
                     <div className="flex items-center gap-1">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
                       <h1 className={`truncate text-[18px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
