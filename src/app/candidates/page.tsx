@@ -210,8 +210,8 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   (selection) => !inactiveSelectionStatuses.has(selection.selectionStatus)
                 )
                 const activeCompanies = [...new Set(activeSelections.map((selection) => selection.companyName).filter(Boolean))]
-                const entryDate = getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
-                const companyInterviewDate = getLatestSelectionDate(
+                const entryDate = candidate.entryDate ?? getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
+                const companyInterviewDate = candidate.companyInterviewDate ?? getLatestSelectionDate(
                   candidate.selections.flatMap((selection) => [selection.firstInterviewAt, selection.secondInterviewAt, selection.interviewScheduledAt])
                 )
                 const bubbleLines = [

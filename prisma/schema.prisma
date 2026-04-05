@@ -125,6 +125,8 @@ model Candidate {
   interviewDate             DateTime?
   proposalDate              DateTime?
   documentCreatedDate       DateTime?
+  entryDate                 DateTime?
+  companyInterviewDate      DateTime?
   offerDate                 DateTime?
   offerAcceptedDate         DateTime?
   joiningDate               DateTime?

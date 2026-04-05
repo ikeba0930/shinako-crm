@@ -102,6 +102,8 @@ export async function saveCandidateAction(formData: FormData) {
   const retirementDate = parseDate(formData.get("retirementDate"))
   const agentPassDate = parseDate(formData.get("agentPassDate"))
   const callPreferredAt = parseDate(formData.get("callPreferredAt"))
+  const entryDate = parseDate(formData.get("entryDate"))
+  const companyInterviewDate = parseDate(formData.get("companyInterviewDate"))
 
   await prisma.candidate.update({
     where: { id },
@@ -132,6 +134,8 @@ export async function saveCandidateAction(formData: FormData) {
       interviewDate: parseDate(formData.get("interviewDate")),
       proposalDate: parseDate(formData.get("proposalDate")),
       documentCreatedDate: parseDate(formData.get("documentCreatedDate")),
+      entryDate,
+      companyInterviewDate,
       offerDate: parseDate(formData.get("offerDate")),
       offerAcceptedDate: parseDate(formData.get("offerAcceptedDate")),
       joiningDate: parseDate(formData.get("joiningDate")),
