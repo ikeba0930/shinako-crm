@@ -296,7 +296,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     <div className="mb-0.5 pl-6 text-[9px] font-semibold leading-none tracking-wide text-zinc-500">{candidate.nameKana || "-"}</div>
                     <div className="flex items-center gap-1">
                       <CandidateLineCopyButton gender={candidate.gender} url={candidate.otherConditions} />
-                      <h1 className={`truncate text-[27px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
+                      <h1 className={`truncate text-[22px] font-black leading-none tracking-tight ${nameColorClassName}`}>{candidate.name}</h1>
                       {ageLabel ? <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">{ageLabel}</span> : null}
                     </div>
                   </div>
