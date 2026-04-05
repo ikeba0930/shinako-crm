@@ -1,5 +1,6 @@
 import { Mail, Phone } from "lucide-react"
 import { notFound } from "next/navigation"
+import { CandidateFileVault } from "@/components/candidate-file-vault"
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
@@ -62,6 +63,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
       include: {
         qualifications: { orderBy: { sortOrder: "asc" } },
         selections: { orderBy: { updatedAt: "desc" } },
+        attachments: { orderBy: { createdAt: "desc" } },
       },
     }),
     prisma.qualificationMaster.findMany({
@@ -141,13 +143,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <div className="flex items-center bg-[linear-gradient(90deg,rgba(244,114,182,0.14),rgba(168,85,247,0.12),rgba(56,189,248,0.12),rgba(250,204,21,0.14))] px-3 py-2">
                 <div className="text-sm font-black tracking-tight text-zinc-800">求職者基本情報</div>
               </div>
-              <div className="flex items-center justify-end gap-1.5 border-b border-white/55 bg-[linear-gradient(90deg,rgba(255,245,251,0.58),rgba(248,244,255,0.56),rgba(241,248,255,0.54),rgba(255,250,239,0.56))] px-3 py-2 backdrop-blur-xl">
-                  <button
-                    type="button"
-                    className="rounded-full border border-violet-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,243,255,0.92))] px-3 py-1 text-[10px] font-semibold text-violet-700 shadow-[0_14px_26px_-22px_rgba(124,58,237,0.7)] transition hover:bg-violet-50"
-                  >
-                    ファイル格納
-                  </button>
+              <div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-white/55 bg-[linear-gradient(90deg,rgba(255,245,251,0.58),rgba(248,244,255,0.56),rgba(241,248,255,0.54),rgba(255,250,239,0.56))] px-3 py-2 backdrop-blur-xl">
+                  <CandidateFileVault candidateId={candidate.id} initialAttachments={candidate.attachments} />
                   <button
                     type="button"
                     className="rounded-full border border-rose-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,242,246,0.92))] px-3 py-1 text-[10px] font-semibold text-rose-700 shadow-[0_14px_26px_-22px_rgba(244,63,94,0.68)] transition hover:bg-rose-50"
