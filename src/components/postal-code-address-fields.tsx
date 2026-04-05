@@ -86,7 +86,7 @@ export function PostalCodeAddressFields({
   }, [postalCodeValue])
 
   return (
-    <div className="space-y-3">
+    <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
       <label className="space-y-1 text-sm">
         <span>郵便番号</span>
         <input
