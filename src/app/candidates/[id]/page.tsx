@@ -6,6 +6,7 @@ import { CandidateContactLogList } from "@/components/candidate-contact-log-list
 import { CandidateLocationFields } from "@/components/candidate-location-fields"
 import { CandidateLineCopyButton } from "@/components/candidate-line-copy-button"
 import { CandidateQualificationFields } from "@/components/candidate-qualification-fields"
+import { DateInputWithShortcuts } from "@/components/date-input-with-shortcuts"
 import { PostalCodeAddressFields } from "@/components/postal-code-address-fields"
 import { SaveSuccessNotice } from "@/components/save-success-notice"
 import { SearchableSelect } from "@/components/searchable-select"
@@ -590,7 +591,11 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
                   <div className="space-y-1">
                     <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 応募者</div>
-                    <input type="date" name="applicationDate" defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    <DateInputWithShortcuts
+                      name="applicationDate"
+                      defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
+                      className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
+                    />
                     <input name="applicantName" defaultValue={selection.applicantName ?? ""} placeholder="応募者" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                   </div>
 
@@ -640,7 +645,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
 
                 <div className="space-y-1">
                   <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 応募者</div>
-                  <input type="date" name="applicationDate" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  <DateInputWithShortcuts name="applicationDate" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                   <input name="applicantName" placeholder="応募者" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                 </div>
 

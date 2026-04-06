@@ -3,6 +3,7 @@ import { CUSTOMER_RANK_BADGE, SELECTION_STATUS_LABELS } from "@/lib/constants"
 import { prisma } from "@/lib/db"
 import { formatDate, formatDateInput } from "@/lib/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DateInputWithShortcuts } from "@/components/date-input-with-shortcuts"
 
 export const dynamic = "force-dynamic"
 
@@ -124,7 +125,11 @@ export default async function SelectionsPage({ searchParams }: Props) {
                   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                     <label className="space-y-1 text-xs text-zinc-500">
                       <span>応募日</span>
-                      <input type="date" name="applicationDate" defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                      <DateInputWithShortcuts
+                        name="applicationDate"
+                        defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
+                        className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900"
+                      />
                     </label>
                     <input name="applicantName" defaultValue={selection.applicantName ?? ""} placeholder="応募者" className="h-10 rounded-2xl border border-zinc-200 px-3" />
                     <input name="ownerName" defaultValue={selection.ownerName ?? ""} placeholder="担当" className="h-10 rounded-2xl border border-zinc-200 px-3" />
