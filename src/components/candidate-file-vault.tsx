@@ -138,15 +138,21 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingNameRef = useRef<HTMLInputElement>(null)
 
+  async function refreshAttachments() {
+    const res = await fetch(`/api/files?candidateId=${candidateId}`)
+    const data = await res.json()
+    if (data.attachments) {
+      setAttachments(data.attachments)
+    }
+  }
+
   async function uploadFile(file: File) {
     const formData = new FormData()
     formData.append("file", file)
     formData.append("candidateId", candidateId)
     const res = await fetch("/api/upload", { method: "POST", body: formData })
     const data = await res.json()
-    if (data.attachment) {
-      setAttachments((prev) => [data.attachment, ...prev])
-    }
+    if (data.attachment) await refreshAttachments()
   }
 
   function stagefile(file: File) {
@@ -217,12 +223,12 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
   }
 
   function handleDelete(id: string) {
-    fetch(`/api/files/${id}`, { method: "DELETE" })
-    setAttachments((prev) => prev.filter((a) => a.id !== id))
+    fetch(`/api/files/${id}`, { method: "DELETE" }).then(() => refreshAttachments())
   }
 
   function handleRename(id: string, name: string) {
     setAttachments((prev) => prev.map((a) => (a.id === id ? { ...a, name } : a)))
+    refreshAttachments()
   }
 
   const count = attachments.length
