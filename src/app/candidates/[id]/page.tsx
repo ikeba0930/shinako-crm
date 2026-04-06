@@ -575,118 +575,228 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             <CardHeader className="border-b border-zinc-200 pb-3">
               <CardTitle className="text-zinc-900">選考企業を紐づけ</CardTitle>
             </CardHeader>
-            <CardContent className="px-0 py-0">
-              <div className="hidden border-b border-zinc-200 px-6 py-3 text-[11px] font-bold tracking-wide text-zinc-500 md:grid md:grid-cols-[minmax(320px,1.8fr)_170px_150px_170px_minmax(260px,1fr)_110px] md:gap-4">
-                <div>選考企業</div>
-                <div>選考状況 / 紹介経路</div>
-                <div>担当</div>
-                <div>応募日 / 次回アクション / 更新日</div>
-                <div>求人情報リンク / メモ</div>
-                <div></div>
-              </div>
+            <CardContent className="space-y-4 px-4 py-4 md:px-6">
               {candidate.selections.map((selection) => (
                 <form
                   key={selection.id}
                   action={saveSelectionAction}
-                  className="border-b border-zinc-200 px-6 py-4 md:grid md:grid-cols-[minmax(320px,1.8fr)_170px_150px_170px_minmax(260px,1fr)_110px] md:items-start md:gap-4"
+                  className="space-y-4 rounded-xl border border-zinc-300 bg-white p-4"
                 >
                   <input type="hidden" name="id" value={selection.id} />
                   <input type="hidden" name="candidateId" value={candidate.id} />
 
-                  <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考企業</div>
-                    <input name="companyName" defaultValue={selection.companyName} placeholder="選考企業" className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[15px] font-semibold" />
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考状況 / 紹介経路</div>
-                    <select name="selectionStatus" defaultValue={selection.selectionStatus} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm">
-                      {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
-                        <option key={code} value={code}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                    <SearchableSelect name="referralSource" defaultValue={selection.referralSource || "自社"} options={selectionReferralOptions} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
-                    <SearchableSelect
-                      name="ownerName"
-                      defaultValue={selection.ownerName ?? candidate.ownerName ?? ""}
-                      options={ownerOptionsWithBlank}
-                      className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 次回アクション / 更新日</div>
-                    <DateInputWithShortcuts
-                      name="applicationDate"
-                      defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
-                      className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm"
-                    />
-                    <input type="date" name="nextActionAt" defaultValue={formatDateInput(selection.nextActionAt)} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                    <div className="pt-1 text-xs font-medium text-zinc-500">最終更新: {formatDate(selection.updatedAt)}</div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">求人情報リンク / メモ</div>
-                    <input name="jobPostingUrl" type="url" defaultValue={selection.jobPostingUrl ?? ""} placeholder="求人情報リンク" className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                    <textarea name="notes" defaultValue={selection.notes ?? ""} rows={2} placeholder="メモ" className="min-h-16 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-                  </div>
-
-                  <div className="flex items-start justify-end md:pt-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3 text-sm">
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-zinc-700">
+                      <div className="font-medium">
+                        応募日 <span className="text-zinc-900">{formatDate(selection.applicationDate ?? selection.proposedAt)}</span>
+                      </div>
+                      <div className="font-medium text-zinc-500">
+                        最終更新 <span className="text-zinc-700">{formatDate(selection.updatedAt)}</span>
+                      </div>
+                    </div>
                     <button type="submit" className="h-9 rounded-md bg-zinc-900 px-4 text-sm font-semibold text-white">
                       更新
                     </button>
                   </div>
+
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_180px_260px]">
+                    <div className="space-y-4">
+                      <div>
+                        <div className="mb-1 text-xs font-bold tracking-wide text-zinc-500">応募者</div>
+                        <div className="text-base font-semibold tracking-[0.3em] text-zinc-900">{candidate.name || "-"}</div>
+                      </div>
+
+                      <div>
+                        <div className="mb-1 text-xs font-bold tracking-wide text-zinc-500">選考企業</div>
+                        <input
+                          name="companyName"
+                          defaultValue={selection.companyName}
+                          placeholder="選考企業"
+                          className="h-14 w-full border-0 bg-transparent px-0 text-[36px] font-semibold leading-none text-blue-700 outline-none placeholder:text-zinc-300"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">求人情報</div>
+                        <input
+                          name="jobPostingUrl"
+                          type="url"
+                          defaultValue={selection.jobPostingUrl ?? ""}
+                          placeholder="https://..."
+                          className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm text-blue-700"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">進捗状況</div>
+                        <select name="selectionStatus" defaultValue={selection.selectionStatus} className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm">
+                          {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
+                            <option key={code} value={code}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">紹介経路</div>
+                        <SearchableSelect
+                          name="referralSource"
+                          defaultValue={selection.referralSource || "自社"}
+                          options={selectionReferralOptions}
+                          className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">担当</div>
+                        <SearchableSelect
+                          name="ownerName"
+                          defaultValue={selection.ownerName ?? candidate.ownerName ?? ""}
+                          options={ownerOptionsWithBlank}
+                          className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">次回アクション</div>
+                        <input
+                          type="date"
+                          name="nextActionAt"
+                          defaultValue={formatDateInput(selection.nextActionAt)}
+                          className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">メモ</div>
+                        <textarea
+                          name="notes"
+                          defaultValue={selection.notes ?? ""}
+                          rows={6}
+                          placeholder="メモ"
+                          className="min-h-[176px] w-full rounded-none border border-zinc-900 bg-white px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold tracking-wide text-zinc-500">応募日を変更</div>
+                        <DateInputWithShortcuts
+                          name="applicationDate"
+                          defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
+                          className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </form>
               ))}
 
-              <form action={createSelectionAction} className="px-6 py-4 md:grid md:grid-cols-[minmax(320px,1.8fr)_170px_150px_170px_minmax(260px,1fr)_110px] md:items-start md:gap-4">
+              <form action={createSelectionAction} className="space-y-4 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-4">
                 <input type="hidden" name="candidateId" value={candidate.id} />
                 <input type="hidden" name="applicantName" value={candidate.name} />
 
-                  <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考企業</div>
-                  <input name="companyName" placeholder="選考企業" className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[15px] font-semibold" />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考状況 / 紹介経路</div>
-                  <select name="selectionStatus" defaultValue="PROPOSED" className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm">
-                    {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
-                      <option key={code} value={code}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                  <SearchableSelect name="referralSource" defaultValue="自社" options={selectionReferralOptions} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
-                  <SearchableSelect name="ownerName" defaultValue={candidate.ownerName ?? ""} options={ownerOptionsWithBlank} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 次回アクション / 更新日</div>
-                  <DateInputWithShortcuts name="applicationDate" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                  <input type="date" name="nextActionAt" className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">求人情報リンク / メモ</div>
-                  <input name="jobPostingUrl" type="url" placeholder="求人情報リンク" className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm" />
-                  <textarea name="notes" rows={2} placeholder="メモ" className="min-h-16 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-                </div>
-
-                <div className="flex items-start justify-end md:pt-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-zinc-700">
+                    <div className="font-medium">
+                      応募日 <span className="text-zinc-900">{formatDate(new Date())}</span>
+                    </div>
+                    <div className="font-medium text-zinc-500">最終更新 保存後に自動反映</div>
+                  </div>
                   <button type="submit" className="h-9 rounded-md bg-zinc-900 px-4 text-sm font-semibold text-white">
                     選考を追加
                   </button>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_180px_260px]">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="mb-1 text-xs font-bold tracking-wide text-zinc-500">応募者</div>
+                      <div className="text-base font-semibold tracking-[0.3em] text-zinc-900">{candidate.name || "-"}</div>
+                    </div>
+
+                    <div>
+                      <div className="mb-1 text-xs font-bold tracking-wide text-zinc-500">選考企業</div>
+                      <input
+                        name="companyName"
+                        placeholder="選考企業"
+                        className="h-14 w-full border-0 bg-transparent px-0 text-[36px] font-semibold leading-none text-blue-700 outline-none placeholder:text-zinc-300"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">求人情報</div>
+                      <input
+                        name="jobPostingUrl"
+                        type="url"
+                        placeholder="https://..."
+                        className="h-9 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm text-blue-700"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">進捗状況</div>
+                      <select name="selectionStatus" defaultValue="PROPOSED" className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm">
+                        {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
+                          <option key={code} value={code}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">紹介経路</div>
+                      <SearchableSelect
+                        name="referralSource"
+                        defaultValue="自社"
+                        options={selectionReferralOptions}
+                        className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">担当</div>
+                      <SearchableSelect
+                        name="ownerName"
+                        defaultValue={candidate.ownerName ?? ""}
+                        options={ownerOptionsWithBlank}
+                        className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">次回アクション</div>
+                      <input type="date" name="nextActionAt" className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">メモ</div>
+                      <textarea
+                        name="notes"
+                        rows={6}
+                        placeholder="メモ"
+                        className="min-h-[176px] w-full rounded-none border border-zinc-900 bg-white px-3 py-2 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold tracking-wide text-zinc-500">応募日を設定</div>
+                      <DateInputWithShortcuts
+                        name="applicationDate"
+                        defaultValue={formatDateInput(new Date())}
+                        className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm"
+                      />
+                    </div>
+                  </div>
                 </div>
               </form>
             </CardContent>
