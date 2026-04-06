@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/db"
 import { saveSelectionAction } from "@/lib/actions"
 import { CUSTOMER_RANK_BADGE, SELECTION_STATUS_LABELS } from "@/lib/constants"
-import { formatDate, formatDateInput, formatManYen } from "@/lib/format"
+import { prisma } from "@/lib/db"
+import { formatDate, formatDateInput } from "@/lib/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const dynamic = "force-dynamic"
 
-const STALLED_ENTRY_THRESHOLD = (() => {
+const ACTION_OVERDUE_THRESHOLD = (() => {
   const date = new Date()
-  date.setDate(date.getDate() - 14)
+  date.setDate(date.getDate() - 1)
   return date
 })()
 
@@ -28,7 +28,9 @@ export default async function SelectionsPage({ searchParams }: Props) {
         ? {
             OR: [
               { companyName: { contains: keyword } },
-              { jobType: { contains: keyword } },
+              { applicantName: { contains: keyword } },
+              { referralSource: { contains: keyword } },
+              { jobPostingUrl: { contains: keyword } },
               { candidate: { name: { contains: keyword } } },
             ],
           }
@@ -39,7 +41,7 @@ export default async function SelectionsPage({ searchParams }: Props) {
     include: {
       candidate: true,
     },
-    orderBy: { updatedAt: "desc" },
+    orderBy: [{ nextActionAt: "asc" }, { updatedAt: "desc" }],
   })
 
   const owners = [...new Set(selections.map((selection) => selection.ownerName).filter(Boolean))]
@@ -49,13 +51,13 @@ export default async function SelectionsPage({ searchParams }: Props) {
     <div className="space-y-6 p-6 lg:p-8">
       <div className="fantasy-page-header p-6 pl-8">
         <div className="fantasy-kicker mb-2">Selection Chronicle</div>
-        <h1 className="fantasy-page-title">選考管理</h1>
-        <p className="fantasy-page-description">1行で求職者と企業の進行が追える、統一トーンの選考管理ビューです。</p>
+        <h1 className="fantasy-page-title">選考一覧</h1>
+        <p className="fantasy-page-description">候補者ごとの選考紐づけを、応募情報と次回アクション中心で管理します。</p>
       </div>
 
       <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-zinc-900">検索・絞り込み</CardTitle>
+          <CardTitle className="text-zinc-900">検索</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -71,7 +73,7 @@ export default async function SelectionsPage({ searchParams }: Props) {
           </div>
           <form className="grid gap-3 md:grid-cols-3">
             <input type="hidden" name="status" value={status} />
-            <input name="keyword" defaultValue={keyword} placeholder="候補者名 / 企業名 / 職種" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+            <input name="keyword" defaultValue={keyword} placeholder="候補者 / 企業 / 応募者 / 紹介経路" className="h-10 rounded-2xl border border-zinc-200 px-3" />
             <select name="owner" defaultValue={owner} className="h-10 rounded-2xl border border-zinc-200 px-3">
               <option value="">担当者すべて</option>
               {owners.map((item) => (
@@ -84,18 +86,12 @@ export default async function SelectionsPage({ searchParams }: Props) {
               適用
             </button>
           </form>
-          <a
-            href={`/api/csv/selections?keyword=${encodeURIComponent(keyword)}&status=${status}&owner=${encodeURIComponent(owner)}`}
-            className="inline-flex rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700"
-          >
-            CSV出力
-          </a>
         </CardContent>
       </Card>
 
       <div className="space-y-4">
         {selections.map((selection) => {
-          const stalled = selection.entryAt && !selection.passedAt && selection.entryAt < STALLED_ENTRY_THRESHOLD
+          const actionOverdue = selection.nextActionAt && selection.nextActionAt < ACTION_OVERDUE_THRESHOLD
 
           return (
             <Card key={selection.id} className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
@@ -114,24 +110,25 @@ export default async function SelectionsPage({ searchParams }: Props) {
                         <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-semibold text-zinc-700">
                           {SELECTION_STATUS_LABELS[selection.selectionStatus]}
                         </span>
-                        {stalled ? <span className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">停滞アラート</span> : null}
+                        {actionOverdue ? <span className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">要対応</span> : null}
                       </div>
                       <p className="text-sm text-zinc-500">
-                        {selection.companyName} / {selection.jobType ?? "-"} / 年齢 {selection.candidate.age ?? "-"} / 希望職種 {selection.candidate.desiredJobType ?? "-"} / 単価{" "}
-                        {formatManYen(selection.unitPrice)}
+                        {selection.companyName} / 応募者 {selection.applicantName ?? "-"} / 担当 {selection.ownerName ?? "-"} / 紹介経路 {selection.referralSource ?? "-"}
                       </p>
                     </div>
                     <a href={`/candidates/${selection.candidateId}`} className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700">
-                      詳細を見る
+                      候補者を見る
                     </a>
                   </div>
 
-                  <div className="grid gap-3 md:grid-cols-4 xl:grid-cols-6">
-                    <input name="companyName" defaultValue={selection.companyName} className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="jobType" defaultValue={selection.jobType ?? ""} className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="ownerName" defaultValue={selection.ownerName ?? ""} className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="unitPrice" defaultValue={selection.unitPrice ?? ""} className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="feeRate" defaultValue={selection.feeRate ?? ""} className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    <label className="space-y-1 text-xs text-zinc-500">
+                      <span>応募日</span>
+                      <input type="date" name="applicationDate" defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                    </label>
+                    <input name="applicantName" defaultValue={selection.applicantName ?? ""} placeholder="応募者" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                    <input name="ownerName" defaultValue={selection.ownerName ?? ""} placeholder="担当" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                    <input name="companyName" defaultValue={selection.companyName} placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
                     <select name="selectionStatus" defaultValue={selection.selectionStatus} className="h-10 rounded-2xl border border-zinc-200 px-3">
                       {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
                         <option key={code} value={code}>
@@ -139,51 +136,28 @@ export default async function SelectionsPage({ searchParams }: Props) {
                         </option>
                       ))}
                     </select>
+                    <input name="referralSource" defaultValue={selection.referralSource ?? ""} placeholder="紹介経路" className="h-10 rounded-2xl border border-zinc-200 px-3" />
                     <label className="space-y-1 text-xs text-zinc-500">
-                      <span>提案日</span>
-                      <input type="date" name="proposedAt" defaultValue={formatDateInput(selection.proposedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                      <span>選考ステータス更新日</span>
+                      <input type="date" name="statusUpdatedAt" defaultValue={formatDateInput(selection.statusUpdatedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
                     </label>
                     <label className="space-y-1 text-xs text-zinc-500">
-                      <span>エントリー日</span>
-                      <input type="date" name="entryAt" defaultValue={formatDateInput(selection.entryAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                      <span>次回アクション日</span>
+                      <input type="date" name="nextActionAt" defaultValue={formatDateInput(selection.nextActionAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
                     </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>書類通過日</span>
-                      <input type="date" name="passedAt" defaultValue={formatDateInput(selection.passedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                    <label className="space-y-1 text-xs text-zinc-500 md:col-span-2 xl:col-span-3">
+                      <span>求人情報リンク</span>
+                      <input name="jobPostingUrl" defaultValue={selection.jobPostingUrl ?? ""} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
                     </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>面談設定日</span>
-                      <input type="date" name="interviewScheduledAt" defaultValue={formatDateInput(selection.interviewScheduledAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>一次面談日</span>
-                      <input type="date" name="firstInterviewAt" defaultValue={formatDateInput(selection.firstInterviewAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>最終面談日</span>
-                      <input type="date" name="secondInterviewAt" defaultValue={formatDateInput(selection.secondInterviewAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>内定日</span>
-                      <input type="date" name="offerAt" defaultValue={formatDateInput(selection.offerAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>承諾日</span>
-                      <input type="date" name="offerAcceptedAt" defaultValue={formatDateInput(selection.offerAcceptedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>入社日</span>
-                      <input type="date" name="joiningAt" defaultValue={formatDateInput(selection.joiningAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
-                    <label className="space-y-1 text-xs text-zinc-500 md:col-span-4 xl:col-span-3">
-                      <span>対応メモ</span>
+                    <label className="space-y-1 text-xs text-zinc-500 md:col-span-2 xl:col-span-3">
+                      <span>メモ</span>
                       <input name="notes" defaultValue={selection.notes ?? ""} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
                     </label>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-zinc-500">
-                      提案 {formatDate(selection.proposedAt)} / エントリー {formatDate(selection.entryAt)} / 内定 {formatDate(selection.offerAt)}
+                      応募日 {formatDate(selection.applicationDate ?? selection.proposedAt)} / 更新日 {formatDate(selection.statusUpdatedAt)} / 次回 {formatDate(selection.nextActionAt)}
                     </p>
                     <button type="submit" className="rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white">
                       更新

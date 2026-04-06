@@ -40,7 +40,7 @@ function formatDt(dt: string | Date | null) {
 
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 basis-[140px]">
       <div className="text-[9px] font-bold text-violet-500">{label}</div>
       <div className="mt-0.5 text-[11px] font-semibold text-zinc-800">{value || "-"}</div>
     </div>
@@ -91,7 +91,7 @@ function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; c
       </div>
 
       {/* 対応情報行 */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-b border-violet-50 px-4 py-3 md:grid-cols-5">
+      <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 border-b border-violet-50 px-4 py-3">
         <Field label="対応日時" value={formatDt(log.respondedAt)} />
         <Field label="対応者" value={log.respondentName} />
         <Field label="対応ステータス" value={log.responseStatus} />
@@ -100,7 +100,7 @@ function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; c
       </div>
 
       {/* NA情報行 */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2 bg-rose-50/30 px-4 py-3 md:grid-cols-3">
+      <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 bg-rose-50/30 px-4 py-3">
         <Field label="NA日時" value={formatDt(log.naAt)} />
         <Field label="NA内容" value={log.naContent} />
         <Field label="理由" value={log.reason} />

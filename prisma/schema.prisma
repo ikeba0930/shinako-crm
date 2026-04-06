@@ -252,10 +252,16 @@ model Selection {
   id                   String          @id @default(cuid())
   candidateId          String
   companyName          String
+  applicantName        String?
+  applicationDate      DateTime?
   jobType              String?
+  referralSource       String?
+  jobPostingUrl        String?
   unitPrice            Int?
   feeRate              Float?
   selectionStatus      SelectionStatus @default(PROPOSED)
+  statusUpdatedAt      DateTime?
+  nextActionAt         DateTime?
   ownerName            String?
   proposedAt           DateTime?
   entryAt              DateTime?

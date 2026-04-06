@@ -327,17 +327,35 @@ export async function deleteCandidateAction(formData: FormData) {
 export async function saveSelectionAction(formData: FormData) {
   const id = String(formData.get("id") ?? "")
   const candidateId = String(formData.get("candidateId") ?? "")
+  const applicationDate = parseDate(formData.get("applicationDate"))
+  const statusUpdatedAt = parseDate(formData.get("statusUpdatedAt"))
+  const selectionStatus = String(formData.get("selectionStatus") ?? "PROPOSED") as SelectionStatus
+  const currentSelection = await prisma.selection.findUnique({
+    where: { id },
+    select: { selectionStatus: true, statusUpdatedAt: true },
+  })
+  const nextStatusUpdatedAt =
+    statusUpdatedAt ??
+    (currentSelection && currentSelection.selectionStatus !== selectionStatus
+      ? new Date()
+      : currentSelection?.statusUpdatedAt ?? null)
 
   await prisma.selection.update({
     where: { id },
     data: {
       companyName: String(formData.get("companyName") ?? ""),
+      applicantName: String(formData.get("applicantName") ?? "") || null,
+      applicationDate,
       jobType: String(formData.get("jobType") ?? "") || null,
+      referralSource: String(formData.get("referralSource") ?? "") || null,
+      jobPostingUrl: String(formData.get("jobPostingUrl") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
       unitPrice: parseIntValue(formData.get("unitPrice")),
       feeRate: parseFloatValue(formData.get("feeRate")),
-      selectionStatus: String(formData.get("selectionStatus") ?? "PROPOSED") as SelectionStatus,
-      proposedAt: parseDate(formData.get("proposedAt")),
+      selectionStatus,
+      statusUpdatedAt: nextStatusUpdatedAt,
+      nextActionAt: parseDate(formData.get("nextActionAt")),
+      proposedAt: applicationDate,
       entryAt: parseDate(formData.get("entryAt")),
       passedAt: parseDate(formData.get("passedAt")),
       interviewScheduledAt: parseDate(formData.get("interviewScheduledAt")),
@@ -358,14 +376,22 @@ export async function saveSelectionAction(formData: FormData) {
 
 export async function createSelectionAction(formData: FormData) {
   const candidateId = String(formData.get("candidateId") ?? "")
+  const applicationDate = parseDate(formData.get("applicationDate")) ?? new Date()
+  const selectionStatus = String(formData.get("selectionStatus") ?? "PROPOSED") as SelectionStatus
   await prisma.selection.create({
     data: {
       candidateId,
       companyName: String(formData.get("companyName") ?? ""),
+      applicantName: String(formData.get("applicantName") ?? "") || null,
+      applicationDate,
       jobType: String(formData.get("jobType") ?? "") || null,
+      referralSource: String(formData.get("referralSource") ?? "") || null,
+      jobPostingUrl: String(formData.get("jobPostingUrl") ?? "") || null,
       ownerName: String(formData.get("ownerName") ?? "") || null,
-      selectionStatus: SelectionStatus.PROPOSED,
-      proposedAt: parseDate(formData.get("proposedAt")) ?? new Date(),
+      selectionStatus,
+      statusUpdatedAt: parseDate(formData.get("statusUpdatedAt")) ?? applicationDate,
+      nextActionAt: parseDate(formData.get("nextActionAt")),
+      proposedAt: applicationDate,
       unitPrice: parseIntValue(formData.get("unitPrice")),
       feeRate: parseFloatValue(formData.get("feeRate")),
       notes: String(formData.get("notes") ?? "") || null,
