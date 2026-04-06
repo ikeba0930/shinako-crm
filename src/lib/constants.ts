@@ -326,6 +326,50 @@ export const SELECTION_STATUS_LABELS = {
   CLOSED: "クローズ",
 } as const
 
+export type SelectionStatusCode = keyof typeof SELECTION_STATUS_LABELS
+
+type SelectionStatusGroup = {
+  label: string
+  statusCodes: SelectionStatusCode[]
+}
+
+export const SELECTION_STATUS_GROUPS: SelectionStatusGroup[] = [
+  {
+    label: "選考中",
+    statusCodes: [
+      "PROPOSED",
+      "WAITING_ENTRY",
+      "ENTERED",
+      "DOCUMENT_SCREENING",
+      "PASSED_DOCUMENT",
+      "FIRST_INTERVIEW_ADJUSTING",
+      "FIRST_INTERVIEW_DONE",
+      "SECOND_INTERVIEW_ADJUSTING",
+      "SECOND_INTERVIEW_DONE",
+    ] as const,
+  },
+  {
+    label: "内定",
+    statusCodes: ["OFFERED", "ACCEPTED", "JOINING_SCHEDULED", "JOINED"] as const,
+  },
+  {
+    label: "選考終了（辞退）",
+    statusCodes: ["DECLINED"] as const,
+  },
+  {
+    label: "選考終了（見送り）",
+    statusCodes: ["REJECTED", "CLOSED"] as const,
+  },
+]
+
+export function getSelectionStatusGroup(status?: SelectionStatusCode | null) {
+  if (!status) return SELECTION_STATUS_GROUPS[0]
+  return (
+    SELECTION_STATUS_GROUPS.find((group) => group.statusCodes.includes(status)) ??
+    SELECTION_STATUS_GROUPS[0]
+  )
+}
+
 export const SELECTION_STATUS_BADGE = {
   PROPOSED: "bg-zinc-100 text-zinc-700",
   WAITING_ENTRY: "bg-amber-100 text-amber-700",

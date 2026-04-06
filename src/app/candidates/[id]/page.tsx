@@ -28,8 +28,10 @@ import {
   FINAL_EDUCATION_OPTIONS,
   INFLOW_ROUTE_OPTIONS,
   MANAGEMENT_EXPERIENCE_OPTIONS,
+  SELECTION_STATUS_GROUPS,
   SELECTION_STATUS_LABELS,
   UNEMPLOYMENT_INSURANCE_CONTRACT_OPTIONS,
+  getSelectionStatusGroup,
 } from "@/lib/constants"
 import { prisma } from "@/lib/db"
 import { formatDate, formatDateInput, formatDateTimeInput } from "@/lib/format"
@@ -576,8 +578,20 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <CardTitle className="text-zinc-900">選考企業を紐づけ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 px-4 py-4 md:px-6">
-              {candidate.selections.map((selection) => (
-                <form
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                {SELECTION_STATUS_GROUPS.map((group) => (
+                  <div key={group.label} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-3 text-xs">
+                    <div className="text-[12px] font-semibold text-zinc-900">{group.label}</div>
+                    <div className="mt-1 text-[11px] leading-snug text-zinc-500">
+                      {group.statusCodes.map((code) => SELECTION_STATUS_LABELS[code]).join(" / ")}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {candidate.selections.map((selection) => {
+                const statusGroup = getSelectionStatusGroup(selection.selectionStatus)
+                return (
+                  <form
                   key={selection.id}
                   action={saveSelectionAction}
                   className="space-y-4 rounded-xl border border-zinc-300 bg-white p-4"
@@ -631,6 +645,7 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     <div className="space-y-3">
                       <div className="space-y-1">
                         <div className="text-xs font-bold tracking-wide text-zinc-500">進捗状況</div>
+                        <div className="text-xs font-semibold text-rose-600">{statusGroup.label}</div>
                         <select name="selectionStatus" defaultValue={selection.selectionStatus} className="h-10 w-full rounded-none border border-zinc-900 bg-white px-3 text-sm">
                           {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
                             <option key={code} value={code}>
@@ -694,7 +709,8 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                     </div>
                   </div>
                 </form>
-              ))}
+              )
+              })}
 
               <form action={createSelectionAction} className="space-y-4 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-4">
                 <input type="hidden" name="candidateId" value={candidate.id} />
