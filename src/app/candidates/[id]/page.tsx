@@ -46,6 +46,11 @@ const compactInputClassName =
   "h-9 w-full rounded-[1rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.99),rgba(249,243,255,0.97)_54%,rgba(239,246,255,0.95))] px-2.5 text-[10px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_26px_-20px_rgba(76,29,149,0.62)] outline-none transition duration-200 hover:-translate-y-[1px] hover:border-fuchsia-200 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_18px_34px_-20px_rgba(168,85,247,0.45)] focus:border-fuchsia-300 focus:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(252,244,255,0.99))] focus:ring-2 focus:ring-fuchsia-200/70"
 const inputClassName =
   "h-10 w-full rounded-[1.25rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(250,243,255,0.98)_52%,rgba(239,247,255,0.96))] px-3 text-sm text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_16px_30px_-22px_rgba(76,29,149,0.64)] outline-none transition duration-200 hover:-translate-y-[1px] hover:border-fuchsia-200 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.94),0_20px_36px_-22px_rgba(168,85,247,0.48)] focus:border-fuchsia-300 focus:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(255,246,255,1))] focus:ring-2 focus:ring-fuchsia-200/70"
+const selectionReferralOptions = [
+  { label: "空欄", value: "" },
+  { label: "自社", value: "自社" },
+  { label: "circus", value: "circus" },
+]
 
 function getLatestSelectionDate(values: Array<Date | null>) {
   return values
@@ -572,41 +577,25 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
               <CardTitle className="text-zinc-900">選考企業を紐づけ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="hidden border-b border-zinc-200 pb-2 text-[11px] font-bold text-zinc-500 md:grid md:grid-cols-[140px_110px_140px_200px_130px_minmax(220px,1fr)] md:gap-3">
-                <div>応募日 / 応募者</div>
-                <div>担当</div>
+              <div className="hidden border-b border-zinc-200 pb-2 text-[11px] font-bold text-zinc-500 md:grid md:grid-cols-[minmax(260px,1.4fr)_180px_150px_150px_minmax(240px,1fr)] md:gap-3">
                 <div>選考企業</div>
                 <div>選考状況 / 紹介経路</div>
-                <div>次回アクション / 更新日</div>
+                <div>担当</div>
+                <div>応募日 / 次回アクション</div>
                 <div>求人情報リンク / メモ</div>
               </div>
               {candidate.selections.map((selection) => (
                 <form
                   key={selection.id}
                   action={saveSelectionAction}
-                  className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-3 md:grid md:grid-cols-[140px_110px_140px_200px_130px_minmax(220px,1fr)] md:items-start md:gap-3"
+                  className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-3 md:grid md:grid-cols-[minmax(260px,1.4fr)_180px_150px_150px_minmax(240px,1fr)] md:items-start md:gap-3"
                 >
                   <input type="hidden" name="id" value={selection.id} />
                   <input type="hidden" name="candidateId" value={candidate.id} />
 
                   <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 応募者</div>
-                    <DateInputWithShortcuts
-                      name="applicationDate"
-                      defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
-                      className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-                    />
-                    <input name="applicantName" defaultValue={selection.applicantName ?? ""} placeholder="応募者" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
-                    <input name="ownerName" defaultValue={selection.ownerName ?? candidate.ownerName ?? ""} placeholder="担当" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                  </div>
-
-                  <div className="space-y-1">
                     <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考企業</div>
-                    <input name="companyName" defaultValue={selection.companyName} placeholder="選考企業" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    <input name="companyName" defaultValue={selection.companyName} placeholder="選考企業" className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base font-semibold" />
                   </div>
 
                   <div className="space-y-1">
@@ -618,13 +607,28 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                         </option>
                       ))}
                     </select>
-                    <input name="referralSource" defaultValue={selection.referralSource ?? ""} placeholder="紹介経路" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    <SearchableSelect name="referralSource" defaultValue={selection.referralSource ?? ""} options={selectionReferralOptions} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                   </div>
 
                   <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">次回アクション / 更新日</div>
+                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
+                    <SearchableSelect
+                      name="ownerName"
+                      defaultValue={selection.ownerName ?? candidate.ownerName ?? ""}
+                      options={ownerOptionsWithBlank}
+                      className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 次回アクション</div>
+                    <DateInputWithShortcuts
+                      name="applicationDate"
+                      defaultValue={formatDateInput(selection.applicationDate ?? selection.proposedAt)}
+                      className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
+                    />
                     <input type="date" name="nextActionAt" defaultValue={formatDateInput(selection.nextActionAt)} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                    <input type="date" name="statusUpdatedAt" defaultValue={formatDateInput(selection.statusUpdatedAt)} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    <div className="rounded-xl border border-zinc-200 bg-zinc-100 px-3 py-2 text-xs font-semibold text-zinc-600">最終更新: {formatDate(selection.updatedAt)}</div>
                   </div>
 
                   <div className="space-y-2">
@@ -640,23 +644,13 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                 </form>
               ))}
 
-              <form action={createSelectionAction} className="rounded-2xl border border-dashed border-zinc-200 bg-white p-3 md:grid md:grid-cols-[140px_110px_140px_200px_130px_minmax(220px,1fr)] md:items-start md:gap-3">
+              <form action={createSelectionAction} className="rounded-2xl border border-dashed border-zinc-200 bg-white p-3 md:grid md:grid-cols-[minmax(260px,1.4fr)_180px_150px_150px_minmax(240px,1fr)] md:items-start md:gap-3">
                 <input type="hidden" name="candidateId" value={candidate.id} />
-
-                <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 応募者</div>
-                  <DateInputWithShortcuts name="applicationDate" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                  <input name="applicantName" placeholder="応募者" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
-                  <input name="ownerName" defaultValue={candidate.ownerName ?? ""} placeholder="担当" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                </div>
+                <input type="hidden" name="applicantName" value={candidate.name} />
 
                 <div className="space-y-1">
                   <div className="text-[10px] font-bold text-zinc-400 md:hidden">選考企業</div>
-                  <input name="companyName" placeholder="選考企業" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  <input name="companyName" placeholder="選考企業" className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base font-semibold" />
                 </div>
 
                 <div className="space-y-1">
@@ -668,13 +662,19 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
                       </option>
                     ))}
                   </select>
-                  <input name="referralSource" placeholder="紹介経路" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  <SearchableSelect name="referralSource" defaultValue="" options={selectionReferralOptions} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">次回アクション / 更新日</div>
+                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">担当</div>
+                  <SearchableSelect name="ownerName" defaultValue={candidate.ownerName ?? ""} options={ownerOptionsWithBlank} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="text-[10px] font-bold text-zinc-400 md:hidden">応募日 / 次回アクション</div>
+                  <DateInputWithShortcuts name="applicationDate" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
                   <input type="date" name="nextActionAt" className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-                  <input type="date" name="statusUpdatedAt" defaultValue={formatDateInput(new Date())} className="h-9 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-100 px-3 py-2 text-xs font-semibold text-zinc-600">最終更新: 保存後に自動反映</div>
                 </div>
 
                 <div className="space-y-2">

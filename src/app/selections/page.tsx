@@ -1,9 +1,10 @@
+import { DateInputWithShortcuts } from "@/components/date-input-with-shortcuts"
+import { SearchableSelect } from "@/components/searchable-select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { saveSelectionAction } from "@/lib/actions"
 import { CUSTOMER_RANK_BADGE, SELECTION_STATUS_LABELS } from "@/lib/constants"
 import { prisma } from "@/lib/db"
 import { formatDate, formatDateInput } from "@/lib/format"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DateInputWithShortcuts } from "@/components/date-input-with-shortcuts"
 
 export const dynamic = "force-dynamic"
 
@@ -12,6 +13,23 @@ const ACTION_OVERDUE_THRESHOLD = (() => {
   date.setDate(date.getDate() - 1)
   return date
 })()
+
+const ownerOptionsWithBlank = [
+  { label: "空欄", value: "" },
+  { label: "池場敬太", value: "池場敬太" },
+  { label: "砂場翔子", value: "砂場翔子" },
+  { label: "馬淵拓也", value: "馬淵拓也" },
+  { label: "共田泰斗", value: "共田泰斗" },
+  { label: "坂本奈央", value: "坂本奈央" },
+  { label: "西田翔太", value: "西田翔太" },
+  { label: "鏡悠真", value: "鏡悠真" },
+]
+
+const referralOptions = [
+  { label: "空欄", value: "" },
+  { label: "自社", value: "自社" },
+  { label: "circus", value: "circus" },
+]
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -29,7 +47,6 @@ export default async function SelectionsPage({ searchParams }: Props) {
         ? {
             OR: [
               { companyName: { contains: keyword } },
-              { applicantName: { contains: keyword } },
               { referralSource: { contains: keyword } },
               { jobPostingUrl: { contains: keyword } },
               { candidate: { name: { contains: keyword } } },
@@ -53,12 +70,12 @@ export default async function SelectionsPage({ searchParams }: Props) {
       <div className="fantasy-page-header p-6 pl-8">
         <div className="fantasy-kicker mb-2">Selection Chronicle</div>
         <h1 className="fantasy-page-title">選考一覧</h1>
-        <p className="fantasy-page-description">候補者ごとの選考紐づけを、応募情報と次回アクション中心で管理します。</p>
+        <p className="fantasy-page-description">候補者ごとの選考進捗を横断で確認し、次回アクションを管理します。</p>
       </div>
 
       <Card className="rounded-3xl border-white/70 bg-white/90 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-zinc-900">検索</CardTitle>
+          <CardTitle className="text-zinc-900">絞り込み</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -74,7 +91,7 @@ export default async function SelectionsPage({ searchParams }: Props) {
           </div>
           <form className="grid gap-3 md:grid-cols-3">
             <input type="hidden" name="status" value={status} />
-            <input name="keyword" defaultValue={keyword} placeholder="候補者 / 企業 / 応募者 / 紹介経路" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+            <input name="keyword" defaultValue={keyword} placeholder="候補者名 / 選考企業 / 紹介経路 / 求人情報リンク" className="h-10 rounded-2xl border border-zinc-200 px-3" />
             <select name="owner" defaultValue={owner} className="h-10 rounded-2xl border border-zinc-200 px-3">
               <option value="">担当者すべて</option>
               {owners.map((item) => (
@@ -113,12 +130,10 @@ export default async function SelectionsPage({ searchParams }: Props) {
                         </span>
                         {actionOverdue ? <span className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">要対応</span> : null}
                       </div>
-                      <p className="text-sm text-zinc-500">
-                        {selection.companyName} / 応募者 {selection.applicantName ?? "-"} / 担当 {selection.ownerName ?? "-"} / 紹介経路 {selection.referralSource ?? "-"}
-                      </p>
+                      <p className="text-sm text-zinc-500">{selection.companyName} / 担当 {selection.ownerName ?? "-"} / 紹介経路 {selection.referralSource ?? "-"}</p>
                     </div>
                     <a href={`/candidates/${selection.candidateId}`} className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700">
-                      候補者を見る
+                      候補者詳細を見る
                     </a>
                   </div>
 
@@ -131,9 +146,8 @@ export default async function SelectionsPage({ searchParams }: Props) {
                         className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900"
                       />
                     </label>
-                    <input name="applicantName" defaultValue={selection.applicantName ?? ""} placeholder="応募者" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="ownerName" defaultValue={selection.ownerName ?? ""} placeholder="担当" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <input name="companyName" defaultValue={selection.companyName} placeholder="企業名" className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                    <SearchableSelect name="ownerName" defaultValue={selection.ownerName ?? ""} options={ownerOptionsWithBlank} className="h-10 rounded-2xl border border-zinc-200 px-3" />
+                    <input name="companyName" defaultValue={selection.companyName} placeholder="選考企業" className="h-10 rounded-2xl border border-zinc-200 px-3 text-base font-semibold" />
                     <select name="selectionStatus" defaultValue={selection.selectionStatus} className="h-10 rounded-2xl border border-zinc-200 px-3">
                       {Object.entries(SELECTION_STATUS_LABELS).map(([code, label]) => (
                         <option key={code} value={code}>
@@ -141,14 +155,14 @@ export default async function SelectionsPage({ searchParams }: Props) {
                         </option>
                       ))}
                     </select>
-                    <input name="referralSource" defaultValue={selection.referralSource ?? ""} placeholder="紹介経路" className="h-10 rounded-2xl border border-zinc-200 px-3" />
-                    <label className="space-y-1 text-xs text-zinc-500">
-                      <span>選考ステータス更新日</span>
-                      <input type="date" name="statusUpdatedAt" defaultValue={formatDateInput(selection.statusUpdatedAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
-                    </label>
+                    <SearchableSelect name="referralSource" defaultValue={selection.referralSource ?? ""} options={referralOptions} className="h-10 rounded-2xl border border-zinc-200 px-3" />
                     <label className="space-y-1 text-xs text-zinc-500">
                       <span>次回アクション日</span>
                       <input type="date" name="nextActionAt" defaultValue={formatDateInput(selection.nextActionAt)} className="h-10 w-full rounded-2xl border border-zinc-200 px-3 text-sm text-zinc-900" />
+                    </label>
+                    <label className="space-y-1 text-xs text-zinc-500">
+                      <span>最終更新日</span>
+                      <div className="flex h-10 items-center rounded-2xl border border-zinc-200 bg-zinc-100 px-3 text-sm font-semibold text-zinc-700">{formatDate(selection.updatedAt)}</div>
                     </label>
                     <label className="space-y-1 text-xs text-zinc-500 md:col-span-2 xl:col-span-3">
                       <span>求人情報リンク</span>
@@ -162,7 +176,7 @@ export default async function SelectionsPage({ searchParams }: Props) {
 
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-zinc-500">
-                      応募日 {formatDate(selection.applicationDate ?? selection.proposedAt)} / 更新日 {formatDate(selection.statusUpdatedAt)} / 次回 {formatDate(selection.nextActionAt)}
+                      応募日 {formatDate(selection.applicationDate ?? selection.proposedAt)} / 更新日 {formatDate(selection.updatedAt)} / 次回 {formatDate(selection.nextActionAt)}
                     </p>
                     <button type="submit" className="rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white">
                       更新
