@@ -246,6 +246,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   (selection) => !inactiveSelectionStatuses.has(selection.selectionStatus)
                 )
                 const activeCompanies = [...new Set(activeSelections.map((selection) => selection.companyName).filter(Boolean))]
+                const activeCompanyCountLabel = activeCompanies.length > 0 ? `${activeCompanies.length}社` : "-"
                 const entryDate = candidate.entryDate ?? getLatestSelectionDate(candidate.selections.map((selection) => selection.entryAt))
                 const companyInterviewDate = candidate.companyInterviewDate ?? getLatestSelectionDate(
                   candidate.selections.flatMap((selection) => [selection.firstInterviewAt, selection.secondInterviewAt, selection.interviewScheduledAt])
@@ -259,7 +260,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
                   `ランク: ${candidate.customerRank}`,
                   `ステータス: ${CANDIDATE_STATUS_LABELS[candidate.overallStatus]}`,
                   `NA日時: ${naAt ? naAt.toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }) : "-"}`,
-                  `選考中企業: ${activeCompanies.join(" / ") || "-"}`,
+                  `選考中企業: ${activeCompanyCountLabel}`,
                   `流入日: ${formatDate(candidate.inflowDate)}`,
                   `初回対応日: ${formatDate(candidate.firstResponseDate)}`,
                   `面談日: ${formatDate(candidate.interviewDate)}`,
@@ -320,8 +321,8 @@ export default async function CandidatesPage({ searchParams }: Props) {
                         <span className="text-zinc-300">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanies.join(" / ") || "-"}>
-                      <span className="block truncate text-rose-700">{activeCompanies.join(" / ") || "-"}</span>
+                    <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanyCountLabel}>
+                      <span className="block truncate text-rose-700">{activeCompanyCountLabel}</span>
                     </TableCell>
                     <TableCell className="px-1 py-2">{formatDate(candidate.inflowDate)}</TableCell>
                     <TableCell className="px-1 py-2">{formatDate(candidate.firstResponseDate)}</TableCell>
