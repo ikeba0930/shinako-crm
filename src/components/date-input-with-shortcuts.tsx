@@ -21,20 +21,13 @@ export function DateInputWithShortcuts({ name, defaultValue = "", className }: P
   return (
     <div className="space-y-1">
       <input type="date" name={name} value={value} onChange={(event) => setValue(event.target.value)} className={className} />
-      <div className="flex justify-end gap-1">
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={() => setValue(formatLocalDate(new Date()))}
-          className="rounded-full border border-zinc-200 bg-white px-2 py-1 text-[10px] font-semibold text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900"
+          className="px-1 text-[10px] font-semibold text-zinc-500 transition hover:text-zinc-900"
         >
           今日
-        </button>
-        <button
-          type="button"
-          onClick={() => setValue("")}
-          className="rounded-full border border-zinc-200 bg-white px-2 py-1 text-[10px] font-semibold text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-800"
-        >
-          クリア
         </button>
       </div>
     </div>
