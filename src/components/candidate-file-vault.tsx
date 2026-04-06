@@ -138,6 +138,17 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingNameRef = useRef<HTMLInputElement>(null)
 
+  async function uploadFile(file: File) {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("candidateId", candidateId)
+    const res = await fetch("/api/upload", { method: "POST", body: formData })
+    const data = await res.json()
+    if (data.attachment) {
+      setAttachments((prev) => [data.attachment, ...prev])
+    }
+  }
+
   function stagefile(file: File) {
     setPendingFile(file)
     setPendingName(file.name)
@@ -148,16 +159,10 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
     if (!pendingFile) return
     setIsUploading(true)
     try {
-      const formData = new FormData()
+      
       // 名前を変更した新しいFileオブジェクトを作る
       const renamedFile = new File([pendingFile], pendingName.trim() || pendingFile.name, { type: pendingFile.type })
-      formData.append("file", renamedFile)
-      formData.append("candidateId", candidateId)
-      const res = await fetch("/api/upload", { method: "POST", body: formData })
-      const data = await res.json()
-      if (data.attachment) {
-        setAttachments((prev) => [data.attachment, ...prev])
-      }
+      await uploadFile(renamedFile)
     } finally {
       setIsUploading(false)
       setPendingFile(null)
@@ -173,17 +178,42 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    stagefile(file)
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
+    if (files.length === 1) {
+      stagefile(files[0])
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      for (const file of files) {
+        await uploadFile(file)
+      }
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
   }
 
   async function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     setDragOver(false)
-    const file = e.dataTransfer.files?.[0]
-    if (!file) return
-    stagefile(file)
+    const files = Array.from(e.dataTransfer.files ?? [])
+    if (files.length === 0) return
+    if (files.length === 1) {
+      stagefile(files[0])
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      for (const file of files) {
+        await uploadFile(file)
+      }
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   function handleDelete(id: string) {
@@ -241,7 +271,7 @@ export function CandidateFileVault({ candidateId, initialAttachments }: Props) {
               <span className="text-xs">📜</span>
               巻物を格納
             </button>
-            <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+            <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileChange} />
           </div>
 
           <div className="space-y-2 p-3">
