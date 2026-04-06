@@ -24,7 +24,19 @@ type Props = {
 
 const inactiveSelectionStatuses = new Set<SelectionStatus>([
   SelectionStatus.DECLINED,
+  SelectionStatus.DECLINED_BEFORE_DOCUMENT,
+  SelectionStatus.DECLINED_FIRST_INTERVIEW,
+  SelectionStatus.DECLINED_SECOND_INTERVIEW,
+  SelectionStatus.DECLINED_THIRD_INTERVIEW,
+  SelectionStatus.DECLINED_FINAL_INTERVIEW,
+  SelectionStatus.DECLINED_OTHER,
+  SelectionStatus.DECLINED_OFFER,
   SelectionStatus.REJECTED,
+  SelectionStatus.REJECTED_DOCUMENT,
+  SelectionStatus.REJECTED_FIRST_INTERVIEW,
+  SelectionStatus.REJECTED_SECOND_INTERVIEW,
+  SelectionStatus.REJECTED_THIRD_INTERVIEW,
+  SelectionStatus.REJECTED_OTHER,
   SelectionStatus.CLOSED,
   SelectionStatus.JOINED,
 ])
