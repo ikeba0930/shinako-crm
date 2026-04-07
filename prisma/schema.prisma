@@ -42,7 +42,12 @@ enum SelectionStatus {
   FIRST_INTERVIEW_DONE
   SECOND_INTERVIEW_ADJUSTING
   SECOND_INTERVIEW_DONE
+  THIRD_INTERVIEW_SCREENING
+  THIRD_INTERVIEW_PASSED
+  FINAL_INTERVIEW_SCREENING
+  FINAL_INTERVIEW_PASSED
   IN_PROGRESS_OTHER
+  IN_PROGRESS_OTHER_PASSED
   OFFERED
   OFFERED_NO_SCHEDULE
   ACCEPTED
@@ -291,6 +296,7 @@ model Selection {
   rejectedAt           DateTime?
   lossReason           String?
   notes                String?
+  naAt                 DateTime?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   candidate            Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)

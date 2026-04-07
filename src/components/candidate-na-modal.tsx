@@ -18,6 +18,7 @@ type Props = {
   ownerName?: string | null
   triggerLabel?: string
   triggerClassName?: string
+  onSaved?: () => void
   initialLog?: {
     id: string
     respondedAt: string | Date | null
@@ -94,7 +95,7 @@ const ownerRequiredCheckboxNames = [
   "setAs_closedDate",
 ] as const
 
-export function CandidateNaModal({ candidateId, ownerName, triggerLabel = "対応NA", triggerClassName, initialLog }: Props) {
+export function CandidateNaModal({ candidateId, ownerName, triggerLabel = "対応NA", triggerClassName, onSaved, initialLog }: Props) {
   const router = useRouter()
   const initialStatusPhase = initialLog?.responseStatus?.split("：")[0] ?? ""
   const initialStatusDetail = initialLog?.responseStatus?.split("：").slice(1).join("：") ?? ""
@@ -144,6 +145,7 @@ export function CandidateNaModal({ candidateId, ownerName, triggerLabel = "対�
 
     startTransition(async () => {
       await saveContactLogAction(formData)
+      onSaved?.()
       router.refresh()
       close()
     })

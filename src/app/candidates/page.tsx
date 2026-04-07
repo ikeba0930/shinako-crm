@@ -58,6 +58,25 @@ const responseStatusOptions = [
   ),
 ]
 
+const DATE_FILTER_FIELDS = [
+  { key: "firstResponseDate", label: "初回対応日" },
+  { key: "interviewDate", label: "面談日" },
+  { key: "documentCreatedDate", label: "書類作成日" },
+  { key: "proposalDate", label: "提案日" },
+  { key: "entryDate", label: "エントリー日" },
+  { key: "companyInterviewDate", label: "企業面談日" },
+  { key: "offerDate", label: "内定日" },
+  { key: "offerAcceptedDate", label: "承諾日" },
+  { key: "joiningDate", label: "入社日" },
+  { key: "closedDate", label: "終了日" },
+] as const
+
+type DateFilterKey = (typeof DATE_FILTER_FIELDS)[number]["key"]
+
+function parseDateParam(value: string | string[] | undefined): string {
+  return typeof value === "string" ? value : ""
+}
+
 export default async function CandidatesPage({ searchParams }: Props) {
   const params = await searchParams
   const keyword = typeof params.keyword === "string" ? params.keyword : ""
@@ -66,6 +85,29 @@ export default async function CandidatesPage({ searchParams }: Props) {
   const owner = typeof params.owner === "string" ? params.owner : ""
   const inflowSource = typeof params.inflowSource === "string" ? params.inflowSource : ""
   const sort = typeof params.sort === "string" ? params.sort : "updatedAt"
+
+  const dateFilters = Object.fromEntries(
+    DATE_FILTER_FIELDS.flatMap(({ key }) => [
+      [`${key}From`, parseDateParam(params[`${key}From`])],
+      [`${key}To`, parseDateParam(params[`${key}To`])],
+    ])
+  ) as Record<`${DateFilterKey}From` | `${DateFilterKey}To`, string>
+
+  function buildDateRange(key: DateFilterKey): object {
+    const from = dateFilters[`${key}From`]
+    const to = dateFilters[`${key}To`]
+    if (!from && !to) return {}
+    return {
+      [key]: {
+        ...(from ? { gte: new Date(from) } : {}),
+        ...(to ? { lte: new Date(`${to}T23:59:59`) } : {}),
+      },
+    }
+  }
+
+  const hasDateFilters = DATE_FILTER_FIELDS.some(
+    ({ key }) => dateFilters[`${key}From`] || dateFilters[`${key}To`]
+  )
 
   const candidates = await prisma.candidate.findMany({
     where: {
@@ -84,6 +126,16 @@ export default async function CandidatesPage({ searchParams }: Props) {
         : {}),
       ...(rank ? { customerRank: rank as never } : {}),
       ...(owner ? { ownerName: owner } : {}),
+      ...buildDateRange("firstResponseDate"),
+      ...buildDateRange("interviewDate"),
+      ...buildDateRange("documentCreatedDate"),
+      ...buildDateRange("proposalDate"),
+      ...buildDateRange("entryDate"),
+      ...buildDateRange("companyInterviewDate"),
+      ...buildDateRange("offerDate"),
+      ...buildDateRange("offerAcceptedDate"),
+      ...buildDateRange("joiningDate"),
+      ...buildDateRange("closedDate"),
     },
     include: {
       selections: {
@@ -118,7 +170,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
       : baseFiltered
 
   const owners = [...new Set(candidates.map((candidate) => candidate.ownerName).filter(Boolean))]
-  const hasActiveFilters = Boolean(keyword || rank || status || owner || inflowSource || (sort && sort !== "updatedAt"))
+  const hasActiveFilters = Boolean(keyword || rank || status || owner || inflowSource || hasDateFilters || (sort && sort !== "updatedAt"))
 
   return (
     <div className="space-y-3 p-4 lg:p-5">
@@ -131,7 +183,7 @@ export default async function CandidatesPage({ searchParams }: Props) {
         </div>
         <div className="flex items-center gap-2">
           <a
-            href={`/api/csv/candidates?keyword=${encodeURIComponent(keyword)}&rank=${rank}&status=${status}&owner=${encodeURIComponent(owner)}&inflowSource=${encodeURIComponent(inflowSource)}`}
+            href={`/api/csv/candidates?keyword=${encodeURIComponent(keyword)}&rank=${rank}&status=${status}&owner=${encodeURIComponent(owner)}&inflowSource=${encodeURIComponent(inflowSource)}${DATE_FILTER_FIELDS.flatMap(({ key }) => [`&${key}From=${dateFilters[`${key}From`]}`, `&${key}To=${dateFilters[`${key}To`]}`]).join("")}`}
             className="rounded-full border border-white/60 bg-white/75 px-3 py-1.5 text-[12px] font-semibold text-[#6d4e7e] shadow-[0_10px_24px_-22px_rgba(88,28,135,0.75)] backdrop-blur"
           >
             CSV
@@ -203,6 +255,31 @@ export default async function CandidatesPage({ searchParams }: Props) {
                 <option value="inflowDate">流入日順</option>
                 <option value="naAt">NA日時順（近い順）</option>
               </select>
+              <div className="md:col-span-6">
+                <div className="mb-1 text-[11px] font-bold text-[#6d4e7e]">日付で絞り込む</div>
+                <div className="grid gap-x-3 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                  {DATE_FILTER_FIELDS.map(({ key, label }) => (
+                    <div key={key} className="rounded-xl border border-white/60 bg-white/70 px-2 py-1.5">
+                      <div className="mb-1 text-[10px] font-bold text-[#6d4e7e]">{label}</div>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="date"
+                          name={`${key}From`}
+                          defaultValue={dateFilters[`${key}From`]}
+                          className="h-7 w-full min-w-0 rounded-lg border border-white/60 bg-white/80 px-1 text-[11px]"
+                        />
+                        <span className="shrink-0 text-[10px] text-zinc-400">〜</span>
+                        <input
+                          type="date"
+                          name={`${key}To`}
+                          defaultValue={dateFilters[`${key}To`]}
+                          className="h-7 w-full min-w-0 rounded-lg border border-white/60 bg-white/80 px-1 text-[11px]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="flex gap-2 md:col-span-6 md:justify-end">
                 <Link
                   href="/candidates"

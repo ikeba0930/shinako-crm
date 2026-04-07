@@ -1,9 +1,10 @@
 "use client"
 
-import { useOptimistic, startTransition } from "react"
+import { useEffect, useOptimistic, startTransition, useState } from "react"
 import { useRouter } from "next/navigation"
 import { deleteContactLogAction } from "@/lib/actions"
 import { CandidateNaModal } from "@/components/candidate-na-modal"
+import { SaveSuccessNotice } from "@/components/save-success-notice"
 
 type ContactLog = {
   id: string
@@ -47,7 +48,19 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   )
 }
 
-function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; candidateId: string; ownerName: string | null; onDelete: (id: string) => void }) {
+function LogCard({
+  log,
+  candidateId,
+  ownerName,
+  onDelete,
+  onSaved,
+}: {
+  log: ContactLog
+  candidateId: string
+  ownerName: string | null
+  onDelete: (id: string) => void
+  onSaved: () => void
+}) {
   const router = useRouter()
   const shortId = log.id.slice(-8).toUpperCase()
 
@@ -67,6 +80,7 @@ function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; c
             candidateId={candidateId}
             ownerName={ownerName}
             initialLog={log}
+            onSaved={onSaved}
             triggerLabel="編集"
             triggerClassName="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[9px] font-semibold text-sky-600 transition hover:bg-sky-100 hover:text-sky-700"
           />
@@ -118,20 +132,28 @@ function LogCard({ log, candidateId, ownerName, onDelete }: { log: ContactLog; c
 }
 
 export function CandidateContactLogList({ candidateId, ownerName, initialLogs }: Props) {
+  const [saved, setSaved] = useState(false)
   const [logs, dispatch] = useOptimistic(
     initialLogs,
     (state, deletedId: string) => state.filter((l) => l.id !== deletedId),
   )
 
+  useEffect(() => {
+    if (!saved) return
+    const timer = window.setTimeout(() => setSaved(false), 2300)
+    return () => window.clearTimeout(timer)
+  }, [saved])
+
   return (
     <div className="space-y-3">
+      {saved ? <SaveSuccessNotice message="対話履歴を保存しました" /> : null}
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-[13px] font-black tracking-wide text-violet-900">対応・NAリスト</span>
           <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-bold text-violet-600">{logs.length}件</span>
         </div>
-        <CandidateNaModal candidateId={candidateId} ownerName={ownerName} />
+        <CandidateNaModal candidateId={candidateId} ownerName={ownerName} triggerLabel="対話履歴を保存" onSaved={() => setSaved(true)} />
       </div>
 
       {/* ログ一覧 */}
@@ -150,6 +172,7 @@ export function CandidateContactLogList({ candidateId, ownerName, initialLogs }:
               candidateId={candidateId}
               ownerName={ownerName}
               onDelete={(id) => dispatch(id)}
+              onSaved={() => setSaved(true)}
             />
           ))}
         </div>

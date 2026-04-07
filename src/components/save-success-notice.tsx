@@ -21,6 +21,7 @@ export function SaveSuccessNotice({ message }: Props) {
     const cleanupTimer = window.setTimeout(() => {
       const nextParams = new URLSearchParams(searchParams.toString())
       nextParams.delete("saved")
+      nextParams.delete("savedSection")
       const nextQuery = nextParams.toString()
       router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
     }, 2300)
