@@ -332,7 +332,7 @@ export async function saveSelectionAction(formData: FormData) {
   const selectionStatus = String(formData.get("selectionStatus") ?? "PROPOSED") as SelectionStatus
   const currentSelection = await prisma.selection.findUnique({
     where: { id },
-    select: { selectionStatus: true, statusUpdatedAt: true },
+    select: { selectionStatus: true, statusUpdatedAt: true, companyName: true },
   })
   const nextStatusUpdatedAt =
     statusUpdatedAt ??
@@ -340,10 +340,16 @@ export async function saveSelectionAction(formData: FormData) {
       ? new Date()
       : currentSelection?.statusUpdatedAt ?? null)
 
+  const naAtRaw = String(formData.get("naAt") ?? "").trim()
+  const naAt = naAtRaw ? new Date(naAtRaw) : null
+
+  const submittedCompanyName = String(formData.get("companyName") ?? "")
+  const companyName = submittedCompanyName || currentSelection?.companyName || ""
+
   await prisma.selection.update({
     where: { id },
     data: {
-      companyName: String(formData.get("companyName") ?? ""),
+      companyName,
       applicantName: String(formData.get("applicantName") ?? "") || null,
       applicationDate,
       jobType: String(formData.get("jobType") ?? "") || null,
@@ -364,6 +370,7 @@ export async function saveSelectionAction(formData: FormData) {
       offerAt: parseDate(formData.get("offerAt")),
       offerAcceptedAt: parseDate(formData.get("offerAcceptedAt")),
       joiningAt: parseDate(formData.get("joiningAt")),
+      naAt,
       notes: String(formData.get("notes") ?? "") || null,
     },
   })
@@ -372,12 +379,15 @@ export async function saveSelectionAction(formData: FormData) {
   revalidatePath("/selections")
   revalidatePath("/dashboard")
   revalidatePath(`/candidates/${candidateId}`)
+  redirect(`/candidates/${candidateId}?tab=selections&saved=1&savedSection=selections`)
 }
 
 export async function createSelectionAction(formData: FormData) {
   const candidateId = String(formData.get("candidateId") ?? "")
   const applicationDate = parseDate(formData.get("applicationDate")) ?? new Date()
   const selectionStatus = String(formData.get("selectionStatus") ?? "PROPOSED") as SelectionStatus
+  const naAtRaw = String(formData.get("naAt") ?? "").trim()
+  const naAt = naAtRaw ? new Date(naAtRaw) : null
   await prisma.selection.create({
     data: {
       candidateId,
@@ -394,10 +404,23 @@ export async function createSelectionAction(formData: FormData) {
       proposedAt: applicationDate,
       unitPrice: parseIntValue(formData.get("unitPrice")),
       feeRate: parseFloatValue(formData.get("feeRate")),
+      naAt,
       notes: String(formData.get("notes") ?? "") || null,
     },
   })
 
+  await syncCandidateDerivedFields(candidateId)
+  revalidatePath("/selections")
+  revalidatePath("/dashboard")
+  revalidatePath(`/candidates/${candidateId}`)
+  redirect(`/candidates/${candidateId}?tab=selections&saved=1&savedSection=selections`)
+}
+
+export async function deleteSelectionAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "")
+  const candidateId = String(formData.get("candidateId") ?? "")
+  if (!id || !candidateId) return
+  await prisma.selection.delete({ where: { id } })
   await syncCandidateDerivedFields(candidateId)
   revalidatePath("/selections")
   revalidatePath("/dashboard")
