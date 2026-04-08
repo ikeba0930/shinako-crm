@@ -300,8 +300,11 @@ export default async function CandidatesPage({ searchParams }: Props) {
       </Card>
 
       <Card className="rounded-[24px] border-white/55 bg-white/62 shadow-[0_22px_48px_-34px_rgba(88,28,135,0.78)]">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-3 pb-2">
           <CardTitle className="text-[#241433]">一覧</CardTitle>
+          <span className="rounded-full bg-fuchsia-100 px-2.5 py-0.5 text-[12px] font-bold text-fuchsia-700">
+            {filteredCandidates.length}件
+          </span>
         </CardHeader>
         <CardContent>
           <Table className="w-full table-auto text-[11px] leading-tight">
