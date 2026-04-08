@@ -725,95 +725,44 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             ＋ 選考を追加
           </button>
 
-          {/* 新規選考追加フォーム */}
+          {/* 新規選考追加フォーム（コンパクト） */}
           <form
             id="new-selection-form"
             action={createSelectionAction}
-            className="overflow-hidden rounded-[1.5rem] border border-dashed border-fuchsia-300/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(252,242,255,0.88)_45%,rgba(239,249,255,0.86))] shadow-[0_14px_38px_-28px_rgba(76,29,149,0.55)]"
+            className="overflow-hidden rounded-[1.2rem] border border-dashed border-fuchsia-300/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(252,242,255,0.88)_45%,rgba(239,249,255,0.86))] shadow-[0_8px_24px_-18px_rgba(76,29,149,0.55)]"
           >
             <input type="hidden" name="candidateId" value={candidate.id} />
             <input type="hidden" name="applicantName" value={candidate.name} />
-
-            {/* ヘッダーバー */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-fuchsia-100/40 bg-[linear-gradient(90deg,rgba(244,114,182,0.10),rgba(168,85,247,0.08),rgba(56,189,248,0.08))] px-4 py-2.5">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                <HeaderLabel label="応募日" className="bg-fuchsia-100 text-fuchsia-700" />
-                <DateInputWithShortcuts
-                  name="applicationDate"
-                  defaultValue={formatDateInput(new Date())}
-                  className={compactInputClassName}
+            <div className="flex flex-wrap items-center gap-2 px-3 py-2">
+              <HeaderLabel label="応募日" className="bg-fuchsia-100 text-fuchsia-700" />
+              <DateInputWithShortcuts
+                name="applicationDate"
+                defaultValue={formatDateInput(new Date())}
+                className={compactInputClassName}
+              />
+              <input
+                name="companyName"
+                placeholder="選考企業名"
+                className={compactInputClassName}
+              />
+              <div className="w-[160px]">
+                <SelectionStatusCascader
+                  defaultValue="DOCUMENT_SCREENING"
+                  selectClassName={compactInputClassName}
                 />
-                <span className="text-[10px] font-medium text-zinc-400">最終更新 保存後に自動反映</span>
               </div>
+              <SearchableSelect
+                name="referralSource"
+                defaultValue="自社"
+                options={selectionReferralOptions}
+                className={compactInputClassName}
+              />
               <button
                 type="submit"
-                className="rounded-full bg-[linear-gradient(135deg,#18181b_0%,#4c1d95_100%)] px-4 py-1.5 text-[10px] font-bold text-white shadow-[0_10px_24px_-12px_rgba(76,29,149,0.60)] transition duration-200 hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-12px_rgba(76,29,149,0.72)]"
+                className="rounded-full bg-[linear-gradient(135deg,#18181b_0%,#4c1d95_100%)] px-4 py-1.5 text-[10px] font-bold text-white shadow-[0_10px_24px_-12px_rgba(76,29,149,0.60)] transition duration-200 hover:-translate-y-[1px]"
               >
-                ＋ 選考を追加
+                ＋ 追加
               </button>
-            </div>
-
-            {/* ボディ：3カラム */}
-            <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1.7fr)_190px_260px]">
-              {/* 左 */}
-              <div className="space-y-4">
-                <div>
-                  <HeaderLabel label="応募者" className="bg-violet-100 text-violet-700" />
-                  <div className="mt-1.5 text-base font-semibold tracking-[0.3em] text-[#2f1b3b]">{candidate.name || "-"}</div>
-                </div>
-
-                <div>
-                  <HeaderLabel label="選考企業" className="bg-sky-100 text-sky-700" />
-                  <input
-                    name="companyName"
-                    placeholder="選考企業"
-                    className="mt-1 h-14 w-full border-0 bg-transparent px-0 text-[34px] font-bold leading-none text-[#1e3a8a] outline-none placeholder:text-fuchsia-200"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <HeaderLabel label="求人情報" className="bg-amber-100 text-amber-700" />
-                  <input
-                    name="jobPostingUrl"
-                    type="url"
-                    placeholder="https://..."
-                    className={`${inputClassName} text-blue-600`}
-                  />
-                </div>
-              </div>
-
-              {/* 中 */}
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <HeaderLabel label="選考状況" className="bg-rose-100 text-rose-700" />
-                  <SelectionStatusCascader
-                    defaultValue="DOCUMENT_SCREENING"
-                    selectClassName="h-10 w-full rounded-[1rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.99),rgba(249,243,255,0.97)_54%,rgba(239,246,255,0.95))] px-2.5 text-[11px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_26px_-20px_rgba(76,29,149,0.62)] outline-none transition duration-200 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/70"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <HeaderLabel label="紹介経路" className="bg-teal-100 text-teal-700" />
-                  <SearchableSelect
-                    name="referralSource"
-                    defaultValue="自社"
-                    options={selectionReferralOptions}
-                    className="h-10 w-full rounded-[1rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.99),rgba(249,243,255,0.97)_54%,rgba(239,246,255,0.95))] px-2.5 text-[11px] text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_26px_-20px_rgba(76,29,149,0.62)] outline-none transition duration-200 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/70"
-                  />
-                </div>
-
-              </div>
-
-              {/* 右：メモ */}
-              <div className="space-y-1">
-                <HeaderLabel label="メモ" className="bg-slate-100 text-slate-600" />
-                <textarea
-                  name="notes"
-                  rows={8}
-                  placeholder="メモ"
-                  className="min-h-[200px] w-full rounded-[1.1rem] border border-fuchsia-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.99),rgba(249,243,255,0.96))] px-3 py-2.5 text-sm text-[#2f1b3b] shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_14px_26px_-20px_rgba(76,29,149,0.55)] outline-none transition duration-200 placeholder:text-fuchsia-200/60 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/70"
-                />
-              </div>
             </div>
           </form>
         </TabsContent>
