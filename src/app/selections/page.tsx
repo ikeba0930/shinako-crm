@@ -23,6 +23,7 @@ const ownerOptionsWithBlank = [
   { label: "坂本奈央", value: "坂本奈央" },
   { label: "西田翔太", value: "西田翔太" },
   { label: "鏡悠真", value: "鏡悠真" },
+  { label: "花咲圭祐", value: "花咲圭祐" },
 ]
 
 const referralOptions = [

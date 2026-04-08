@@ -31,6 +31,7 @@ export const CANDIDATE_OWNER_OPTIONS = [
   "水見倫",
   "杉山翔太",
   "高木琴乃",
+  "花咲圭祐",
 ] as const
 
 export const CANDIDATE_AGE_OPTIONS = Array.from({ length: 48 }, (_, index) => String(index + 18))
