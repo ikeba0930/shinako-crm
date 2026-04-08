@@ -413,8 +413,8 @@ export default async function CandidatesPage({ searchParams }: Props) {
                         <span className="text-zinc-300">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="max-w-[112px] px-1 py-2" title={activeCompanyCountLabel}>
-                      <span className="block truncate text-rose-700">{activeCompanyCountLabel}</span>
+                    <TableCell className="w-[22px] px-1 py-2 text-center" title={activeCompanyCountLabel}>
+                      <span className="text-[10px] font-semibold text-rose-700">{activeCompanyCountLabel}</span>
                     </TableCell>
                     <TableCell className="px-1 py-2">{formatDate(candidate.inflowDate)}</TableCell>
                     <TableCell className="px-1 py-2">{formatDate(candidate.firstResponseDate)}</TableCell>
