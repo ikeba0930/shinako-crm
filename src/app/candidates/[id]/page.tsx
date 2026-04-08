@@ -716,8 +716,18 @@ export default async function CandidateDetailPage({ params, searchParams }: Prop
             )
           })}
 
+          {/* 固定表示の追加ボタン */}
+          <button
+            type="submit"
+            form="new-selection-form"
+            className="fixed bottom-6 right-6 z-50 rounded-full bg-[linear-gradient(135deg,#18181b_0%,#4c1d95_100%)] px-5 py-3 text-[13px] font-bold text-white shadow-[0_14px_32px_-10px_rgba(76,29,149,0.75)] transition duration-200 hover:-translate-y-[2px] hover:shadow-[0_18px_38px_-10px_rgba(76,29,149,0.85)]"
+          >
+            ＋ 選考を追加
+          </button>
+
           {/* 新規選考追加フォーム */}
           <form
+            id="new-selection-form"
             action={createSelectionAction}
             className="overflow-hidden rounded-[1.5rem] border border-dashed border-fuchsia-300/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(252,242,255,0.88)_45%,rgba(239,249,255,0.86))] shadow-[0_14px_38px_-28px_rgba(76,29,149,0.55)]"
           >
